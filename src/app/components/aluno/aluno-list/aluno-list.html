@@ -1,0 +1,60 @@
+<mat-toolbar class="mat-toolbar" color="primary">
+    <div class="flex-container">
+        <span class="toolbar-title">Controle de Alunos</span>
+        <button matFab class="accent" routerLink="/alunos/new">
+            <mat-icon>add</mat-icon>
+        </button>
+    </div>
+</mat-toolbar>
+<mat-form-field appearance="outline" class="flex-container">
+  <mat-label>Filtro</mat-label>
+  <input matInput (keyup)="applyFilter($event)" placeholder="Ex. João Silva" #input>
+</mat-form-field>
+
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+  
+  <!-- Numero Column -->
+  <ng-container matColumnDef="numero">
+    <th mat-header-cell *matHeaderCellDef> Número </th>
+    <td mat-cell *matCellDef="let obj; let i = index"> {{i + 1}} </td>
+  </ng-container>
+
+  <!-- Nome Column -->
+  <ng-container matColumnDef="nome">
+    <th mat-header-cell *matHeaderCellDef> Nome </th>
+    <td mat-cell *matCellDef="let obj"> {{obj.nome}} </td>
+  </ng-container>
+
+  <!-- Sobrenome Column -->
+  <ng-container matColumnDef="sobrenome">
+    <th mat-header-cell *matHeaderCellDef> Sobrenome </th>
+    <td mat-cell *matCellDef="let obj"> {{obj.sobrenome}} </td>
+  </ng-container>
+
+  <!-- Email Column -->
+  <ng-container matColumnDef="email">
+    <th mat-header-cell *matHeaderCellDef> Email </th>
+    <td mat-cell *matCellDef="let obj"> {{obj.email}} </td>
+  </ng-container>
+
+  <!-- Acao Column -->
+  <ng-container matColumnDef="acao">
+    <th mat-header-cell *matHeaderCellDef> Ação </th>
+    <td mat-cell *matCellDef="let obj">  
+        <button matIconButton
+            color="primary"
+            routerLink="/alunos/edit/{{obj.id}}">
+            <mat-icon>edit</mat-icon>
+        </button>
+        <button matIconButton
+            color="warn">
+            <mat-icon>delete</mat-icon>
+        </button>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
+
+<mat-paginator [length]="totalRecords" [pageSize]="pageSize" [pageSizeOptions]="[2, 5, 10]" (page)="paginar($event)"></mat-paginator>

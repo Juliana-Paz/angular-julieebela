@@ -1,0 +1,79 @@
+/* O flex é um modelo de layout do CSS criado para organizar elementos 
+em linha ou em coluna de forma mais flexível e responsiva. */
+
+/* Define que o título da toolbar vai ocupar todo o espaço disponível (flex: 1)
+   e será alinhado ao centro */
+
+.toolbar-title {
+    flex: 1;
+    text-align: center;
+}
+
+.mat-toolbar {
+   padding: 0;
+   margin-bottom: 14px;
+}
+
+/* Cria um container flexível para organizar elementos lado a lado,
+   alinha os itens verticalmente ao centro e ocupa toda a largura */
+.flex-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+/* Faz com que a tabela ocupe 100% da largura disponível */
+table {
+    width: 100%;
+}
+
+/* Coluna 'numero' da tabela:
+   - largura fixa de 5em
+   - borda à direita
+   - espaçamento interno à direita de 24px
+   - texto centralizado */
+.mat-column-numero {
+    width: 1em;
+    border-right: 1px solid currentColor; 
+    text-align: center;
+}
+
+/* Coluna 'nome' da tabela ocupa 58% da largura */
+.mat-column-nome {
+    width: 58%;
+    white-space: nowrap; /*impede a quebra de linha*/
+}
+
+/* Coluna 'sigla' da tabela:
+   - largura fixa de 5em
+   - texto centralizado */
+.mat-column-sigla {
+    width: 5em;
+    text-align: center;
+}
+
+/* Coluna 'regiao' da tabela:
+   - largura fixa de 10em
+   - texto centralizado */
+.mat-column-regiao {
+    width: 10em;
+    text-align: center;
+}
+
+/* Coluna 'ação' da tabela:
+   - largura fixa de 10em
+   - texto centralizado */
+.mat-column-acao {
+    width: 10em;
+    text-align: center;
+    white-space: nowrap; /*impede a quebra de linha*/
+}
+
+/* Define o estilo do componente host (a raiz do componente Angular):
+   - exibido como bloco (block)
+   - aplica espaçamento interno (padding) que varia conforme a largura da tela
+     usando clamp (mín: 12px, preferido: 2vw, máx: 24px) */
+:host {
+  display: block;
+  padding: clamp(12px, 2vw, 24px);
+}

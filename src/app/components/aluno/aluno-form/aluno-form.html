@@ -1,0 +1,123 @@
+<mat-toolbar class="toolbar-title" color="primary">
+    Controle de Alunos
+</mat-toolbar>
+
+<mat-card class="card">
+  <mat-card-content>
+    <form class="form" [formGroup]="form">
+      <div class="grid">
+        <!-- Nome -->
+        <mat-form-field appearance="outline">
+          <mat-label>Nome</mat-label>
+          <input matInput formControlName="nome" placeholder="Ex.: João" />
+          <mat-error *ngIf="form.get('nome')?.hasError('required')">Nome obrigatório</mat-error>
+          <mat-error *ngIf="form.get('nome')?.hasError('minlength')">Nome muito curto</mat-error>
+        </mat-form-field>
+
+        <!-- Sobrenome -->
+        <mat-form-field appearance="outline">
+          <mat-label>Sobrenome</mat-label>
+          <input matInput formControlName="sobrenome" placeholder="Ex.: Silva" />
+          <mat-error *ngIf="form.get('sobrenome')?.hasError('required')">Sobrenome obrigatório</mat-error>
+          <mat-error *ngIf="form.get('sobrenome')?.hasError('minlength')">Sobrenome muito curto</mat-error>
+        </mat-form-field>
+
+        <!-- Data de Nascimento -->
+        <mat-form-field appearance="outline">
+          <mat-label>Data de Nascimento</mat-label>
+          <input 
+            matInput 
+            [matDatepicker]="picker" 
+            formControlName="dataNascimento" 
+            placeholder="DD/MM/YYYY" />
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <mat-error *ngIf="form.get('dataNascimento')?.hasError('required')">Data de nascimento obrigatória</mat-error>
+        </mat-form-field>
+
+        <!-- CPF -->
+        <mat-form-field appearance="outline">
+          <mat-label>CPF</mat-label>
+          <input matInput formControlName="cpf" placeholder="Ex.: 123.456.789-00" />
+          <mat-error *ngIf="form.get('cpf')?.hasError('required')">CPF obrigatório</mat-error>
+          <mat-error *ngIf="form.get('cpf')?.hasError('pattern')">CPF deve seguir 000.000.000-00</mat-error>
+        </mat-form-field>
+
+        <!-- Email -->
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email" placeholder="Ex.: email@example.com" />
+          <mat-error *ngIf="form.get('email')?.hasError('required')">Email obrigatório</mat-error>
+          <mat-error *ngIf="form.get('email')?.hasError('email')">Email inválido</mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Telefones -->
+      <div class="telefones-section">
+        <div class="telefones-header">
+          <h3>Telefones</h3>
+          <button
+            type="button"
+            mat-fab
+            color="accent"
+            (click)="adicionarTelefone()"
+            aria-label="Adicionar Telefone">
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
+
+        <div class="telefones-list" formArrayName="telefones">
+          @for (telefone of telefones.controls; let i = $index; track i) {
+            <div [formGroupName]="i" class="telefone-item">
+              <mat-form-field appearance="outline">
+                <mat-label>Código de Área</mat-label>
+                <input matInput formControlName="codigoArea" placeholder="Ex.: 11" />
+                <mat-error *ngIf="telefones.controls[i].get('codigoArea')?.hasError('required')">Código de área obrigatório</mat-error>
+                <mat-error *ngIf="telefones.controls[i].get('codigoArea')?.hasError('pattern')">Código deve ter 2 ou 3 dígitos</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Número</mat-label>
+                <input matInput formControlName="numero" placeholder="Ex.: 987654321" />
+                <mat-error *ngIf="telefones.controls[i].get('numero')?.hasError('required')">Número obrigatório</mat-error>
+                <mat-error *ngIf="telefones.controls[i].get('numero')?.hasError('pattern')">Número deve ter 8 ou 9 dígitos</mat-error>
+              </mat-form-field>
+
+              <button
+                type="button"
+                mat-icon-button
+                color="warn"
+                (click)="removerTelefone(i)"
+                aria-label="Remover Telefone">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="actions">
+        <button 
+          mat-raised-button
+          routerLink="/alunos">
+          Cancelar
+        </button>
+
+        <button 
+          mat-raised-button 
+          color="warn" 
+          (click)="excluir()"
+          [disabled]="!form.value.id">
+          Deletar
+        </button>
+
+        <button 
+          mat-raised-button 
+          color="accent" 
+          (click)="salvar()">
+          Salvar
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

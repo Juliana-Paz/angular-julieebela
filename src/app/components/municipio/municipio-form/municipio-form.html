@@ -1,0 +1,53 @@
+<mat-toolbar class="toolbar-title" color="primary" >
+    Controle de Municípios
+</mat-toolbar>
+
+<mat-card class="card">
+  <mat-card-content>
+    <form class="form" [formGroup]="form">
+      <div class="grid">
+        <!-- Nome -->
+        <mat-form-field appearance="outline">
+          <mat-label>Nome</mat-label>
+          <input matInput formControlName="nome" placeholder="Ex.: Palmas" />
+        </mat-form-field>
+
+        <!-- Estado -->
+        <mat-form-field appearance="outline">
+          <mat-label>Estado</mat-label>
+          <mat-select formControlName="idEstado" placeholder="Selecione ..." >
+            <mat-option [value]="null" disabled="false">Nenhum</mat-option>
+            @for (e of estados; track e.id) {
+              <mat-option [value]="e.id">{{e.nome}}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+      </div>
+
+      <div class="actions">
+        <button 
+          mat-raised-button
+          routerLink="/municipios">
+          Cancelar
+        </button>
+
+        <button 
+          mat-raised-button 
+          color="warn" 
+          (click)="excluir()"
+          [disabled]="!form.value.id">
+          Excluir
+        </button>
+
+        <button 
+          mat-raised-button 
+          color="primary" 
+          (click)="salvar()">
+          Salvar
+        </button>
+      </div>
+
+    </form>
+  </mat-card-content>
+</mat-card>

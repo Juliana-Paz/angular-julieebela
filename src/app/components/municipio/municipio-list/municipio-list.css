@@ -1,0 +1,28 @@
+/* O flex é um modelo de layout do CSS criado para organizar elementos 
+em linha ou em coluna de forma mais flexível e responsiva. */
+
+/* Define que o título da toolbar vai ocupar todo o espaço disponível (flex: 1)
+   e será alinhado ao centro */
+
+.toolbar-title {
+    flex: 1;
+    text-align: center;
+}
+
+.flex-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+
+table {
+    width: 100%;
+    margin-top: 20px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+mat-paginator {
+    margin-top: 20px;
+}

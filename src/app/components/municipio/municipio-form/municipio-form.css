@@ -1,0 +1,32 @@
+/* Define que o título da toolbar:
+   - usa flexbox
+   - centraliza horizontalmente o conteúdo
+   - aumenta o tamanho da fonte */
+.toolbar-title {
+    display: flex;
+    justify-content: center;
+    font-size: x-large;
+}
+
+.card {
+    margin: 20px;
+    padding: 20px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}

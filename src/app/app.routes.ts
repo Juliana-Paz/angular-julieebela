@@ -1,0 +1,27 @@
+import { Routes } from '@angular/router';
+import { EstadoList } from './components/estado/estado-list/estado-list';
+import { EstadoForm } from './components/estado/estado-form/estado-form';
+import { estadoResolver } from './resolvers/estado-resolver';
+import { MunicipioList } from './components/municipio/municipio-list/municipio-list';
+import { MunicipioForm } from './components/municipio/municipio-form/municipio-form';
+import { municipioResolver } from './resolvers/municipio-resolver';
+import { AlunoList } from './components/aluno/aluno-list/aluno-list';
+import { AlunoForm } from './components/aluno/aluno-form/aluno-form';
+import { alunoResolver } from './resolvers/aluno-resolver';
+
+export const routes: Routes = [
+    {path: 'estados', component: EstadoList, title: 'Listagem de Estados'},
+    {path: 'estados/new', component: EstadoForm, title: 'Cadastro de Estado'},
+    {path: 'estados/edit/:id', component: EstadoForm, title: 'Edição de Estado', 
+        resolve: {estado: estadoResolver} },
+    {path: 'municipios', component: MunicipioList, title: 'Listagem de Municípios'},
+    {path: 'alunos', component: AlunoList, title: 'Listagem de Alunos'},
+    {path: 'alunos/new', component: AlunoForm, title: 'Cadastro de Aluno'},
+    {path: 'alunos/edit/:id', component: AlunoForm, title: 'Edição de Aluno', 
+        resolve: {aluno: alunoResolver} },
+    {path: 'municipios/new', component: MunicipioForm, title: 'Cadastro de Município'},
+    {path: 'municipios/edit/:id', component: MunicipioForm, title: 'Edição de Município', 
+        resolve: {municipio: municipioResolver} },
+];
+
+

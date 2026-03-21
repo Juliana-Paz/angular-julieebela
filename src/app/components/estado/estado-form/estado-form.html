@@ -1,0 +1,65 @@
+<mat-toolbar class="toolbar-title" color="primary" >
+    Controle de Estados
+</mat-toolbar>
+
+<mat-card class="card">
+  <mat-card-content>
+    <form class="form" [formGroup]="form">
+      <div class="grid">
+        <!-- Nome -->
+        <mat-form-field appearance="outline">
+          <mat-label>Nome</mat-label>
+          <input matInput formControlName="nome" placeholder="Ex.: Tocantins" />
+        </mat-form-field>
+
+        <!-- Sigla -->
+        <mat-form-field appearance="outline">
+          <mat-label>Sigla (UF)</mat-label>
+          <input
+            matInput
+            formControlName="sigla"
+            maxlength="2"
+            placeholder="Ex.: TO"
+          />
+        </mat-form-field>
+
+        <!-- Regiao -->
+        <mat-form-field appearance="outline">
+          <mat-label>Regiao</mat-label>
+          <mat-select formControlName="idRegiao" placeholder="Selecione ..." >
+            <mat-option [value]="null" disabled="false">Nenhum</mat-option>
+            @for (r of regioes; track r.id) {
+              <mat-option [value]="r.id">{{r.nome}}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+      </div>
+
+      <div class="actions">
+        <button 
+          mat-raised-button
+          routerLink="/estados">
+          Cancelar
+        </button>
+
+        <button 
+          mat-raised-button 
+          color="warn" 
+          (click)="excluir()"
+          [disabled]="!form.value.id">
+          Excluir
+        </button>
+
+        <button 
+          mat-raised-button 
+          color="primary" 
+          (click)="salvar()"
+          [disabled]="form.invalid">
+          Salvar
+        </button>
+
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

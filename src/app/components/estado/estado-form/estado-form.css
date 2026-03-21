@@ -1,0 +1,94 @@
+/* Define que o título da toolbar:
+   - usa flexbox
+   - centraliza horizontalmente o conteúdo
+   - aumenta o tamanho da fonte */
+.toolbar-title {
+    display: flex;
+    justify-content: center;
+    font-size: x-large;
+}
+
+/* Define o estilo do componente host (a raiz do componente Angular):
+   - exibido como bloco (block)
+   - aplica espaçamento interno (padding) que varia conforme a largura da tela
+     usando clamp (mín: 12px, preferido: 2vw, máx: 24px) */
+:host {
+  display: block;
+  padding: clamp(12px, 2vw, 24px);
+}
+
+/* Estiliza os cartões:
+   - largura máxima ocupa todo o espaço disponível
+   - arredondamento dos cantos (9px) */
+.card {
+  max-width: 100%;
+  /* margin-inline: auto; */ /* centralizaria horizontalmente se ativado */
+  border-radius: 18px;
+}
+
+/* Define um layout de formulário em grid:
+   - espaçamento entre os elementos = 16px
+   - margem superior de 8px */
+.form {
+  display: grid;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+/* Define grid com duas colunas:
+   - primeira coluna flexível (1fr)
+   - segunda coluna fixa em 160px
+   - espaçamento entre colunas de 16px */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+/* Responsividade: 
+   - quando a tela for menor que 640px, a grid passa a ter apenas 1 coluna */
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Faz com que os campos de formulário Material ocupem 100% da largura */
+mat-form-field {
+  width: 100%;
+}
+
+/* Área de ações (botões, etc.):
+   - usa flexbox
+   - adiciona espaçamento de 12px entre itens
+   - alinha os itens à direita (flex-end)
+   - adiciona padding superior de 8px */
+.actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding-top: 8px;
+}
+
+/* Botões com estilo flat (preenchidos):
+   - cantos arredondados (12px)
+   - espaçamento horizontal maior (18px) */
+button[mat-flat-button] {
+  border-radius: 12px;
+  padding-inline: 18px;
+}
+
+/* Botões com estilo stroked (com borda):
+   - apenas cantos arredondados (12px) */
+button[mat-stroked-button] {
+  border-radius: 12px;
+}
+
+/* Estilo do título dentro do mat-card:
+   - texto em negrito (700)
+   - espaçamento extra entre letras (0.2px)
+   - dá mais destaque ao título */
+mat-card-title {
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
