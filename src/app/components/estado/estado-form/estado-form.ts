@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { MatToolbar } from "@angular/material/toolbar";
 import { MatCardModule } from '@angular/material/card';
-import { MatFormField, MatLabel } from "@angular/material/form-field";
+import { MatFormField, MatLabel, MatError } from "@angular/material/form-field";
 import { MatButtonModule } from '@angular/material/button';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { EstadoService } from '../../../services/estado.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Estado } from '../../../models/estado.model';
@@ -13,6 +13,22 @@ import { Regiao } from '../../../models/regiao.model';
 import { RegiaoService } from '../../../services/regiao.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
+// Interface para tipificar erro de validação do backend
+interface ValidationError {
+  field: string;
+  message: string;
+}
+
+interface BackendErrorResponse {
+  type?: string;
+  title?: string;
+  status?: number;
+  detail?: string;
+  instance?: string;
+  timestamp?: string;
+  errors?: ValidationError[];
+}
+
 
 @Component({
   selector: 'app-estado-form',
@@ -21,6 +37,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
       MatCardModule,
       MatFormField,
       MatLabel,
+      MatError,
       MatButtonModule,
       ReactiveFormsModule,
       MatInputModule,
@@ -84,7 +101,13 @@ export class EstadoForm implements OnInit {
         this.exibirMensagem('Estado salvo com sucesso!');
       },
       error: (erro) => {
-        this.exibirMensagem('Problema ao salvar o estado, entre em contato com o suporte!');
+        // Tenta processar como erro de validação do backend
+        if (erro.status === 400 && erro.error?.errors) {
+          this.processarErrosValidacao(erro.error as BackendErrorResponse);
+          this.exibirMensagem('Corrija os erros de validação indicados nos campos.');
+        } else {
+          this.exibirMensagem('Problema ao salvar o estado, entre em contato com o suporte!');
+        }
       }
     })
   }
@@ -114,4 +137,32 @@ export class EstadoForm implements OnInit {
     });
   }
 
+  /**
+   * Processa erros de validação retornados pelo backend
+   * Adiciona mensagens de validação aos campos correspondentes
+   * @param response Resposta de erro do backend com lista de erros de validação
+   */
+  private processarErrosValidacao(response: BackendErrorResponse): void {
+    if (!response.errors || response.errors.length === 0) {
+      return;
+    }
+
+    // Limpar erros anteriores
+    Object.keys(this.form.controls).forEach(key => {
+      const control = this.form.get(key);
+      if (control) {
+        control.setErrors(null);
+      }
+    });
+
+    // Aplicar novos erros do backend
+    response.errors.forEach(error => {
+      const control = this.form.get(error.field);
+      if (control) {
+        // Adicionar erro customizado com a mensagem do backend
+        control.setErrors({ 'backendError': error.message });
+        control.markAsTouched();
+      }
+    });
+  }
 }

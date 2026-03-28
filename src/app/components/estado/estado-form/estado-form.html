@@ -10,6 +10,9 @@
         <mat-form-field appearance="outline">
           <mat-label>Nome</mat-label>
           <input matInput formControlName="nome" placeholder="Ex.: Tocantins" />
+          @if (form.get('nome')?.hasError('backendError') && form.get('nome')?.touched) {
+            <mat-error>{{ form.get('nome')?.getError('backendError') }}</mat-error>
+          }
         </mat-form-field>
 
         <!-- Sigla -->
@@ -21,6 +24,9 @@
             maxlength="2"
             placeholder="Ex.: TO"
           />
+          @if (form.get('sigla')?.hasError('backendError') && form.get('sigla')?.touched) {
+            <mat-error>{{ form.get('sigla')?.getError('backendError') }}</mat-error>
+          }
         </mat-form-field>
 
         <!-- Regiao -->
@@ -32,6 +38,9 @@
               <mat-option [value]="r.id">{{r.nome}}</mat-option>
             }
           </mat-select>
+          @if (form.get('idRegiao')?.hasError('backendError') && form.get('idRegiao')?.touched) {
+            <mat-error>{{ form.get('idRegiao')?.getError('backendError') }}</mat-error>
+          }
         </mat-form-field>
 
       </div>
