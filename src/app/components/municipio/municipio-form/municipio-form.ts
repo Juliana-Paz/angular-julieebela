@@ -1,30 +1,29 @@
 import { Component, OnInit } from '@angular/core';
-import { MatToolbar } from "@angular/material/toolbar";
-import { MatCardModule } from '@angular/material/card';
 import { MatFormField, MatLabel } from "@angular/material/form-field";
-import { MatButtonModule } from '@angular/material/button';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MunicipioService } from '../../../services/municipio.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Municipio } from '../../../models/municipio.model';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
 import { Estado } from '../../../models/estado.model';
 import { EstadoService } from '../../../services/estado.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatIconModule } from '@angular/material/icon';
 
 
 @Component({
   selector: 'app-municipio-form',
   imports:
-    [MatToolbar,
-      MatCardModule,
-      MatFormField,
+    [MatFormField,
       MatLabel,
-      MatButtonModule,
       ReactiveFormsModule,
       MatInputModule,
-      MatSelectModule],
+      MatSelectModule,
+      MatButtonModule,
+      MatIconModule,
+      RouterLink],
   templateUrl: './municipio-form.html',
   styleUrl: './municipio-form.css',
 })

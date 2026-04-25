@@ -1,28 +1,161 @@
-/* O flex é um modelo de layout do CSS criado para organizar elementos 
-em linha ou em coluna de forma mais flexível e responsiva. */
+/* ── Column widths ── */
+.mat-column-numero { width: 3em; text-align: center; }
+.mat-column-nome { width: 42%; }
+.mat-column-estado { width: 38%; }
+.mat-column-acao { width: 8em; text-align: right; white-space: nowrap; }
 
-/* Define que o título da toolbar vai ocupar todo o espaço disponível (flex: 1)
-   e será alinhado ao centro */
-
-.toolbar-title {
-    flex: 1;
-    text-align: center;
-}
-
-.flex-container {
+/* ── Breadcrumb ── */
+.breadcrumb {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 10px;
+    flex-wrap: wrap;
+    gap: 2px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
 }
 
-table {
+.bc-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.15s;
+}
+
+.bc-link:hover { color: var(--primary); }
+
+.bc-sep {
+    font-size: 14px !important;
+    width: 14px !important;
+    height: 14px !important;
+    color: var(--text-muted);
+}
+
+.bc-current {
+    color: var(--primary);
+    font-weight: 800;
+}
+
+/* ── Display title override ── */
+.page-title.display {
+    font-size: 32px;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+}
+
+/* ── "Novo Município" button ── */
+.novo-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--primary-strong);
+    color: #fff;
+    height: 48px;
+    padding: 0 24px;
+    border: none;
+    border-radius: var(--radius);
+    font-family: var(--font-family);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: background-color 0.2s;
+}
+
+.novo-btn:hover { background-color: #b71c1c; }
+
+.novo-btn mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+}
+
+/* ── Filter bar ── */
+.filter-bar {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--outline-light);
+    padding: 16px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+.filter-search {
+    flex: 1;
+    min-width: 280px;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.filter-search mat-icon {
+    position: absolute;
+    left: 12px;
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+.filter-search input {
     width: 100%;
-    margin-top: 20px;
-    margin-left: 10px;
-    margin-right: 10px;
+    height: 44px;
+    padding: 0 16px 0 42px;
+    border: 1px solid var(--outline-light);
+    border-radius: var(--radius);
+    font-size: 14px;
+    font-family: var(--font-family);
+    color: var(--text);
+    background: var(--surface);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-mat-paginator {
-    margin-top: 20px;
+.filter-search input:focus {
+    border-color: var(--primary-strong);
+    box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+}
+
+.filter-icon-btn {
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface-low);
+    border: 1px solid var(--outline-light);
+    border-radius: var(--radius);
+    cursor: pointer;
+    color: var(--text);
+    transition: background 0.2s;
+}
+
+.filter-icon-btn:hover { background: var(--outline-light); }
+
+/* ── Table action buttons ── */
+.action-edit,
+.action-delete {
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    color: var(--text-muted);
+    transition: background 0.15s, color 0.15s;
+}
+
+.action-edit:hover {
+    background: var(--surface-low);
+    color: var(--primary-strong);
+}
+
+.action-delete:hover {
+    background: #fce4ec;
+    color: var(--primary-strong);
 }

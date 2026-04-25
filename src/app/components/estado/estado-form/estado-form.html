@@ -1,13 +1,33 @@
-<mat-toolbar class="toolbar-title" color="primary" >
-    Controle de Estados
-</mat-toolbar>
+<section class="page">
 
-<mat-card class="card">
-  <mat-card-content>
-    <form class="form" [formGroup]="form">
-      <div class="grid">
-        <!-- Nome -->
-        <mat-form-field appearance="outline">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a class="bc-link" routerLink="/dashboard">Home</a>
+    <mat-icon class="bc-sep">chevron_right</mat-icon>
+    <a class="bc-link" routerLink="/estados">Estados</a>
+    <mat-icon class="bc-sep">chevron_right</mat-icon>
+    <span class="bc-current">{{ form.value.id ? 'Editar Estado' : 'Novo Estado' }}</span>
+  </nav>
+
+  <div class="form-hero-row">
+    <div>
+      <h1 class="page-title display">Cadastro de Estado</h1>
+      <p class="page-subtitle">Edite dados do estado e vinculação de região.</p>
+    </div>
+    <button class="voltar-btn" type="button" routerLink="/estados">
+      <mat-icon>arrow_back</mat-icon>
+      Voltar
+    </button>
+  </div>
+
+  <form [formGroup]="form" class="form-layout">
+    <div class="form-section-card">
+      <div class="section-header">
+        <mat-icon class="section-icon">map</mat-icon>
+        <h3 class="section-title">Dados do Estado</h3>
+      </div>
+
+      <div class="section-grid">
+        <mat-form-field appearance="outline" class="full">
           <mat-label>Nome</mat-label>
           <input matInput formControlName="nome" placeholder="Ex.: Tocantins" />
           @if (form.get('nome')?.hasError('backendError') && form.get('nome')?.touched) {
@@ -15,60 +35,40 @@
           }
         </mat-form-field>
 
-        <!-- Sigla -->
         <mat-form-field appearance="outline">
           <mat-label>Sigla (UF)</mat-label>
-          <input
-            matInput
-            formControlName="sigla"
-            maxlength="2"
-            placeholder="Ex.: TO"
-          />
+          <input matInput formControlName="sigla" maxlength="2" placeholder="Ex.: TO" />
           @if (form.get('sigla')?.hasError('backendError') && form.get('sigla')?.touched) {
             <mat-error>{{ form.get('sigla')?.getError('backendError') }}</mat-error>
           }
         </mat-form-field>
 
-        <!-- Regiao -->
         <mat-form-field appearance="outline">
-          <mat-label>Regiao</mat-label>
-          <mat-select formControlName="idRegiao" placeholder="Selecione ..." >
-            <mat-option [value]="null" disabled="false">Nenhum</mat-option>
+          <mat-label>Região</mat-label>
+          <mat-select formControlName="idRegiao" placeholder="Selecione...">
+            <mat-option [value]="null" disabled="false">Nenhuma</mat-option>
             @for (r of regioes; track r.id) {
-              <mat-option [value]="r.id">{{r.nome}}</mat-option>
+              <mat-option [value]="r.id">{{ r.nome }}</mat-option>
             }
           </mat-select>
           @if (form.get('idRegiao')?.hasError('backendError') && form.get('idRegiao')?.touched) {
             <mat-error>{{ form.get('idRegiao')?.getError('backendError') }}</mat-error>
           }
         </mat-form-field>
-
       </div>
+    </div>
 
-      <div class="actions">
-        <button 
-          mat-raised-button
-          routerLink="/estados">
-          Cancelar
-        </button>
+    <div class="form-footer">
+      <button matButton="text" type="button" routerLink="/estados">Cancelar</button>
+      <button matButton="outlined" type="button" (click)="excluir()" [disabled]="!form.value.id">
+        <mat-icon>delete</mat-icon>
+        Excluir
+      </button>
+      <button matButton="filled" type="submit" (click)="salvar()" [disabled]="form.invalid">
+        <mat-icon>save</mat-icon>
+        Salvar Estado
+      </button>
+    </div>
+  </form>
 
-        <button 
-          mat-raised-button 
-          color="warn" 
-          (click)="excluir()"
-          [disabled]="!form.value.id">
-          Excluir
-        </button>
-
-        <button 
-          mat-raised-button 
-          color="primary" 
-          (click)="salvar()"
-          [disabled]="form.invalid">
-          Salvar
-        </button>
-
-      </div>
-    </form>
-  </mat-card-content>
-</mat-card>
+</section>

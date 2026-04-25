@@ -1,0 +1,294 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap');
+
+/* ==================================================
+   DESIGN TOKENS - SGA
+================================================== */
+:root {
+
+  /* BRAND */
+  --primary: #af101a;
+  --primary-hover: #930010;
+  --primary-strong: #d32f2f;
+  --secondary: #5f5e5e;
+  --tertiary: #005f7b;
+
+  /* BACKGROUNDS */
+  --background: #f5f5f5;
+  --background-accent: #ffe9e7;
+  --surface: #ffffff;
+  --surface-low: #f6f5f5;
+  --surface-container: #efefef;
+
+  /* TEXT */
+  --text: #271816;
+  --text-muted: #5b403d;
+
+  /* BORDER */
+  --outline: #8e7775;
+  --outline-light: #dad9d9;
+
+  /* RADIUS */
+  --radius-sm: 4px;
+  --radius: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  /* SPACING */
+  --space-xs: 4px;
+  --space-sm: 12px;
+  --space-md: 24px;
+  --space-lg: 40px;
+
+  /* SHADOW */
+  --shadow-sm: 0 2px 4px rgba(0,0,0,.02);
+  --shadow-md: 0 10px 20px rgba(0,0,0,.04);
+  --shadow-lg: 0 20px 40px rgba(0,0,0,.08);
+
+  /* FONT */
+  --font-family: 'Manrope', sans-serif;
+}
+
+/* ==================================================
+   GLOBAL
+================================================== */
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background-color: var(--background);
+  background-image: radial-gradient(circle at top right, var(--background-accent) 0%, var(--background) 46%);
+  color: var(--text);
+  font-family: var(--font-family);
+}
+
+body,
+button,
+input,
+textarea,
+select {
+  font-family: var(--font-family);
+}
+
+/* ==================================================
+   ANGULAR MATERIAL - TYPOGRAPHY
+================================================== */
+.mat-typography,
+.mat-mdc-button,
+.mat-mdc-form-field,
+.mat-mdc-card,
+.mat-toolbar,
+.mat-mdc-table {
+  font-family: var(--font-family) !important;
+}
+
+/* ==================================================
+   BUTTONS
+================================================== */
+.mat-mdc-button.mat-primary,
+.mat-mdc-raised-button.mat-primary,
+.mat-mdc-unelevated-button:not(:disabled):not(.mat-mdc-button-disabled),
+.mat-mdc-fab.mat-primary,
+.mat-mdc-mini-fab.mat-primary {
+  background: var(--primary) !important;
+  color: #fff !important;
+}
+
+.mat-mdc-button.mat-primary:hover,
+.mat-mdc-raised-button.mat-primary:hover,
+.mat-mdc-unelevated-button:not(:disabled):not(.mat-mdc-button-disabled):hover {
+  background: var(--primary-hover) !important;
+}
+
+.mat-mdc-button,
+.mat-mdc-raised-button,
+.mat-mdc-unelevated-button,
+.mat-mdc-outlined-button {
+  border-radius: var(--radius) !important;
+  font-weight: 600 !important;
+}
+
+/* ==================================================
+   CARDS
+================================================== */
+.mat-mdc-card {
+  background: var(--surface) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-md) !important;
+  border: 1px solid rgba(0,0,0,.03);
+}
+
+/* ==================================================
+   TOOLBAR
+================================================== */
+.mat-toolbar,
+.mat-mdc-toolbar {
+  background: var(--surface) !important;
+  color: var(--text) !important;
+  border-bottom: 1px solid var(--outline-light);
+}
+
+/* ==================================================
+   INPUTS / FORM FIELDS
+================================================== */
+
+/* fundo branco */
+.mat-mdc-form-field .mat-mdc-text-field-wrapper {
+  background-color: var(--surface) !important;
+  border-radius: var(--radius) !important;
+}
+
+/* corrige padding interno */
+.mat-mdc-form-field-infix {
+  min-height: 48px;
+  padding-top: 14px !important;
+  padding-bottom: 10px !important;
+}
+
+/* texto */
+.mat-mdc-input-element,
+.mat-mdc-select-value-text,
+.mat-mdc-form-field input,
+.mat-mdc-form-field textarea {
+  color: var(--text) !important;
+}
+
+/* placeholder */
+.mat-mdc-input-element::placeholder {
+  color: var(--text-muted);
+}
+
+/* label */
+.mat-mdc-floating-label,
+.mat-mdc-form-field .mdc-floating-label {
+  color: var(--text-muted) !important;
+}
+
+/* focus label */
+.mat-focused .mat-mdc-floating-label,
+.mat-mdc-form-field.mat-focused .mdc-floating-label {
+  color: var(--primary) !important;
+}
+
+/* borda focus */
+.mdc-text-field--focused .mdc-notched-outline__leading,
+.mdc-text-field--focused .mdc-notched-outline__notch,
+.mdc-text-field--focused .mdc-notched-outline__trailing {
+  border-color: var(--primary) !important;
+}
+
+/* borda normal */
+.mdc-notched-outline__leading,
+.mdc-notched-outline__notch,
+.mdc-notched-outline__trailing {
+  border-color: var(--outline-light) !important;
+}
+
+/* ==================================================
+   SELECT
+================================================== */
+select {
+  background-color: var(--surface);
+  color: var(--text);
+}
+
+.mat-mdc-select-arrow {
+  color: var(--text) !important;
+}
+
+.mat-mdc-select-panel {
+  background-color: var(--surface) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+.mat-mdc-option .mdc-list-item__primary-text {
+  color: var(--text) !important;
+}
+
+.mat-mdc-option:hover {
+  background: var(--surface-low) !important;
+}
+
+.mat-mdc-option.mdc-list-item--selected {
+  background: var(--surface-container) !important;
+}
+
+/* ==================================================
+   TABLES
+================================================== */
+.mat-mdc-table {
+  background: var(--surface) !important;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.mat-mdc-header-row {
+  background: var(--surface-container) !important;
+}
+
+.mat-mdc-header-cell {
+  color: var(--text-muted) !important;
+  font-weight: 700 !important;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.mat-mdc-row:hover {
+  background: rgba(0,0,0,.02);
+}
+
+/* ==================================================
+   PAGINATOR
+================================================== */
+.mat-mdc-paginator,
+.mat-mdc-paginator .mat-mdc-paginator-container {
+  background: var(--surface) !important;
+}
+
+.mat-mdc-paginator {
+  border-top: 1px solid var(--outline-light);
+}
+
+/* ==================================================
+   SIDEBAR (usar class="sidebar")
+================================================== */
+.sidebar {
+  width: 250px;
+  background: #111111;
+  color: #fff;
+  padding: 16px;
+  border-right: 1px solid rgba(255,255,255,.05);
+}
+
+.sidebar a {
+  display: block;
+  padding: 12px;
+  margin-bottom: 8px;
+  text-decoration: none;
+  color: #fff;
+  border-radius: var(--radius);
+  transition: .2s ease;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+  background: rgba(255,255,255,.08);
+  border-left: 4px solid var(--primary);
+}
+
+/* ==================================================
+   SCROLLBAR (opcional)
+================================================== */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d8d8d8;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #bdbdbd;
+}

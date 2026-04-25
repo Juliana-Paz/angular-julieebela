@@ -1,22 +1,41 @@
 import { Component, OnInit } from '@angular/core';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatIcon, MatIconModule } from '@angular/material/icon';
+import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from "@angular/router";
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTableDataSource } from '@angular/material/table';
 import { Municipio } from '../../../models/municipio.model';
 import { MunicipioService } from '../../../services/municipio.service';
 import { MatTableModule } from '@angular/material/table';
-import { MatInputModule } from '@angular/material/input';
 import { PageEvent } from '@angular/material/paginator';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatPaginatorIntl } from '@angular/material/paginator';
 import { forkJoin } from 'rxjs';
+
+function getPortuguesePaginatorIntl(): MatPaginatorIntl {
+    const paginatorIntl = new MatPaginatorIntl();
+    paginatorIntl.itemsPerPageLabel = 'Itens por página:';
+    paginatorIntl.nextPageLabel = 'Próxima página';
+    paginatorIntl.previousPageLabel = 'Página anterior';
+    paginatorIntl.firstPageLabel = 'Primeira página';
+    paginatorIntl.lastPageLabel = 'Última página';
+    paginatorIntl.getRangeLabel = (page: number, pageSize: number, length: number): string => {
+        if (length === 0 || pageSize === 0) {
+            return `0 de ${length}`;
+        }
+
+        const startIndex = page * pageSize;
+        const endIndex = Math.min(startIndex + pageSize, length);
+
+        return `${startIndex + 1} - ${endIndex} de ${length}`;
+    };
+
+    return paginatorIntl;
+}
 
 @Component({
     selector: 'app-municipio-list',
-    imports: [MatToolbarModule, MatIconModule, MatButtonModule,
-        RouterLink, MatFormFieldModule, MatTableModule, MatIcon, MatInputModule, MatPaginatorModule],
+    imports: [MatIconModule, MatButtonModule, RouterLink, MatTableModule, MatPaginatorModule],
+    providers: [{ provide: MatPaginatorIntl, useFactory: getPortuguesePaginatorIntl }],
 
     templateUrl: './municipio-list.html',
     styleUrl: './municipio-list.css',
@@ -25,7 +44,7 @@ export class MunicipioList implements OnInit {
     // variaveis de controle de paginacao
     totalRecords = 3;
     page = 0;
-    pageSize = 2;
+    pageSize = 8;
 
     displayedColumns: string[] = ['numero', 'nome', 'estado', 'acao'];
     dataSource = new MatTableDataSource<Municipio>([]);

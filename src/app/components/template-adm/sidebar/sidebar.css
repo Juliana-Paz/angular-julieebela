@@ -1,0 +1,127 @@
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 8px 14px 18px;
+  border-bottom: 1px solid #272727;
+  gap: 8px;
+  text-align: center;
+}
+
+.sidebar-header.collapsed {
+  justify-content: center;
+  padding: 14px 0;
+}
+
+.sidebar-brand-text {
+  overflow: hidden;
+  flex: 1;
+  text-align: center;
+}
+
+.sidebar-brand-text strong {
+  display: block;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.sidebar-brand-text span {
+  display: block;
+  margin-top: 2px;
+  color: #8f8f8f;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.toggle-btn {
+  color: #afafaf !important;
+  flex-shrink: 0;
+}
+
+.toggle-btn:hover {
+  color: #ffffff !important;
+}
+
+.sidebar-nav {
+  padding-top: 10px;
+}
+
+.sidebar-link {
+  color: #afafaf !important;
+  margin: 3px 8px;
+  border-radius: 10px;
+  transition: 0.2s ease;
+  --mdc-list-list-item-label-text-color: #afafaf;
+  --mdc-list-list-item-hover-label-text-color: #ffffff;
+  --mdc-list-list-item-hover-state-layer-color: transparent;
+  --mdc-list-list-item-focus-state-layer-color: transparent;
+  --mat-list-active-indicator-color: transparent;
+}
+
+.sidebar-link.collapsed {
+  margin: 3px 4px;
+}
+
+.sidebar-link:hover {
+  background: #1c1c1c;
+  color: #ffffff !important;
+  --mdc-list-list-item-label-text-color: #ffffff;
+}
+
+.active-link {
+  background: rgba(211, 47, 47, 0.2);
+  color: #ffffff !important;
+  font-weight: 700;
+  border-left: 3px solid #d32f2f;
+  border-radius: 0 10px 10px 0;
+  margin-left: 0;
+  --mdc-list-list-item-label-text-color: #ffffff;
+  --mdc-list-list-item-hover-label-text-color: #ffffff;
+  --mdc-list-list-item-focus-label-text-color: #ffffff;
+  --mdc-list-list-item-pressed-label-text-color: #ffffff;
+  --mdc-list-list-item-hover-state-layer-color: transparent;
+  --mdc-list-list-item-focus-state-layer-color: transparent;
+  --mdc-list-list-item-pressed-state-layer-color: transparent;
+  --mat-list-active-indicator-color: transparent;
+}
+
+.active-link.collapsed {
+  border-left: none;
+  border-bottom: 3px solid #d32f2f;
+  border-radius: 10px;
+  margin-left: 4px;
+}
+
+:host ::ng-deep .sidebar-nav .mdc-list-item__primary-text {
+  color: inherit;
+}
+
+:host ::ng-deep .sidebar-nav .mat-mdc-list-item .mat-icon {
+  color: inherit;
+}
+
+:host ::ng-deep .sidebar-nav .sidebar-link:hover .mdc-list-item__primary-text,
+:host ::ng-deep .sidebar-nav .sidebar-link:hover .mat-icon {
+  color: #ffffff !important;
+}
+
+:host ::ng-deep .sidebar-nav .active-link .mdc-list-item__primary-text,
+:host ::ng-deep .sidebar-nav .active-link .mat-icon {
+  color: #ffffff !important;
+}
+
+:host ::ng-deep .sidebar-nav .active-link .mdc-list-item__ripple::before,
+:host ::ng-deep .sidebar-nav .active-link .mdc-list-item__ripple::after,
+:host ::ng-deep .sidebar-nav .active-link .mat-mdc-list-item-ripple::before,
+:host ::ng-deep .sidebar-nav .active-link .mat-mdc-list-item-ripple::after,
+:host ::ng-deep .sidebar-nav .sidebar-link:hover .mdc-list-item__ripple::before,
+:host ::ng-deep .sidebar-nav .sidebar-link:hover .mdc-list-item__ripple::after,
+:host ::ng-deep .sidebar-nav .sidebar-link:hover .mat-mdc-list-item-ripple::before,
+:host ::ng-deep .sidebar-nav .sidebar-link:hover .mat-mdc-list-item-ripple::after {
+  display: none;
+}

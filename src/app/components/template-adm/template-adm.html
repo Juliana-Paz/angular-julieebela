@@ -1,0 +1,13 @@
+<div class="app-shell">
+  <aside class="sidenav" [class.collapsed]="collapsed">
+    <app-sidebar [collapsed]="collapsed" (toggleCollapse)="collapsed = !collapsed" />
+  </aside>
+
+  <div class="main-area">
+    <app-header />
+    <main class="page-area">
+      <router-outlet />
+    </main>
+    <app-footer />
+  </div>
+</div>

@@ -1,79 +1,161 @@
-/* O flex é um modelo de layout do CSS criado para organizar elementos 
-em linha ou em coluna de forma mais flexível e responsiva. */
+/* ── Column widths ── */
+.mat-column-numero { width: 3em; text-align: center; }
+.mat-column-nome { width: 58%; }
+.mat-column-sigla { width: 6em; text-align: center; }
+.mat-column-acao { width: 8em; text-align: right; white-space: nowrap; }
 
-/* Define que o título da toolbar vai ocupar todo o espaço disponível (flex: 1)
-   e será alinhado ao centro */
-
-.toolbar-title {
-    flex: 1;
-    text-align: center;
+/* ── Breadcrumb ── */
+.breadcrumb {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 2px;
+	font-size: 11px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--text-muted);
 }
 
-.mat-toolbar {
-   padding: 0;
-   margin-bottom: 14px;
+.bc-link {
+	color: var(--text-muted);
+	text-decoration: none;
+	transition: color 0.15s;
 }
 
-/* Cria um container flexível para organizar elementos lado a lado,
-   alinha os itens verticalmente ao centro e ocupa toda a largura */
-.flex-container {
-    display: flex;
-    align-items: center;
-    width: 100%;
+.bc-link:hover { color: var(--primary); }
+
+.bc-sep {
+	font-size: 14px !important;
+	width: 14px !important;
+	height: 14px !important;
+	color: var(--text-muted);
 }
 
-/* Faz com que a tabela ocupe 100% da largura disponível */
-table {
-    width: 100%;
+.bc-current {
+	color: var(--primary);
+	font-weight: 800;
 }
 
-/* Coluna 'numero' da tabela:
-   - largura fixa de 5em
-   - borda à direita
-   - espaçamento interno à direita de 24px
-   - texto centralizado */
-.mat-column-numero {
-    width: 1em;
-    border-right: 1px solid currentColor; 
-    text-align: center;
+/* ── Display title override ── */
+.page-title.display {
+	font-size: 32px;
+	letter-spacing: -0.02em;
+	line-height: 1.1;
 }
 
-/* Coluna 'nome' da tabela ocupa 58% da largura */
-.mat-column-nome {
-    width: 58%;
-    white-space: nowrap; /*impede a quebra de linha*/
+/* ── "Novo Estado" button ── */
+.novo-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	background-color: var(--primary-strong);
+	color: #fff;
+	height: 48px;
+	padding: 0 24px;
+	border: none;
+	border-radius: var(--radius);
+	font-family: var(--font-family);
+	font-size: 15px;
+	font-weight: 600;
+	cursor: pointer;
+	box-shadow: var(--shadow-sm);
+	transition: background-color 0.2s;
 }
 
-/* Coluna 'sigla' da tabela:
-   - largura fixa de 5em
-   - texto centralizado */
-.mat-column-sigla {
-    width: 5em;
-    text-align: center;
+.novo-btn:hover { background-color: #b71c1c; }
+
+.novo-btn mat-icon {
+	font-size: 20px;
+	width: 20px;
+	height: 20px;
 }
 
-/* Coluna 'regiao' da tabela:
-   - largura fixa de 10em
-   - texto centralizado */
-.mat-column-regiao {
-    width: 10em;
-    text-align: center;
+/* ── Filter bar ── */
+.filter-bar {
+	background: var(--surface);
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow-md);
+	border: 1px solid var(--outline-light);
+	padding: 16px 20px;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 12px;
 }
 
-/* Coluna 'ação' da tabela:
-   - largura fixa de 10em
-   - texto centralizado */
-.mat-column-acao {
-    width: 10em;
-    text-align: center;
-    white-space: nowrap; /*impede a quebra de linha*/
+.filter-search {
+	flex: 1;
+	min-width: 280px;
+	position: relative;
+	display: flex;
+	align-items: center;
 }
 
-/* Define o estilo do componente host (a raiz do componente Angular):
-   - exibido como bloco (block)
-   - aplica espaçamento interno (padding) que varia conforme a largura da tela
-     usando clamp (mín: 12px, preferido: 2vw, máx: 24px) */
-:host {
-  display: block;
-  padding: clamp(12px, 2vw, 24px);
+.filter-search mat-icon {
+	position: absolute;
+	left: 12px;
+	color: var(--text-muted);
+	pointer-events: none;
+}
+
+.filter-search input {
+	width: 100%;
+	height: 44px;
+	padding: 0 16px 0 42px;
+	border: 1px solid var(--outline-light);
+	border-radius: var(--radius);
+	font-size: 14px;
+	font-family: var(--font-family);
+	color: var(--text);
+	background: var(--surface);
+	outline: none;
+	transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.filter-search input:focus {
+	border-color: var(--primary-strong);
+	box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+}
+
+.filter-icon-btn {
+	width: 44px;
+	height: 44px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--surface-low);
+	border: 1px solid var(--outline-light);
+	border-radius: var(--radius);
+	cursor: pointer;
+	color: var(--text);
+	transition: background 0.2s;
+}
+
+.filter-icon-btn:hover { background: var(--outline-light); }
+
+/* ── Table action buttons ── */
+.action-edit,
+.action-delete {
+	width: 34px;
+	height: 34px;
+	border-radius: 6px;
+	border: none;
+	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: transparent;
+	color: var(--text-muted);
+	transition: background 0.15s, color 0.15s;
+}
+
+.action-edit:hover {
+	background: var(--surface-low);
+	color: var(--primary-strong);
+}
+
+.action-delete:hover {
+	background: #fce4ec;
+	color: var(--primary-strong);
 }

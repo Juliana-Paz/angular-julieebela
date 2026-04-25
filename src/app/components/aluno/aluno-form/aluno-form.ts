@@ -1,11 +1,10 @@
 import { Component, OnInit, LOCALE_ID } from '@angular/core';
-import { MatToolbar } from "@angular/material/toolbar";
 import { MatCardModule } from '@angular/material/card';
 import { MatFormField, MatLabel } from "@angular/material/form-field";
 import { MatButtonModule } from '@angular/material/button';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormArray, Validators } from '@angular/forms';
 import { AlunoService } from '../../../services/aluno.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Aluno } from '../../../models/aluno.model';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -18,8 +17,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 @Component({
   selector: 'app-aluno-form',
   imports:
-    [MatToolbar,
-      MatCardModule,
+    [MatCardModule,
       MatFormField,
       MatLabel,
       MatButtonModule,
@@ -28,7 +26,8 @@ import { MatNativeDateModule } from '@angular/material/core';
       MatIconModule,
       CommonModule,
       MatDatepickerModule,
-      MatNativeDateModule],
+      MatNativeDateModule,
+      RouterLink],
   templateUrl: './aluno-form.html',
   styleUrl: './aluno-form.css',
   providers: [
@@ -69,7 +68,7 @@ export class AlunoForm implements OnInit {
         nome: aluno.nome,
         sobrenome: aluno.sobrenome,
         dataNascimento: aluno.dataNascimento,
-        cpf: aluno.cpf,
+        cpf: this.formatCpf(aluno.cpf ?? ''),
         email: aluno.email
       });
 
@@ -79,6 +78,32 @@ export class AlunoForm implements OnInit {
         });
       }
     }
+  }
+
+  onCpfInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const formattedCpf = this.formatCpf(input.value);
+
+    input.value = formattedCpf;
+    this.form.get('cpf')?.setValue(formattedCpf, { emitEvent: false });
+  }
+
+  private formatCpf(value: string): string {
+    const digits = value.replace(/\D/g, '').slice(0, 11);
+
+    if (digits.length <= 3) {
+      return digits;
+    }
+
+    if (digits.length <= 6) {
+      return `${digits.slice(0, 3)}.${digits.slice(3)}`;
+    }
+
+    if (digits.length <= 9) {
+      return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
+    }
+
+    return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9, 11)}`;
   }
 
   adicionarTelefone(codigoArea: string = '', numero: string = ''): void {

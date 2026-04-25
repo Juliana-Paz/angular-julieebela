@@ -1,1 +1,206 @@
-/* You can add global styles to this file, and also import other style files */
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--background);
+  color: var(--text);
+  font-family: var(--font-family);
+}
+
+/* ============================================================
+   ADMIN CRUD — SHARED LAYOUT CLASSES
+   Use these in every list/form page. Component CSS should only
+   define table column widths and component-specific overrides.
+   ============================================================ */
+
+/* ── Page shell ── */
+.page {
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* ── Page header row (title + FAB) ── */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.page-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.page-subtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* ── Primary FAB ── */
+.add-btn {
+  background-color: var(--primary-strong) !important;
+  color: #fff !important;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── List card wrapper ── */
+.list-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  border: 1px solid var(--outline-light);
+}
+
+/* ── Filter bar inside list-card ── */
+.filter-row {
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--outline-light);
+  background: var(--surface-low);
+}
+
+.filter-row mat-form-field {
+  width: 100%;
+  max-width: 400px;
+}
+
+/* ── Mat-table shared styles ── */
+table[mat-table] { width: 100%; }
+
+table[mat-table] th {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  background: var(--surface-low);
+}
+
+table[mat-table] td {
+  font-size: 14px;
+  color: var(--text);
+}
+
+/* ── Form card ── */
+.form-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-md) !important;
+  border: 1px solid var(--outline-light) !important;
+  padding: var(--space-md);
+}
+
+/* ── Form grid (2 cols, responsive) ── */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm);
+}
+
+.form-grid mat-form-field { width: 100%; }
+
+.form-grid mat-form-field.full { grid-column: 1 / -1; }
+
+@media (max-width: 640px) {
+  .form-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Form action bar ── */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--outline-light);
+}
+
+/* ── Stats grid (3 cols, responsive) ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-sm);
+}
+
+@media (max-width: 768px) {
+  .stats-grid { grid-template-columns: 1fr; }
+}
+
+.stat-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-md) !important;
+  border: 1px solid var(--outline-light) !important;
+}
+
+.stat-inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+}
+
+.stat-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stat-icon mat-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.stat-icon.total    { background: var(--surface-container); color: var(--primary-strong); }
+.stat-icon.active   { background: #e8f5e9; color: #2e7d32; }
+.stat-icon.inactive { background: #fce4ec; color: var(--primary-strong); }
+
+.stat-label {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.stat-value {
+  margin: 4px 0 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+/* ── Avatar initials ── */
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--surface-container);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.cell-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}

@@ -1,0 +1,34 @@
+.app-shell {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.sidenav {
+  width: 264px;
+  min-width: 264px;
+  background: #111111;
+  border-right: 1px solid #2d2d2d;
+  overflow: hidden;
+  transition: width 0.25s ease, min-width 0.25s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidenav.collapsed {
+  width: 64px;
+  min-width: 64px;
+}
+
+.main-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.page-area {
+  flex: 1;
+  overflow-y: auto;
+}

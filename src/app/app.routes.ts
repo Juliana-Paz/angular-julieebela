@@ -8,20 +8,30 @@ import { municipioResolver } from './resolvers/municipio-resolver';
 import { AlunoList } from './components/aluno/aluno-list/aluno-list';
 import { AlunoForm } from './components/aluno/aluno-form/aluno-form';
 import { alunoResolver } from './resolvers/aluno-resolver';
+import { TemplateAdm } from './components/template-adm/template-adm';
+import { Dashboard } from './components/adm/dashboard/dashboard';
 
 export const routes: Routes = [
-    {path: 'estados', component: EstadoList, title: 'Listagem de Estados'},
-    {path: 'estados/new', component: EstadoForm, title: 'Cadastro de Estado'},
-    {path: 'estados/edit/:id', component: EstadoForm, title: 'Edição de Estado', 
-        resolve: {estado: estadoResolver} },
-    {path: 'municipios', component: MunicipioList, title: 'Listagem de Municípios'},
-    {path: 'alunos', component: AlunoList, title: 'Listagem de Alunos'},
-    {path: 'alunos/new', component: AlunoForm, title: 'Cadastro de Aluno'},
-    {path: 'alunos/edit/:id', component: AlunoForm, title: 'Edição de Aluno', 
-        resolve: {aluno: alunoResolver} },
-    {path: 'municipios/new', component: MunicipioForm, title: 'Cadastro de Município'},
-    {path: 'municipios/edit/:id', component: MunicipioForm, title: 'Edição de Município', 
-        resolve: {municipio: municipioResolver} },
+    {
+        path: '',
+        component: TemplateAdm,
+        children: [
+            {path: '', pathMatch: 'full', redirectTo: 'dashboard'},
+            {path: 'dashboard', component: Dashboard, title: 'Dashboard'},
+            {path: 'estados', component: EstadoList, title: 'Listagem de Estados'},
+            {path: 'estados/new', component: EstadoForm, title: 'Cadastro de Estado'},
+            {path: 'estados/edit/:id', component: EstadoForm, title: 'Edição de Estado',
+                resolve: {estado: estadoResolver} },
+            {path: 'municipios', component: MunicipioList, title: 'Listagem de Municípios'},
+            {path: 'alunos', component: AlunoList, title: 'Listagem de Alunos'},
+            {path: 'alunos/new', component: AlunoForm, title: 'Cadastro de Aluno'},
+            {path: 'alunos/edit/:id', component: AlunoForm, title: 'Edição de Aluno',
+                resolve: {aluno: alunoResolver} },
+            {path: 'municipios/new', component: MunicipioForm, title: 'Cadastro de Município'},
+            {path: 'municipios/edit/:id', component: MunicipioForm, title: 'Edição de Município',
+                resolve: {municipio: municipioResolver} },
+        ]
+    },
 ];
 
 

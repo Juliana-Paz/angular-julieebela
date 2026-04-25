@@ -1,53 +1,59 @@
-<mat-toolbar class="toolbar-title" color="primary" >
-    Controle de Municípios
-</mat-toolbar>
+<section class="page">
 
-<mat-card class="card">
-  <mat-card-content>
-    <form class="form" [formGroup]="form">
-      <div class="grid">
-        <!-- Nome -->
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a class="bc-link" routerLink="/dashboard">Home</a>
+    <mat-icon class="bc-sep">chevron_right</mat-icon>
+    <a class="bc-link" routerLink="/municipios">Municípios</a>
+    <mat-icon class="bc-sep">chevron_right</mat-icon>
+    <span class="bc-current">{{ form.value.id ? 'Editar Município' : 'Novo Município' }}</span>
+  </nav>
+
+  <div class="form-hero-row">
+    <div>
+      <h1 class="page-title display">Cadastro de Município</h1>
+      <p class="page-subtitle">Gerencie nome e estado vinculado de cada município.</p>
+    </div>
+    <button class="voltar-btn" type="button" routerLink="/municipios">
+      <mat-icon>arrow_back</mat-icon>
+      Voltar
+    </button>
+  </div>
+
+  <form [formGroup]="form" class="form-layout">
+    <div class="form-section-card">
+      <div class="section-header">
+        <mat-icon class="section-icon">location_city</mat-icon>
+        <h3 class="section-title">Dados do Município</h3>
+      </div>
+
+      <div class="section-grid">
         <mat-form-field appearance="outline">
           <mat-label>Nome</mat-label>
           <input matInput formControlName="nome" placeholder="Ex.: Palmas" />
         </mat-form-field>
 
-        <!-- Estado -->
         <mat-form-field appearance="outline">
           <mat-label>Estado</mat-label>
-          <mat-select formControlName="idEstado" placeholder="Selecione ..." >
+          <mat-select formControlName="idEstado" placeholder="Selecione ...">
             <mat-option [value]="null" disabled="false">Nenhum</mat-option>
             @for (e of estados; track e.id) {
-              <mat-option [value]="e.id">{{e.nome}}</mat-option>
+              <mat-option [value]="e.id">{{ e.nome }}</mat-option>
             }
           </mat-select>
         </mat-form-field>
-
       </div>
+    </div>
 
-      <div class="actions">
-        <button 
-          mat-raised-button
-          routerLink="/municipios">
-          Cancelar
-        </button>
+    <div class="form-footer">
+      <button matButton="text" type="button" routerLink="/municipios">Cancelar</button>
+      <button matButton="outlined" type="button" (click)="excluir()" [disabled]="!form.value.id">
+        <mat-icon>delete</mat-icon>
+        Excluir
+      </button>
+      <button matButton="filled" type="submit" (click)="salvar()">
+        <mat-icon>save</mat-icon>
+        Salvar Município
+      </button>
+    </div>
 
-        <button 
-          mat-raised-button 
-          color="warn" 
-          (click)="excluir()"
-          [disabled]="!form.value.id">
-          Excluir
-        </button>
-
-        <button 
-          mat-raised-button 
-          color="primary" 
-          (click)="salvar()">
-          Salvar
-        </button>
-      </div>
-
-    </form>
-  </mat-card-content>
-</mat-card>
+  </form>

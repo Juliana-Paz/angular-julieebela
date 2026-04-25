@@ -1,0 +1,84 @@
+<section class="dashboard-page">
+
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a class="bc-link" routerLink="/dashboard">Home</a>
+    <mat-icon class="bc-sep">chevron_right</mat-icon>
+    <span class="bc-current">Dashboard</span>
+  </nav>
+    
+  <header class="dashboard-header">
+    <div class="header-spacer"></div>
+    <div class="header-title">
+      <h1>Dashboard Principal</h1>
+      <p>Visao geral do desempenho da rede SGA hoje.</p>
+    </div>
+
+    <div class="header-actions">
+      <button class="btn-secondary" type="button">Ultimos 30 dias</button>
+      <button matButton="filled" type="button">Exportar relatorio</button>
+    </div>
+  </header>
+
+  <section class="kpi-grid">
+    @for (kpi of kpis; track kpi.title) {
+      <article class="kpi-card">
+        <div class="kpi-top">
+          <mat-icon class="icon">{{ kpi.icon }}</mat-icon>
+          <span class="trend">{{ kpi.trend }}</span>
+        </div>
+        <p class="kpi-title">{{ kpi.title }}</p>
+        <h2>{{ kpi.value }}</h2>
+      </article>
+    }
+  </section>
+
+  <section class="dashboard-grid">
+    <article class="chart-card">
+      <div class="chart-header">
+        <div>
+          <h3>Crescimento de Matriculas</h3>
+          <p>Comparativo entre novas matriculas e cancelamentos.</p>
+        </div>
+      </div>
+
+      <div class="bars">
+        <div class="bar" style="--value: 62%"></div>
+        <div class="bar" style="--value: 79%"></div>
+        <div class="bar" style="--value: 48%"></div>
+        <div class="bar" style="--value: 88%"></div>
+        <div class="bar" style="--value: 71%"></div>
+        <div class="bar" style="--value: 56%"></div>
+      </div>
+
+      <div class="months">
+        @for (mes of meses; track mes) {
+          <span>{{ mes }}</span>
+        }
+      </div>
+    </article>
+
+    <article class="plans-card">
+      <h3>Planos populares</h3>
+
+      <div class="plans-list">
+        @for (plano of planosPopulares; track plano.nome) {
+          <div class="plan-row">
+            <div class="plan-main">
+              <span class="tag">{{ plano.sigla }}</span>
+              <div>
+                <strong>{{ plano.nome }}</strong>
+                <small>{{ plano.preco }}</small>
+              </div>
+            </div>
+            <div class="plan-share">
+              <span>{{ plano.percentual }}%</span>
+              <div class="progress">
+                <div [style.width.%]="plano.percentual"></div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </article>
+  </section>
+</section>

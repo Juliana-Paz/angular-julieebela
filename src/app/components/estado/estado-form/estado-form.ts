@@ -1,17 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { MatToolbar } from "@angular/material/toolbar";
-import { MatCardModule } from '@angular/material/card';
 import { MatFormField, MatLabel, MatError } from "@angular/material/form-field";
-import { MatButtonModule } from '@angular/material/button';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { EstadoService } from '../../../services/estado.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Estado } from '../../../models/estado.model';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
 import { Regiao } from '../../../models/regiao.model';
 import { RegiaoService } from '../../../services/regiao.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatIconModule } from '@angular/material/icon';
 
 // Interface para tipificar erro de validação do backend
 interface ValidationError {
@@ -33,15 +32,15 @@ interface BackendErrorResponse {
 @Component({
   selector: 'app-estado-form',
   imports:
-    [MatToolbar,
-      MatCardModule,
-      MatFormField,
+    [MatFormField,
       MatLabel,
       MatError,
-      MatButtonModule,
       ReactiveFormsModule,
       MatInputModule,
-      MatSelectModule],
+      MatSelectModule,
+      MatButtonModule,
+      MatIconModule,
+      RouterLink],
   templateUrl: './estado-form.html',
   styleUrl: './estado-form.css',
 })
