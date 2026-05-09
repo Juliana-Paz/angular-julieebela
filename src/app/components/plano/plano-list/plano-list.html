@@ -1,0 +1,73 @@
+<section class="page">
+
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a class="bc-link" routerLink="/dashboard">Home</a>
+    <mat-icon class="bc-sep">chevron_right</mat-icon>
+    <span class="bc-current">Planos</span>
+  </nav>
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title display">Controle de Planos</h1>
+      <p class="page-subtitle">Gerencie limites e valores dos planos do sistema.</p>
+    </div>
+    <button matButton="filled" routerLink="/planos/new" aria-label="Adicionar plano">
+      <mat-icon>add</mat-icon>
+      Novo Plano
+    </button>
+  </div>
+
+  <div class="filter-bar">
+    <div class="filter-search">
+      <mat-icon>search</mat-icon>
+      <input (keyup)="aplicarBusca($event)" placeholder="Buscar plano por nome...">
+    </div>
+    <button class="filter-icon-btn" type="button" aria-label="Filtros">
+      <mat-icon>filter_list</mat-icon>
+    </button>
+  </div>
+
+  <div class="list-card">
+    <table mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="numero">
+        <th mat-header-cell *matHeaderCellDef>#</th>
+        <td mat-cell *matCellDef="let obj; let i = index">{{ i + 1 + page * pageSize }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="nome">
+        <th mat-header-cell *matHeaderCellDef>Nome</th>
+        <td mat-cell *matCellDef="let obj">{{ obj.nome }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="maxAlunos">
+        <th mat-header-cell *matHeaderCellDef>Máx. Alunos</th>
+        <td mat-cell *matCellDef="let obj">{{ obj.maxAlunos }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="precoMensal">
+        <th mat-header-cell *matHeaderCellDef>Preço Mensal</th>
+        <td mat-cell *matCellDef="let obj">R$ {{ obj.precoMensal }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="acao">
+        <th mat-header-cell *matHeaderCellDef>Ações</th>
+        <td mat-cell *matCellDef="let obj">
+          <button class="action-edit" [routerLink]="['/planos/edit', obj.id]" aria-label="Editar">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <mat-paginator
+      class="plano-paginator"
+      [pageSizeOptions]="[2,4,8,16]"
+      [pageSize]="pageSize"
+      [length]="totalRecords"
+      (page)="paginar($event)">
+    </mat-paginator>
+  </div>
+</section>

@@ -10,6 +10,9 @@ import { AlunoForm } from './components/aluno/aluno-form/aluno-form';
 import { alunoResolver } from './resolvers/aluno-resolver';
 import { TemplateAdm } from './components/template-adm/template-adm';
 import { Dashboard } from './components/adm/dashboard/dashboard';
+import { PlanoList } from './components/plano/plano-list/plano-list';
+import { PlanoForm } from './components/plano/plano-form/plano-form';
+import { planoResolver } from './resolvers/plano-resolver';
 
 export const routes: Routes = [
     {
@@ -27,6 +30,10 @@ export const routes: Routes = [
             {path: 'alunos/new', component: AlunoForm, title: 'Cadastro de Aluno'},
             {path: 'alunos/edit/:id', component: AlunoForm, title: 'Edição de Aluno',
                 resolve: {aluno: alunoResolver} },
+            {path: 'planos', component: PlanoList, title: 'Listagem de Planos'},
+            {path: 'planos/new', component: PlanoForm, title: 'Cadastro de Plano'},
+            {path: 'planos/edit/:id', component: PlanoForm, title: 'Edição de Plano',
+                resolve: {plano: planoResolver} },
             {path: 'municipios/new', component: MunicipioForm, title: 'Cadastro de Município'},
             {path: 'municipios/edit/:id', component: MunicipioForm, title: 'Edição de Município',
                 resolve: {municipio: municipioResolver} },
