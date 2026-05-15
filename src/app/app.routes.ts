@@ -1,17 +1,17 @@
 import { Routes } from '@angular/router';
-import { EstadoList } from './components/estado/estado-list/estado-list';
-import { EstadoForm } from './components/estado/estado-form/estado-form';
+import { EstadoList } from './components/adm/estado/estado-list/estado-list';
+import { EstadoForm } from './components/adm/estado/estado-form/estado-form';
 import { estadoResolver } from './resolvers/estado-resolver';
-import { MunicipioList } from './components/municipio/municipio-list/municipio-list';
-import { MunicipioForm } from './components/municipio/municipio-form/municipio-form';
+import { MunicipioList } from './components/adm/municipio/municipio-list/municipio-list';
+import { MunicipioForm } from './components/adm/municipio/municipio-form/municipio-form';
 import { municipioResolver } from './resolvers/municipio-resolver';
-import { AlunoList } from './components/aluno/aluno-list/aluno-list';
-import { AlunoForm } from './components/aluno/aluno-form/aluno-form';
+import { AlunoList } from './components/adm/aluno/aluno-list/aluno-list';
+import { AlunoForm } from './components/adm/aluno/aluno-form/aluno-form';
 import { alunoResolver } from './resolvers/aluno-resolver';
 import { TemplateAdm } from './components/template-adm/template-adm';
 import { Dashboard } from './components/adm/dashboard/dashboard';
-import { PlanoList } from './components/plano/plano-list/plano-list';
-import { PlanoForm } from './components/plano/plano-form/plano-form';
+import { PlanoList } from './components/adm/plano/plano-list/plano-list';
+import { PlanoForm } from './components/adm/plano/plano-form/plano-form';
 import { planoResolver } from './resolvers/plano-resolver';
 
 export const routes: Routes = [

@@ -7,9 +7,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { forkJoin } from 'rxjs';
-import { Plano } from '../../../models/plano.model';
-import { Arquivo } from '../../../models/arquivo.model';
-import { PlanoService } from '../../../services/plano.service';
+import { Plano } from '../../../../models/plano.model';
+import { Arquivo } from '../../../../models/arquivo.model';
+import { PlanoService } from '../../../../services/plano.service';
 
 @Component({
   selector: 'app-plano-form',

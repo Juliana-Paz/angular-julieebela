@@ -4,8 +4,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { PageEvent, MatPaginatorIntl, MatPaginatorModule } from '@angular/material/paginator';
-import { Plano } from '../../../models/plano.model';
-import { PlanoService } from '../../../services/plano.service';
+import { Plano } from '../../../../models/plano.model';
+import { PlanoService } from '../../../../services/plano.service';
 
 function getPortuguesePaginatorIntl(): MatPaginatorIntl {
   const paginatorIntl = new MatPaginatorIntl();
