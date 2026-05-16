@@ -1,0 +1,66 @@
+<section class="cart-page">
+  <header class="cart-header">
+    <div>
+      <p class="eyebrow">Ecommerce</p>
+      <h1>Carrinho</h1>
+      <p>{{ quantidadeTotal() }} item(ns) no carrinho</p>
+    </div>
+
+    <div class="cart-actions-header">
+      <button mat-stroked-button color="primary" routerLink="/">Continuar comprando</button>
+      <button mat-flat-button color="accent" (click)="limpar()" [disabled]="itens().length === 0">
+        Limpar carrinho
+      </button>
+    </div>
+  </header>
+
+  @if (itens().length === 0) {
+    <div class="empty-state">
+      <mat-icon>shopping_cart</mat-icon>
+      <h2>Seu carrinho está vazio</h2>
+      <p>Adicione um plano para ver os detalhes da compra aqui.</p>
+      <a mat-flat-button color="accent" routerLink="/">Ver planos</a>
+    </div>
+  } @else {
+    <div class="cart-layout">
+      <div class="cart-items">
+        @for (item of itens(); track item.plano.id) {
+          <mat-card class="cart-item">
+            <img class="cart-image" [src]="getImageUrl(item.plano)" [alt]="item.plano.nome">
+
+            <div class="cart-item-body">
+              <div class="cart-item-head">
+                <div>
+                  <h2>{{ item.plano.nome }}</h2>
+                  <p>R$ {{ item.plano.precoMensal | number:'1.2-2' }} / mês</p>
+                </div>
+                <button mat-icon-button type="button" aria-label="Remover plano" (click)="remover(item.plano.id)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+
+              <div class="cart-item-meta">
+                <span>{{ item.quantidade }} unidade(s)</span>
+                <strong>Subtotal: R$ {{ (item.plano.precoMensal * item.quantidade) | number:'1.2-2' }}</strong>
+              </div>
+            </div>
+          </mat-card>
+        }
+      </div>
+
+      <mat-card class="summary-card">
+        <p class="eyebrow">Resumo</p>
+        <h2>Total</h2>
+        <div class="summary-row">
+          <span>Itens</span>
+          <strong>{{ quantidadeTotal() }}</strong>
+        </div>
+        <div class="summary-row total">
+          <span>Valor total</span>
+          <strong>R$ {{ valorTotal() | number:'1.2-2' }}</strong>
+        </div>
+        <button mat-flat-button color="accent" class="checkout-btn" type="button">Finalizar compra</button>
+      </mat-card>
+    </div>
+  }
+</section>

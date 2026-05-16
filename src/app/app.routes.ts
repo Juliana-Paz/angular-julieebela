@@ -13,11 +13,34 @@ import { Dashboard } from './components/adm/dashboard/dashboard';
 import { PlanoList } from './components/adm/plano/plano-list/plano-list';
 import { PlanoForm } from './components/adm/plano/plano-form/plano-form';
 import { planoResolver } from './resolvers/plano-resolver';
+import { Home } from './components/ecommerce/home/home';
+import { DetalhePlano } from './components/ecommerce/detalhe-plano/detalhe-plano';
+import { Carrinho } from './components/ecommerce/carrinho/carrinho';
+import { Perfil } from './components/ecommerce/perfil/perfil';
+import { Login } from './components/ecommerce/login/login';
+import { TemplateEcommerce } from './components/template-ecommerce/template-ecommerce';
+import { authGuard } from './guards/auth.guard';
+import { roleChildGuard, roleGuard } from './guards/role.guard';
 
 export const routes: Routes = [
     {
         path: '',
+        component: TemplateEcommerce,
+        children: [
+            {path: '', component: Home, title: 'Home'},
+            {path: 'detalhe-plano/:id', component: DetalhePlano, title: 'Detalhe do Plano',
+                resolve: {plano: planoResolver} },
+            {path: 'carrinho', component: Carrinho, title: 'Carrinho'},
+            {path: 'perfil', component: Perfil, title: 'Meu Perfil', canActivate: [authGuard]},
+            {path: 'login', component: Login, title: 'Login'},
+        ]
+    },
+    {
+        path: 'adm',
         component: TemplateAdm,
+        canActivate: [roleGuard],
+        canActivateChild: [roleChildGuard],
+        data: { roles: ['Adm'] },
         children: [
             {path: '', pathMatch: 'full', redirectTo: 'dashboard'},
             {path: 'dashboard', component: Dashboard, title: 'Dashboard'},

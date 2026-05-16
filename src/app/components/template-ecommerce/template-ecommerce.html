@@ -1,0 +1,41 @@
+<div class="ecommerce-shell">
+  <mat-toolbar class="topbar" role="banner">
+    <a class="brand" routerLink="/">SGA Store</a>
+
+    <nav class="main-nav" aria-label="Menu principal">
+      <a mat-button routerLink="/">Planos</a>
+      <a mat-button routerLink="/carrinho">Carrinho</a>
+    </nav>
+
+    <button mat-stroked-button type="button" [matMenuTriggerFor]="menuConta" aria-label="Abrir menu da conta">
+      <mat-icon>account_circle</mat-icon>
+      Conta
+    </button>
+  </mat-toolbar>
+
+  <mat-menu #menuConta="matMenu">
+    @if (!logado()) {
+      <button mat-menu-item type="button" (click)="login()">
+        <mat-icon>login</mat-icon>
+        <span>Logar</span>
+      </button>
+    } @else {
+      <button mat-menu-item type="button" disabled>
+        <mat-icon>alternate_email</mat-icon>
+        <span>{{ nomeUsuario() ?? username() }}</span>
+      </button>
+      <button mat-menu-item type="button" (click)="perfil()">
+        <mat-icon>person</mat-icon>
+        <span>Perfil</span>
+      </button>
+      <button mat-menu-item type="button" (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        <span>Deslogar</span>
+      </button>
+    }
+  </mat-menu>
+
+  <main class="content" role="main">
+    <router-outlet />
+  </main>
+</div>

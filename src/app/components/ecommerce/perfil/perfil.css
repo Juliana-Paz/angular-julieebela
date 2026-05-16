@@ -1,0 +1,19 @@
+.perfil-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 16px;
+}
+
+.perfil-page h1 {
+  margin: 0 0 8px;
+}
+
+.perfil-page p {
+  margin: 0 0 20px;
+  color: #555;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+}

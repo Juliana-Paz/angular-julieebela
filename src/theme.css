@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap');
-
 /* ==================================================
    DESIGN TOKENS - SGA
 ================================================== */
@@ -46,7 +44,7 @@
   --shadow-lg: 0 20px 40px rgba(0,0,0,.08);
 
   /* FONT */
-  --font-family: 'Manrope', sans-serif;
+  --font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
 }
 
 /* ==================================================

@@ -1,0 +1,39 @@
+<div class="home-container">
+  <div class="home-topbar">
+    <h1 class="home-title">Nossos Planos</h1>
+  </div>
+
+  @if (loading) {
+    <div class="home-state">Carregando planos...</div>
+  }
+
+  @if (!loading && errorMessage) {
+    <div class="home-state error">{{ errorMessage }}</div>
+  }
+
+  @if (!loading && !errorMessage && planos.length === 0) {
+    <div class="home-state">Nenhum plano encontrado.</div>
+  }
+
+  <div class="cards-grid">
+    @for (plano of planos; track plano.id) {
+      <mat-card class="plano-card">
+        <img mat-card-image [src]="getImageUrl(plano)" [alt]="plano.nome" class="card-img">
+        <mat-card-header>
+          <mat-card-title>{{ plano.nome }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p class="plano-info">Até {{ plano.maxAlunos }} alunos</p>
+          <p class="plano-info">Até {{ plano.maxProfessores }} professores</p>
+          <p class="preco">R$ {{ plano.precoMensal | number:'1.2-2' }}<span>/mês</span></p>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-stroked-button color="primary" type="button" (click)="verDetalhe(plano.id)">Detalhes</button>
+          <button mat-flat-button color="accent" (click)="adicionarCarrinho(plano)">
+            <mat-icon>shopping_cart</mat-icon> Carrinho
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    }
+  </div>
+</div>

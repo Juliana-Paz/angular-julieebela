@@ -1,0 +1,39 @@
+<section class="login-page">
+  <mat-card class="login-card">
+    <p class="eyebrow">Ecommerce</p>
+    <h1>Entrar na conta</h1>
+
+    <form [formGroup]="form" (ngSubmit)="enviar()" class="login-form">
+      <mat-form-field appearance="outline">
+        <mat-label>Login</mat-label>
+        <input matInput type="text" formControlName="login" autocomplete="username">
+        <mat-icon matSuffix>person</mat-icon>
+        @if (form.controls.login.touched && form.controls.login.invalid) {
+          <mat-error>Informe seu login.</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Senha</mat-label>
+        <input matInput type="password" formControlName="senha" autocomplete="current-password">
+        <mat-icon matSuffix>lock</mat-icon>
+        @if (form.controls.senha.touched && form.controls.senha.invalid) {
+          <mat-error>A senha deve ter no mínimo 4 caracteres.</mat-error>
+        }
+      </mat-form-field>
+
+      @if (erro()) {
+        <p class="error-msg">{{ erro() }}</p>
+      }
+
+      <button mat-flat-button color="accent" type="submit" [disabled]="enviando()">
+        @if (enviando()) {
+          Entrando...
+        } @else {
+          Entrar
+        }
+      </button>
+      <a mat-stroked-button color="primary" routerLink="/">Voltar para loja</a>
+    </form>
+  </mat-card>
+</section>

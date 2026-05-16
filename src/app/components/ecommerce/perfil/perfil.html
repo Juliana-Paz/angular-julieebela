@@ -1,0 +1,15 @@
+<section class="perfil-page">
+  <h1>Meu Perfil</h1>
+
+  @if (usuario(); as usuarioLogado) {
+    <p><strong>Nome:</strong> {{ usuarioLogado.nome }}</p>
+    <p><strong>Usuário:</strong> {{ usuarioLogado.username }}</p>
+    <p><strong>Perfil:</strong> {{ usuarioLogado.perfil.nome }}</p>
+  } @else {
+    <p>Não foi possível carregar os dados do usuário logado.</p>
+  }
+
+  <div class="actions">
+    <a mat-stroked-button color="primary" routerLink="/">Voltar para a home</a>
+  </div>
+</section>

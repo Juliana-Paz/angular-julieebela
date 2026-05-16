@@ -16,10 +16,10 @@ export class Sidebar {
   @Output() toggleCollapse = new EventEmitter<void>();
 
   menuItems = [
-    { label: 'Dashboard', icon: 'dashboard', route: '/dashboard' },
-    { label: 'Estados', icon: 'map', route: '/estados' },
-    { label: 'Municípios', icon: 'location_city', route: '/municipios' },
-    { label: 'Planos', icon: 'workspace_premium', route: '/planos' },
-    { label: 'Alunos', icon: 'school', route: '/alunos' },
+    { label: 'Dashboard', icon: 'dashboard', route: 'dashboard' },
+    { label: 'Estados', icon: 'map', route: 'estados' },
+    { label: 'Municípios', icon: 'location_city', route: 'municipios' },
+    { label: 'Planos', icon: 'workspace_premium', route: 'planos' },
+    { label: 'Alunos', icon: 'school', route: 'alunos' },
   ];
 }

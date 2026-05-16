@@ -1,0 +1,80 @@
+.home-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 16px;
+}
+
+.home-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.home-title {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.home-state {
+  margin: 0 0 24px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #fff7f6;
+  color: #7a2a22;
+  text-align: center;
+  font-weight: 600;
+}
+
+.home-state.error {
+  background: #ffe9e7;
+  color: #9e1b19;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.plano-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+.preco {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 8px 0 0;
+  color: #1976d2;
+}
+
+.preco span {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #555;
+}
+
+mat-card-actions {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 16px 16px;
+}
+
+@media (max-width: 640px) {
+  .home-topbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .home-topbar a {
+    justify-content: center;
+  }
+}
