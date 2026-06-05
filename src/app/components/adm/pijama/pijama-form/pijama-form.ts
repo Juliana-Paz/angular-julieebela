@@ -10,6 +10,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { Pijama } from '../../../../models/pijama.model';
 import { Categoria } from '../../../../models/categoria.model';
 import { Marca } from '../../../../models/marca.model';
@@ -32,7 +33,9 @@ interface BackendErrorResponse { errors?: ValidationError[]; }
     CommonModule, MatFormField, MatLabel, MatError,
     ReactiveFormsModule, MatInputModule, MatSelectModule,
     MatButtonModule, MatIconModule, MatSlideToggleModule, RouterLink,
+    NgxMaskDirective,
   ],
+  providers: [provideNgxMask()],
   templateUrl: './pijama-form.html',
   styleUrl: './pijama-form.css',
 })
@@ -164,9 +167,13 @@ export class PijamaForm implements OnInit {
     const formData = new FormData();
     const valores = this.form.value;
 
+    const precoNum = parseFloat(
+      String(valores.preco ?? '0').replace(/[^\d,]/g, '').replace(',', '.')
+    ) || 0;
+
     formData.append('nome', valores.nome);
     formData.append('descricao', valores.descricao ?? '');
-    formData.append('preco', String(valores.preco));
+    formData.append('preco', String(precoNum));
     formData.append('modelo', valores.modelo);
     formData.append('estoque', String(valores.estoque));
     formData.append('ativo', String(valores.ativo));

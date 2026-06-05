@@ -7,7 +7,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { DateMaskDirective } from '../../../../directives/date-mask.directive';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { Cupom } from '../../../../models/cupom.model';
 import { CupomService } from '../../../../services/cupom.service';
 
@@ -18,7 +21,9 @@ interface BackendErrorResponse { errors?: ValidationError[]; }
   selector: 'app-cupom-form',
   imports: [CommonModule, MatFormField, MatLabel, MatError, MatHint,
             ReactiveFormsModule, MatInputModule, MatButtonModule,
-            MatIconModule, MatSlideToggleModule, RouterLink],
+            MatIconModule, MatSlideToggleModule, RouterLink,
+            MatDatepickerModule, DateMaskDirective, NgxMaskDirective],
+  providers: [provideNgxMask()],
   templateUrl: './cupom-form.html',
   styleUrl: './cupom-form.css',
 })
@@ -46,7 +51,25 @@ export class CupomForm implements OnInit {
 
   ngOnInit(): void {
     const cupom: Cupom = this.activatedRoute.snapshot.data['cupom'];
-    if (cupom) this.form.patchValue(cupom);
+    if (cupom) {
+      this.form.patchValue({
+        ...cupom,
+        dataInicio: cupom.dataInicio ? new Date(cupom.dataInicio + 'T00:00:00') : null,
+        dataFim: cupom.dataFim ? new Date(cupom.dataFim + 'T00:00:00') : null,
+      });
+    }
+  }
+
+  private formatarData(data: any): string {
+    if (!data) return '';
+    if (typeof data.format === 'function') return data.format('YYYY-MM-DD');
+    if (data instanceof Date) {
+      const y = data.getFullYear();
+      const m = String(data.getMonth() + 1).padStart(2, '0');
+      const d = String(data.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+    return String(data);
   }
 
   onCodigoInput(event: Event): void {
@@ -58,7 +81,15 @@ export class CupomForm implements OnInit {
 
   salvar(): void {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
-    const cupom = this.form.value;
+    const raw = this.form.value;
+    const valorStr = String(raw.valorDesconto ?? '0');
+    const valorNum = parseFloat(valorStr.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+    const cupom = {
+      ...raw,
+      valorDesconto: valorNum,
+      dataInicio: this.formatarData(raw.dataInicio),
+      dataFim: this.formatarData(raw.dataFim),
+    };
     const req = cupom.id ? this.cupomService.update(cupom) : this.cupomService.create(cupom);
     req.subscribe({
       next: () => { this.router.navigateByUrl('/adm/cupons'); this.exibirMensagem('Cupom salvo com sucesso!'); },

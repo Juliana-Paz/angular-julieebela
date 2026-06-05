@@ -32,7 +32,8 @@
 
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>CPF</mat-label>
-              <input matInput formControlName="cpf" />
+              <input matInput formControlName="cpf" mask="000.000.000-00" [dropSpecialCharacters]="false"
+                placeholder="000.000.000-00" maxlength="14" inputmode="numeric" />
               @if (erroDados('cpf')) { <mat-error>{{ erroDados('cpf') }}</mat-error> }
             </mat-form-field>
 
@@ -44,7 +45,10 @@
 
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Data de Nascimento</mat-label>
-              <input matInput formControlName="dataNascimento" type="date" />
+              <input matInput [matDatepicker]="pickerNasc" formControlName="dataNascimento"
+                placeholder="DD/MM/AAAA" dateMask />
+              <mat-datepicker-toggle matIconSuffix [for]="pickerNasc" />
+              <mat-datepicker #pickerNasc startView="multi-year" />
               @if (erroDados('dataNascimento')) { <mat-error>{{ erroDados('dataNascimento') }}</mat-error> }
             </mat-form-field>
 
@@ -61,21 +65,33 @@
           <form [formGroup]="senhaForm" (ngSubmit)="alterarSenha()">
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Senha atual</mat-label>
-              <input matInput formControlName="senhaAtual" type="password" />
+              <input matInput formControlName="senhaAtual" [type]="hideSenhaAtual ? 'password' : 'text'" />
+              <button mat-icon-button matSuffix type="button" (click)="hideSenhaAtual = !hideSenhaAtual">
+                <mat-icon>{{ hideSenhaAtual ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
               @if (erroSenha('senhaAtual')) { <mat-error>{{ erroSenha('senhaAtual') }}</mat-error> }
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Nova senha</mat-label>
-              <input matInput formControlName="novaSenha" type="password" />
+              <input matInput formControlName="novaSenha" [type]="hideNovaSenha ? 'password' : 'text'" />
+              <button mat-icon-button matSuffix type="button" (click)="hideNovaSenha = !hideNovaSenha">
+                <mat-icon>{{ hideNovaSenha ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
               @if (erroSenha('novaSenha')) { <mat-error>{{ erroSenha('novaSenha') }}</mat-error> }
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Confirmar nova senha</mat-label>
-              <input matInput formControlName="confirmarSenha" type="password" />
-              @if (senhaForm.errors?.['senhasNaoConferem'] && senhaForm.get('confirmarSenha')?.touched) {
-                <mat-error>As senhas não conferem.</mat-error>
+              <input matInput formControlName="confirmarSenha" [type]="hideConfirmarSenha ? 'password' : 'text'" />
+              <button mat-icon-button matSuffix type="button" (click)="hideConfirmarSenha = !hideConfirmarSenha">
+                <mat-icon>{{ hideConfirmarSenha ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              @if (senhaForm.get('confirmarSenha')?.hasError('required')) {
+                <mat-error>Campo obrigatório.</mat-error>
+              }
+              @if (senhaForm.get('confirmarSenha')?.hasError('passwordMismatch')) {
+                <mat-error>As senhas não coincidem.</mat-error>
               }
             </mat-form-field>
 

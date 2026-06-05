@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -9,26 +9,25 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
+import { DateMaskDirective } from '../../../directives/date-mask.directive';
 import { ClienteService } from '../../../services/cliente.service';
 
-function senhaMatchValidator(group: AbstractControl): ValidationErrors | null {
-  const senha = group.get('senha')?.value;
-  const confirmar = group.get('confirmarSenha')?.value;
-  return senha && confirmar && senha !== confirmar ? { senhasNaoConferem: true } : null;
+function confirmarSenhaValidator(control: AbstractControl): ValidationErrors | null {
+  const senhaField = control.parent?.get('senha');
+  if (!senhaField) return null;
+  return control.value !== senhaField.value ? { passwordMismatch: true } : null;
 }
 
 @Component({
   selector: 'app-cadastro',
   imports: [CommonModule, ReactiveFormsModule, RouterLink, MatButtonModule, MatCardModule,
-            MatFormFieldModule, MatInputModule, MatIconModule,
-            MatDatepickerModule, MatNativeDateModule],
-  providers: [{ provide: MAT_DATE_LOCALE, useValue: 'pt-BR' }],
+            MatFormFieldModule, MatInputModule, MatIconModule, MatDatepickerModule,
+            DateMaskDirective],
   templateUrl: './cadastro.html',
   styleUrl: './cadastro.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Cadastro {
+export class Cadastro implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly clienteService = inject(ClienteService);
   private readonly router = inject(Router);
@@ -45,8 +44,14 @@ export class Cadastro {
     dataNascimento: [null, Validators.required],
     username: ['', [Validators.required, Validators.minLength(3)]],
     senha: ['', [Validators.required, Validators.minLength(6)]],
-    confirmarSenha: ['', Validators.required],
-  }, { validators: senhaMatchValidator });
+    confirmarSenha: ['', [Validators.required, confirmarSenhaValidator]],
+  });
+
+  ngOnInit(): void {
+    this.form.get('senha')?.valueChanges.subscribe(() => {
+      this.form.get('confirmarSenha')?.updateValueAndValidity();
+    });
+  }
 
   onCpfInput(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -68,8 +73,9 @@ export class Cadastro {
     return null;
   }
 
-  private formatarData(data: Date | string | null): string {
+  private formatarData(data: any): string {
     if (!data) return '';
+    if (typeof data.format === 'function') return data.format('YYYY-MM-DD');
     if (data instanceof Date) {
       const y = data.getFullYear();
       const m = String(data.getMonth() + 1).padStart(2, '0');
@@ -104,8 +110,25 @@ export class Cadastro {
       error: (e) => {
         this.salvando.set(false);
         console.error('[Cadastro] Erro ao cadastrar:', e);
-        const msg = e?.error?.message ?? e?.error?.errors?.[0]?.message ?? 'Erro ao criar a conta.';
-        this.snack.open(msg, 'OK', { duration: 5000 });
+        const body = e.error ?? {};
+        const detail = JSON.stringify(body).toLowerCase();
+        const apiMsg: string = body.message ?? body.errors?.[0]?.message ?? '';
+
+        if (e.status === 400) {
+          if (detail.includes('email') || detail.includes('e-mail')) {
+            this.snack.open('Este e-mail já está cadastrado. Faça login ou use outro e-mail.', 'Fechar', { duration: 5000 });
+          } else if (detail.includes('cpf')) {
+            this.snack.open('Este CPF já está cadastrado.', 'Fechar', { duration: 5000 });
+          } else if (apiMsg) {
+            this.snack.open(apiMsg, 'Fechar', { duration: 5000 });
+          } else {
+            this.snack.open('Erro ao criar a conta. Tente novamente.', 'Fechar', { duration: 4000 });
+          }
+        } else if (e.status === 500 && detail.includes('cliente_email_key')) {
+          this.snack.open('Este e-mail já está cadastrado. Faça login ou use outro e-mail.', 'Fechar', { duration: 5000 });
+        } else {
+          this.snack.open('Erro ao criar a conta. Tente novamente.', 'Fechar', { duration: 4000 });
+        }
       },
     });
   }

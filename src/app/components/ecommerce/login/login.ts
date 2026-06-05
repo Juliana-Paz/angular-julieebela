@@ -33,10 +33,11 @@ export class Login {
 
   readonly erro = signal('');
   readonly enviando = signal(false);
+  hideSenha = true;
 
   readonly form = this.formBuilder.group({
     login: ['', [Validators.required]],
-    senha: ['', [Validators.required, Validators.minLength(6)]],
+    senha: ['', [Validators.required]],
   });
 
   enviar(): void {

@@ -34,7 +34,7 @@ function getPtPaginatorIntl(): MatPaginatorIntl {
 export class PijamaList implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  displayedColumns: string[] = ['numero', 'imagem', 'nome', 'categoria', 'preco', 'estoque', 'ativo', 'acao'];
+  displayedColumns: string[] = ['numero', 'imagem', 'nome', 'categoria', 'sexo', 'preco', 'estoque', 'ativo', 'acao'];
   dataSource = new MatTableDataSource<Pijama>([]);
   readonly imageBase = 'http://localhost:8080/pijamas/imagens/download/';
 

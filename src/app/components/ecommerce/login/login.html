@@ -15,11 +15,10 @@
 
       <mat-form-field appearance="outline">
         <mat-label>Senha</mat-label>
-        <input matInput type="password" formControlName="senha" autocomplete="current-password">
-        <mat-icon matSuffix>lock</mat-icon>
-        @if (form.controls.senha.touched && form.controls.senha.errors?.['minlength']) {
-          <mat-error>A senha deve ter no mínimo 6 caracteres.</mat-error>
-        }
+        <input matInput [type]="hideSenha ? 'password' : 'text'" formControlName="senha" autocomplete="current-password">
+        <button mat-icon-button matSuffix type="button" (click)="hideSenha = !hideSenha">
+          <mat-icon>{{ hideSenha ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
         @if (form.controls.senha.touched && form.controls.senha.errors?.['required']) {
           <mat-error>Informe sua senha.</mat-error>
         }

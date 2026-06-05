@@ -52,8 +52,14 @@ export class MaterialList implements OnInit, AfterViewInit {
   excluir(id: number): void {
     if (!confirm('Deseja realmente excluir este material?')) return;
     this.materialService.delete(id).subscribe({
-      next: () => { this.snack.open('Material excluído!', 'OK', { duration: 2500, verticalPosition: 'top' }); this.carregar(); },
-      error: () => this.snack.open('Erro ao excluir material.', 'OK', { duration: 2500, verticalPosition: 'top' }),
+      next: () => { this.carregar(); this.snack.open('Material excluído!', 'OK', { duration: 2500, verticalPosition: 'top' }); },
+      error: (err) => {
+        let mensagem = 'Erro ao excluir. Tente novamente.';
+        if (err.status === 400 && err.error?.errors?.length > 0) {
+          mensagem = err.error.errors[0].message;
+        }
+        this.snack.open(mensagem, 'Fechar', { duration: 5000, verticalPosition: 'top' });
+      },
     });
   }
 }

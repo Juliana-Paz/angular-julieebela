@@ -55,6 +55,11 @@
             }
           </mat-form-field>
 
+          <input type="color" class="color-picker-native"
+            [value]="hexPreview"
+            (input)="form.get('hexadecimal')?.setValue($any($event.target).value)"
+            title="Escolher cor na paleta" />
+
           <div class="cor-grande-preview" [style.background]="hexPreview" aria-hidden="true"></div>
         </div>
       </div>

@@ -12,6 +12,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { DateMaskDirective } from '../../../directives/date-mask.directive';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import moment from 'moment';
 import { ClienteService } from '../../../services/cliente.service';
 import { PedidoService } from '../../../services/pedido.service';
 import { EcommerceAuthService } from '../../../services/ecommerce-auth.service';
@@ -25,12 +29,20 @@ function novaSenhaMatchValidator(group: AbstractControl): ValidationErrors | nul
   return nova && confirmar && nova !== confirmar ? { senhasNaoConferem: true } : null;
 }
 
+function confirmPasswordValidator(control: AbstractControl): ValidationErrors | null {
+  const senha = control.parent?.get('novaSenha')?.value;
+  if (!senha || !control.value) return null;
+  return control.value !== senha ? { passwordMismatch: true } : null;
+}
+
 @Component({
   selector: 'app-perfil',
   imports: [CommonModule, ReactiveFormsModule, RouterLink,
             MatButtonModule, MatCardModule, MatFormFieldModule,
             MatInputModule, MatIconModule, MatTabsModule,
-            MatTableModule, MatDividerModule, MatChipsModule],
+            MatTableModule, MatDividerModule, MatChipsModule,
+            MatDatepickerModule, DateMaskDirective, NgxMaskDirective],
+  providers: [provideNgxMask()],
   templateUrl: './perfil.html',
   styleUrl: './perfil.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -51,6 +63,10 @@ export class Perfil implements OnInit {
   readonly mostrarFormEndereco = signal(false);
   readonly tabIndex = signal(0);
 
+  hideSenhaAtual = true;
+  hideNovaSenha = true;
+  hideConfirmarSenha = true;
+
   readonly usuario = this.authService.usuario;
 
   dadosForm!: FormGroup;
@@ -70,8 +86,12 @@ export class Perfil implements OnInit {
     this.senhaForm = this.fb.group({
       senhaAtual: ['', Validators.required],
       novaSenha: ['', [Validators.required, Validators.minLength(6)]],
-      confirmarSenha: ['', Validators.required],
+      confirmarSenha: ['', [Validators.required, confirmPasswordValidator]],
     }, { validators: novaSenhaMatchValidator });
+
+    this.senhaForm.get('novaSenha')?.valueChanges.subscribe(() => {
+      this.senhaForm.get('confirmarSenha')?.updateValueAndValidity();
+    });
 
     this.enderecoForm = this.fb.group({
       cep: ['', [Validators.required, Validators.pattern(/^\d{5}-?\d{3}$/)]],
@@ -95,6 +115,18 @@ export class Perfil implements OnInit {
     return d.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
   }
 
+  private formatarData(data: any): string {
+    if (!data) return '';
+    if (typeof data.format === 'function') return data.format('YYYY-MM-DD');
+    if (data instanceof Date) {
+      const y = data.getFullYear();
+      const m = String(data.getMonth() + 1).padStart(2, '0');
+      const d = String(data.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+    return String(data);
+  }
+
   private carregarPerfil(): void {
     this.clienteService.getMeuPerfil().subscribe({
       next: cliente => {
@@ -103,7 +135,7 @@ export class Perfil implements OnInit {
           nome: cliente.nome,
           cpf: this.formatarCpf(cliente.cpf ?? ''),
           email: cliente.email,
-          dataNascimento: cliente.dataNascimento,
+          dataNascimento: cliente.dataNascimento ? moment(cliente.dataNascimento, 'YYYY-MM-DD') : null,
         });
         this.loading.set(false);
       },
@@ -148,7 +180,13 @@ export class Perfil implements OnInit {
   salvarDados(): void {
     if (this.dadosForm.invalid) { this.dadosForm.markAllAsTouched(); return; }
     this.salvandoDados.set(true);
-    this.clienteService.atualizarPerfil(this.dadosForm.value).subscribe({
+    const raw = this.dadosForm.value;
+    const dadosPayload = {
+      ...raw,
+      cpf: (raw.cpf as string).replace(/\D/g, ''),
+      dataNascimento: this.formatarData(raw.dataNascimento),
+    };
+    this.clienteService.atualizarPerfil(dadosPayload).subscribe({
       next: cliente => {
         this.cliente.set(cliente);
         this.salvandoDados.set(false);

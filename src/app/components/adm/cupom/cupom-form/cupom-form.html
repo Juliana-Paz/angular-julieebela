@@ -43,7 +43,11 @@
 
         <mat-form-field appearance="outline">
           <mat-label>Valor do Desconto</mat-label>
-          <input matInput type="number" formControlName="valorDesconto" min="0" step="0.01" />
+          <input matInput formControlName="valorDesconto"
+            [mask]="form.get('percentual')?.value ? 'percent' : 'separator.2'"
+            [prefix]="form.get('percentual')?.value ? '' : 'R$ '"
+            [suffix]="form.get('percentual')?.value ? '%' : ''"
+            thousandSeparator="." decimalMarker="," placeholder="0,00" />
           @if (form.get('valorDesconto')?.hasError('min') && form.get('valorDesconto')?.touched) {
             <mat-error>Valor deve ser positivo.</mat-error>
           }
@@ -56,7 +60,9 @@
 
         <mat-form-field appearance="outline">
           <mat-label>Data de Início</mat-label>
-          <input matInput type="date" formControlName="dataInicio" />
+          <input matInput [matDatepicker]="pickerInicio" formControlName="dataInicio" placeholder="DD/MM/AAAA" dateMask />
+          <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+          <mat-datepicker #pickerInicio></mat-datepicker>
           @if (form.get('dataInicio')?.hasError('required') && form.get('dataInicio')?.touched) {
             <mat-error>Data de início é obrigatória.</mat-error>
           }
@@ -64,7 +70,9 @@
 
         <mat-form-field appearance="outline">
           <mat-label>Data de Fim</mat-label>
-          <input matInput type="date" formControlName="dataFim" />
+          <input matInput [matDatepicker]="pickerFim" formControlName="dataFim" placeholder="DD/MM/AAAA" dateMask />
+          <mat-datepicker-toggle matSuffix [for]="pickerFim"></mat-datepicker-toggle>
+          <mat-datepicker #pickerFim></mat-datepicker>
           @if (form.get('dataFim')?.hasError('required') && form.get('dataFim')?.touched) {
             <mat-error>Data de fim é obrigatória.</mat-error>
           }

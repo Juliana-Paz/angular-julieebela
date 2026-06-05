@@ -52,8 +52,14 @@ export class MarcaList implements OnInit, AfterViewInit {
   excluir(id: number): void {
     if (!confirm('Deseja realmente excluir esta marca?')) return;
     this.marcaService.delete(id).subscribe({
-      next: () => { this.snack.open('Marca excluída!', 'OK', { duration: 2500, verticalPosition: 'top' }); this.carregar(); },
-      error: () => this.snack.open('Erro ao excluir marca.', 'OK', { duration: 2500, verticalPosition: 'top' }),
+      next: () => { this.carregar(); this.snack.open('Marca excluída!', 'OK', { duration: 2500, verticalPosition: 'top' }); },
+      error: (err) => {
+        let mensagem = 'Erro ao excluir. Tente novamente.';
+        if (err.status === 400 && err.error?.errors?.length > 0) {
+          mensagem = err.error.errors[0].message;
+        }
+        this.snack.open(mensagem, 'Fechar', { duration: 5000, verticalPosition: 'top' });
+      },
     });
   }
 }
