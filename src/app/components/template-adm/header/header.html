@@ -2,15 +2,31 @@
   <div class="adm-header-spacer"></div>
 
   <div class="adm-header-center">
-    <strong>SGA - Sistema de Gerenciamento de Academias</strong>
+    <strong>Julie e Bela — Administração</strong>
   </div>
 
   <div class="adm-header-actions">
-    <button mat-icon-button aria-label="Notificacoes">
-      <mat-icon>notifications</mat-icon>
-    </button>
-    <button mat-icon-button aria-label="Perfil">
-      <mat-icon>account_circle</mat-icon>
+    <button mat-button [matMenuTriggerFor]="menuUsuario" class="user-btn">
+      <mat-icon>admin_panel_settings</mat-icon>
+      <span>{{ authService.nomeUsuario() }}</span>
+      <mat-icon>arrow_drop_down</mat-icon>
     </button>
   </div>
 </mat-toolbar>
+
+<mat-menu #menuUsuario="matMenu">
+  <button mat-menu-item disabled>
+    <mat-icon>person</mat-icon>
+    <span>{{ authService.nomeUsuario() }}</span>
+  </button>
+  <mat-divider />
+  <button mat-menu-item routerLink="/adm/perfil">
+    <mat-icon>manage_accounts</mat-icon>
+    <span>Meu Perfil</span>
+  </button>
+  <mat-divider />
+  <button mat-menu-item (click)="sair()">
+    <mat-icon>logout</mat-icon>
+    <span>Sair</span>
+  </button>
+</mat-menu>

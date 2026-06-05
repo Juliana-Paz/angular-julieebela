@@ -36,6 +36,7 @@ import { PedidoConfirmado } from './components/ecommerce/pedido-confirmado/pedid
 import { Cadastro } from './components/ecommerce/cadastro/cadastro';
 import { ListaDesejos } from './components/ecommerce/lista-desejos/lista-desejos';
 import { RecuperarSenha } from './components/ecommerce/recuperar-senha/recuperar-senha';
+import { AdmPerfil } from './components/adm/adm-perfil/adm-perfil';
 import { authGuard } from './guards/auth.guard';
 import { roleChildGuard, roleGuard } from './guards/role.guard';
 
@@ -98,6 +99,7 @@ export const routes: Routes = [
             { path: 'municipios/new', component: MunicipioForm, title: 'Cadastro de Município' },
             { path: 'municipios/edit/:id', component: MunicipioForm, title: 'Edição de Município',
                 resolve: { municipio: municipioResolver } },
+            { path: 'perfil', component: AdmPerfil, title: 'Meu Perfil' },
         ]
     },
 ];

@@ -1,84 +1,161 @@
-<section class="dashboard-page">
+<style>
+  .kpi-content {
+    display: flex !important;
+    align-items: center !important;
+    gap: 16px !important;
+    padding: 16px !important;
+  }
+  .kpi-icon .mat-icon {
+    color: white !important;
+    font-size: 28px !important;
+    width: 28px !important;
+    height: 28px !important;
+  }
+</style>
 
-  <nav class="breadcrumb" aria-label="Breadcrumb">
-    <a class="bc-link" routerLink="/dashboard">Home</a>
-    <mat-icon class="bc-sep">chevron_right</mat-icon>
-    <span class="bc-current">Dashboard</span>
-  </nav>
-    
-  <header class="dashboard-header">
-    <div class="header-spacer"></div>
-    <div class="header-title">
-      <h1>Dashboard Principal</h1>
-      <p>Visao geral do desempenho da rede SGA hoje.</p>
+<div class="dashboard-container">
+  <h2 class="page-title">Dashboard</h2>
+
+  @if (carregando()) {
+    <div class="loading-center">
+      <mat-spinner diameter="48" />
+      <p>Carregando dados...</p>
     </div>
+  }
 
-    <div class="header-actions">
-      <button class="btn-secondary" type="button">Ultimos 30 dias</button>
-      <button matButton="filled" type="button">Exportar relatorio</button>
-    </div>
-  </header>
-
-  <section class="kpi-grid">
-    @for (kpi of kpis; track kpi.title) {
-      <article class="kpi-card">
-        <div class="kpi-top">
-          <mat-icon class="icon">{{ kpi.icon }}</mat-icon>
-          <span class="trend">{{ kpi.trend }}</span>
-        </div>
-        <p class="kpi-title">{{ kpi.title }}</p>
-        <h2>{{ kpi.value }}</h2>
-      </article>
-    }
-  </section>
-
-  <section class="dashboard-grid">
-    <article class="chart-card">
-      <div class="chart-header">
-        <div>
-          <h3>Crescimento de Matriculas</h3>
-          <p>Comparativo entre novas matriculas e cancelamentos.</p>
-        </div>
+  @if (erro()) {
+    <mat-card class="erro-card">
+      <div class="kpi-content" style="flex-direction:column;align-items:center;gap:12px;padding:32px;text-align:center;">
+        <mat-icon color="warn">error_outline</mat-icon>
+        <p>Erro ao carregar dados do dashboard.</p>
+        <button mat-flat-button color="primary" (click)="carregar()">
+          Tentar novamente
+        </button>
       </div>
+    </mat-card>
+  }
 
-      <div class="bars">
-        <div class="bar" style="--value: 62%"></div>
-        <div class="bar" style="--value: 79%"></div>
-        <div class="bar" style="--value: 48%"></div>
-        <div class="bar" style="--value: 88%"></div>
-        <div class="bar" style="--value: 71%"></div>
-        <div class="bar" style="--value: 56%"></div>
-      </div>
+  @if (!carregando() && !erro() && stats(); as s) {
 
-      <div class="months">
-        @for (mes of meses; track mes) {
-          <span>{{ mes }}</span>
-        }
-      </div>
-    </article>
-
-    <article class="plans-card">
-      <h3>Planos populares</h3>
-
-      <div class="plans-list">
-        @for (plano of planosPopulares; track plano.nome) {
-          <div class="plan-row">
-            <div class="plan-main">
-              <span class="tag">{{ plano.sigla }}</span>
-              <div>
-                <strong>{{ plano.nome }}</strong>
-                <small>{{ plano.preco }}</small>
-              </div>
-            </div>
-            <div class="plan-share">
-              <span>{{ plano.percentual }}%</span>
-              <div class="progress">
-                <div [style.width.%]="plano.percentual"></div>
-              </div>
-            </div>
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <mat-card class="kpi-card">
+        <div class="kpi-content">
+          <div class="kpi-icon kpi-primary"><mat-icon>shopping_bag</mat-icon></div>
+          <div class="kpi-info">
+            <span class="kpi-label">Total de Pedidos</span>
+            <span class="kpi-value">{{ s.totalPedidos }}</span>
           </div>
-        }
-      </div>
-    </article>
-  </section>
-</section>
+        </div>
+      </mat-card>
+
+      <mat-card class="kpi-card">
+        <div class="kpi-content">
+          <div class="kpi-icon kpi-success"><mat-icon>attach_money</mat-icon></div>
+          <div class="kpi-info">
+            <span class="kpi-label">Receita Total</span>
+            <span class="kpi-value">{{ s.receitaTotal | currency:'BRL':'symbol':'1.2-2' }}</span>
+          </div>
+        </div>
+      </mat-card>
+
+      <mat-card class="kpi-card">
+        <div class="kpi-content">
+          <div class="kpi-icon kpi-accent"><mat-icon>calendar_today</mat-icon></div>
+          <div class="kpi-info">
+            <span class="kpi-label">Receita do Mês</span>
+            <span class="kpi-value">{{ s.receitaMesAtual | currency:'BRL':'symbol':'1.2-2' }}</span>
+          </div>
+        </div>
+      </mat-card>
+
+      <mat-card class="kpi-card">
+        <div class="kpi-content">
+          <div class="kpi-icon kpi-warn"><mat-icon>receipt_long</mat-icon></div>
+          <div class="kpi-info">
+            <span class="kpi-label">Pedidos do Mês</span>
+            <span class="kpi-value">{{ s.pedidosMesAtual }}</span>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+
+    <!-- Linha 2: Mais vendidos + Receita mensal -->
+    <div class="charts-grid">
+
+      <!-- Tabela pijamas mais vendidos -->
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>star</mat-icon> Pijamas Mais Vendidos
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          @if (s.maisVendidos.length === 0) {
+            <p class="sem-dados">Nenhum pedido registrado ainda.</p>
+          } @else {
+            <table mat-table [dataSource]="s.maisVendidos" class="full-width">
+              <ng-container matColumnDef="posicao">
+                <th mat-header-cell *matHeaderCellDef>#</th>
+                <td mat-cell *matCellDef="let item; let i = index">{{ i + 1 }}</td>
+              </ng-container>
+              <ng-container matColumnDef="nome">
+                <th mat-header-cell *matHeaderCellDef>Pijama</th>
+                <td mat-cell *matCellDef="let item">{{ item.nome }}</td>
+              </ng-container>
+              <ng-container matColumnDef="totalVendido">
+                <th mat-header-cell *matHeaderCellDef>Unidades</th>
+                <td mat-cell *matCellDef="let item"><strong>{{ item.totalVendido }}</strong></td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="colunasVendidos"></tr>
+              <tr mat-row *matRowDef="let row; columns: colunasVendidos;"></tr>
+            </table>
+          }
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Gráfico de barras — receita últimos 6 meses -->
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>bar_chart</mat-icon> Receita Últimos 6 Meses
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          @if (s.receitaMensal.length === 0) {
+            <p class="sem-dados">Nenhum dado disponível.</p>
+          } @else {
+            <div class="bar-chart">
+              @for (item of s.receitaMensal; track item.mes) {
+                <div class="bar-item">
+                  <div class="bar-valor">
+                    {{ item.receita | currency:'BRL':'symbol':'1.0-0' }}
+                  </div>
+                  <div class="bar-wrap">
+                    <div class="bar-fill"
+                         [style]="'height:' + getAltura(item.receita) + '%'"
+                         [title]="item.pedidos + ' pedidos'">
+                    </div>
+                  </div>
+                  <div class="bar-mes">{{ item.mes }}</div>
+                </div>
+              }
+            </div>
+          }
+        </mat-card-content>
+      </mat-card>
+
+    </div>
+
+    <!-- Ações rápidas -->
+    <div class="acoes-rapidas">
+      <button mat-stroked-button color="primary" routerLink="/adm/pijamas">
+        <mat-icon>inventory_2</mat-icon> Gerenciar Pijamas
+      </button>
+      <button mat-stroked-button color="primary" routerLink="/adm/cupons">
+        <mat-icon>local_offer</mat-icon> Gerenciar Cupons
+      </button>
+    </div>
+
+  }
+</div>

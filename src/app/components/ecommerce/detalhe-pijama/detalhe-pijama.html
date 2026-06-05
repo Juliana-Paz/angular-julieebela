@@ -108,6 +108,12 @@
             {{ p.estoque === 0 ? 'Esgotado' : 'Adicionar ao Carrinho' }}
           </button>
 
+          <button mat-flat-button color="accent" class="btn-comprar"
+            [disabled]="!p.ativo || p.estoque === 0" (click)="comprarAgora()">
+            <mat-icon>flash_on</mat-icon>
+            Comprar Agora
+          </button>
+
           <button mat-icon-button class="btn-desejo" [class.ativo]="noDesejo()"
             (click)="toggleDesejos()" [matTooltip]="noDesejo() ? 'Remover dos desejos' : 'Adicionar aos desejos'">
             <mat-icon>{{ noDesejo() ? 'favorite' : 'favorite_border' }}</mat-icon>

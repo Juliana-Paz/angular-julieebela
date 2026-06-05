@@ -71,6 +71,13 @@ export class DetalhePijama implements OnInit {
       .onAction().subscribe(() => this.router.navigate(['/carrinho']));
   }
 
+  comprarAgora(): void {
+    const p = this.pijama();
+    if (!p) return;
+    this.carrinhoService.adicionar(p as PijamaEcommerce);
+    this.router.navigate(['/checkout']);
+  }
+
   toggleDesejos(): void {
     if (!this.logado()) { this.router.navigate(['/login']); return; }
     const p = this.pijama();

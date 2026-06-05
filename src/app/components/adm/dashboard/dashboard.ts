@@ -1,28 +1,63 @@
-import { Component } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { CurrencyPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { DashboardService, DashboardStats } from '../../../services/dashboard.service';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [MatIconModule, MatButtonModule, RouterLink],
+  imports: [
+    CurrencyPipe,
+    RouterLink,
+    MatCardModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatTableModule,
+    MatButtonModule,
+  ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Dashboard {
-  kpis = [
-    { title: 'Total Academias', value: '42', trend: '+2 este mes', icon: 'domain' },
-    { title: 'Total Alunos', value: '12.840', trend: '+12,4%', icon: 'group' },
-    { title: 'Matriculas Ativas', value: '10.215', trend: 'Estavel', icon: 'assignment_ind' },
-    { title: 'Receita Mensal', value: 'R$ 842k', trend: '+R$ 54k', icon: 'payments' },
-  ];
+export class Dashboard implements OnInit {
+  private readonly service = inject(DashboardService);
 
-  planosPopulares = [
-    { nome: 'Black Anual', preco: 'R$ 1.200,00', percentual: 45, sigla: 'VIP' },
-    { nome: 'Plano Mensal', preco: 'R$ 149,90', percentual: 32, sigla: 'STD' },
-    { nome: 'Plano Fit', preco: 'R$ 99,90', percentual: 23, sigla: 'FIT' },
-  ];
+  readonly carregando = signal(true);
+  readonly erro = signal(false);
+  readonly stats = signal<DashboardStats | null>(null);
 
-  meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'];
+  readonly colunasVendidos = ['posicao', 'nome', 'totalVendido'];
 
+  ngOnInit(): void {
+    this.carregar();
+  }
+
+  carregar(): void {
+    this.carregando.set(true);
+    this.erro.set(false);
+    this.service.getStats().subscribe({
+      next: (data) => {
+        this.stats.set(data);
+        this.carregando.set(false);
+      },
+      error: () => {
+        this.erro.set(true);
+        this.carregando.set(false);
+      },
+    });
+  }
+
+  get maxReceita(): number {
+    const mensal = this.stats()?.receitaMensal;
+    if (!mensal?.length) return 1;
+    return Math.max(...mensal.map((m) => m.receita)) || 1;
+  }
+
+  getAltura(receita: number): number {
+    return receita > 0 ? Math.round((receita / this.maxReceita) * 100) : 2;
+  }
 }

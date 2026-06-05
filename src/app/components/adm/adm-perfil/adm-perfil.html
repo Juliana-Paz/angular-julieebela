@@ -1,0 +1,89 @@
+<div class="adm-perfil-container">
+  <h2 class="page-title">Meu Perfil</h2>
+
+  <mat-card class="perfil-card">
+    <mat-card-header>
+      <div class="avatar-circle">
+        <mat-icon>admin_panel_settings</mat-icon>
+      </div>
+      <div class="header-info">
+        <mat-card-title>Administrador</mat-card-title>
+        <mat-card-subtitle>Julie e Bela — Pijamas Infantis</mat-card-subtitle>
+      </div>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="form">
+
+        <h3 class="section-title">Dados da Conta</h3>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nome completo</mat-label>
+          <mat-icon matPrefix>person</mat-icon>
+          <input matInput formControlName="nome">
+          @if (form.controls.nome.touched && form.controls.nome.hasError('required')) {
+            <mat-error>Campo obrigatório.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nome de usuário</mat-label>
+          <mat-icon matPrefix>alternate_email</mat-icon>
+          <input matInput formControlName="username">
+          @if (form.controls.username.touched && form.controls.username.hasError('required')) {
+            <mat-error>Campo obrigatório.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-divider class="divider" />
+
+        <h3 class="section-title">
+          Alterar Senha <span class="opcional">(opcional)</span>
+        </h3>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Senha atual</mat-label>
+          <mat-icon matPrefix>lock</mat-icon>
+          <input matInput [type]="hideSenhaAtual ? 'password' : 'text'" formControlName="senhaAtual">
+          <button mat-icon-button matSuffix type="button" (click)="hideSenhaAtual = !hideSenhaAtual">
+            <mat-icon>{{ hideSenhaAtual ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nova senha</mat-label>
+          <mat-icon matPrefix>lock_open</mat-icon>
+          <input matInput [type]="hideNovaSenha ? 'password' : 'text'" formControlName="novaSenha">
+          <button mat-icon-button matSuffix type="button" (click)="hideNovaSenha = !hideNovaSenha">
+            <mat-icon>{{ hideNovaSenha ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (form.controls.novaSenha.hasError('minlength')) {
+            <mat-error>Mínimo 6 caracteres.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Confirmar nova senha</mat-label>
+          <mat-icon matPrefix>lock_open</mat-icon>
+          <input matInput [type]="hideConfirmarSenha ? 'password' : 'text'" formControlName="confirmarSenha">
+          <button mat-icon-button matSuffix type="button" (click)="hideConfirmarSenha = !hideConfirmarSenha">
+            <mat-icon>{{ hideConfirmarSenha ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </mat-form-field>
+
+      </form>
+    </mat-card-content>
+
+    <mat-card-actions align="end">
+      <button mat-flat-button color="primary" (click)="salvar()" [disabled]="carregando()">
+        @if (carregando()) {
+          <mat-spinner diameter="20" />
+        } @else {
+          <ng-container>
+            <mat-icon>save</mat-icon> Salvar alterações
+          </ng-container>
+        }
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>
