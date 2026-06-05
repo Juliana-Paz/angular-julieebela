@@ -1,0 +1,121 @@
+<div class="detalhe-container">
+
+  <a routerLink="/" class="back-link">
+    <mat-icon>arrow_back</mat-icon> Voltar à loja
+  </a>
+
+  @if (!pijama()) {
+    <div class="detalhe-state">Carregando...</div>
+  }
+
+  @if (pijama(); as p) {
+    <div class="detalhe-grid">
+
+      <!-- Galeria de imagens -->
+      <div class="galeria">
+        <div class="main-img-wrap">
+          <button class="arrow-btn prev" (click)="prevImage()" [disabled]="(p.imagens?.length ?? 0) <= 1">
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+          <img [src]="getImageUrl(activeIndex())" [alt]="p.nome" class="main-img" />
+          <button class="arrow-btn next" (click)="nextImage()" [disabled]="(p.imagens?.length ?? 0) <= 1">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+        @if ((p.imagens?.length ?? 0) > 1) {
+          <div class="thumbnails">
+            @for (idx of thumbs; track idx) {
+              <img [src]="getImageUrl(idx)" [alt]="'Imagem ' + (idx + 1)" class="thumb"
+                [class.active]="activeIndex() === idx" (click)="activeIndex.set(idx)" />
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Detalhes do produto -->
+      <div class="produto-info">
+        @if (p.categoria) {
+          <p class="categoria-label">{{ p.categoria.nome }}</p>
+        }
+        <h1 class="produto-nome">{{ p.nome }}</h1>
+        @if (p.marca) {
+          <p class="produto-marca">{{ p.marca.nome }}</p>
+        }
+        <p class="produto-preco">R$ {{ p.preco | number:'1.2-2' }}</p>
+
+        <mat-divider />
+
+        <div class="meta-grid">
+          <div class="meta-item">
+            <span class="meta-label">Tamanho</span>
+            <span class="meta-value">{{ $any(p.tamanho)?.nome ?? p.tamanho }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Sexo</span>
+            <span class="meta-value">{{ $any(p.sexo)?.nome ?? p.sexo }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Modelo</span>
+            <span class="meta-value">{{ $any(p.modelo)?.nome ?? p.modelo }}</span>
+          </div>
+          @if (p.estampa) {
+            <div class="meta-item">
+              <span class="meta-label">Estampa</span>
+              <span class="meta-value">{{ p.estampa.nome }}</span>
+            </div>
+          }
+          <div class="meta-item">
+            <span class="meta-label">Estoque</span>
+            <span class="meta-value" [class.sem-estoque]="p.estoque === 0">{{ p.estoque === 0 ? 'Esgotado' : p.estoque + ' unidades' }}</span>
+          </div>
+        </div>
+
+        @if (p.cores?.length) {
+          <div class="cores-wrap">
+            <span class="meta-label">Cores</span>
+            <div class="cores-list">
+              @for (cor of p.cores; track cor.id) {
+                <span class="cor-chip" [style.background]="cor.hexadecimal" [matTooltip]="cor.nome"></span>
+              }
+            </div>
+          </div>
+        }
+
+        @if (p.materiais?.length) {
+          <div class="materiais-wrap">
+            <span class="meta-label">Materiais</span>
+            <div class="chips-row">
+              @for (mat of p.materiais; track mat.id) {
+                <span class="mat-chip">{{ mat.nome }}</span>
+              }
+            </div>
+          </div>
+        }
+
+        @if (p.descricao) {
+          <div class="descricao-wrap">
+            <span class="meta-label">Descrição</span>
+            <p class="descricao-texto">{{ p.descricao }}</p>
+          </div>
+        }
+
+        <mat-divider />
+
+        <div class="actions-row">
+          <button mat-flat-button color="primary" class="btn-carrinho"
+            [disabled]="!p.ativo || p.estoque === 0" (click)="adicionarCarrinho()">
+            <mat-icon>shopping_cart</mat-icon>
+            {{ p.estoque === 0 ? 'Esgotado' : 'Adicionar ao Carrinho' }}
+          </button>
+
+          <button mat-icon-button class="btn-desejo" [class.ativo]="noDesejo()"
+            (click)="toggleDesejos()" [matTooltip]="noDesejo() ? 'Remover dos desejos' : 'Adicionar aos desejos'">
+            <mat-icon>{{ noDesejo() ? 'favorite' : 'favorite_border' }}</mat-icon>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  }
+
+</div>

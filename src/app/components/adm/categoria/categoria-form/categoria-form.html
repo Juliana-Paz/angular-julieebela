@@ -1,0 +1,68 @@
+<section class="page">
+
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a class="bc-link" routerLink="/adm/dashboard">Home</a>
+    <mat-icon class="bc-sep">chevron_right</mat-icon>
+    <a class="bc-link" routerLink="/adm/categorias">Categorias</a>
+    <mat-icon class="bc-sep">chevron_right</mat-icon>
+    <span class="bc-current">{{ form.value.id ? 'Editar Categoria' : 'Nova Categoria' }}</span>
+  </nav>
+
+  <div class="form-hero-row">
+    <div>
+      <h1 class="page-title display">Cadastro de Categoria</h1>
+      <p class="page-subtitle">Defina nome e descrição da categoria de pijamas.</p>
+    </div>
+    <button class="voltar-btn" type="button" routerLink="/adm/categorias">
+      <mat-icon>arrow_back</mat-icon>
+      Voltar
+    </button>
+  </div>
+
+  <form [formGroup]="form" class="form-layout">
+    <div class="form-section-card">
+      <div class="section-header">
+        <mat-icon class="section-icon">category</mat-icon>
+        <h3 class="section-title">Dados da Categoria</h3>
+      </div>
+
+      <div class="section-grid">
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>Nome</mat-label>
+          <input matInput formControlName="nome" placeholder="Ex.: Temático, Liso, Estampado..." />
+          @if (form.get('nome')?.hasError('required') && form.get('nome')?.touched) {
+            <mat-error>Nome é obrigatório.</mat-error>
+          }
+          @if (form.get('nome')?.hasError('minlength') && form.get('nome')?.touched) {
+            <mat-error>Nome deve ter ao menos 2 caracteres.</mat-error>
+          }
+          @if (form.get('nome')?.hasError('backendError') && form.get('nome')?.touched) {
+            <mat-error>{{ form.get('nome')?.getError('backendError') }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>Descrição</mat-label>
+          <textarea matInput formControlName="descricao" rows="3"
+            placeholder="Descreva brevemente esta categoria..."></textarea>
+          @if (form.get('descricao')?.hasError('backendError') && form.get('descricao')?.touched) {
+            <mat-error>{{ form.get('descricao')?.getError('backendError') }}</mat-error>
+          }
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="form-footer">
+      <button matButton="text" type="button" routerLink="/adm/categorias">Cancelar</button>
+      <button matButton="outlined" type="button" (click)="excluir()" [disabled]="!form.value.id">
+        <mat-icon>delete</mat-icon>
+        Excluir
+      </button>
+      <button matButton="filled" type="submit" (click)="salvar()" [disabled]="form.invalid">
+        <mat-icon>save</mat-icon>
+        Salvar Categoria
+      </button>
+    </div>
+  </form>
+
+</section>

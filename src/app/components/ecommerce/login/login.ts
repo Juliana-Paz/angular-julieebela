@@ -6,7 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { EcommerceAuthService } from '../../../services/ecommerce-auth.service';
 
@@ -29,13 +29,14 @@ export class Login {
   private readonly formBuilder = inject(FormBuilder);
   private readonly authService = inject(EcommerceAuthService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   readonly erro = signal('');
   readonly enviando = signal(false);
 
   readonly form = this.formBuilder.group({
     login: ['', [Validators.required]],
-    senha: ['', [Validators.required, Validators.minLength(4)]],
+    senha: ['', [Validators.required, Validators.minLength(6)]],
   });
 
   enviar(): void {
@@ -56,7 +57,13 @@ export class Login {
       .pipe(finalize(() => this.enviando.set(false)))
       .subscribe({
         next: () => {
-          this.router.navigate(['/']);
+          const redirectTo = this.route.snapshot.queryParamMap.get('redirectTo');
+          if (redirectTo) {
+            this.router.navigateByUrl('/' + redirectTo);
+            return;
+          }
+          const perfil = this.authService.perfil()?.toLowerCase() ?? '';
+          this.router.navigate(perfil === 'adm' ? ['/adm'] : ['/']);
         },
         error: (error: HttpErrorResponse) => {
           if (error.status === 401) {

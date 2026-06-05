@@ -1,0 +1,55 @@
+<div class="desejos-container">
+
+  <div class="desejos-header">
+    <h1 class="page-title">Lista de Desejos</h1>
+    <a mat-stroked-button routerLink="/">
+      <mat-icon>store</mat-icon> Continuar Comprando
+    </a>
+  </div>
+
+  @if (loading()) {
+    <div class="desejos-state">Carregando...</div>
+  }
+
+  @if (!loading() && pijamas().length === 0) {
+    <div class="desejos-vazio">
+      <mat-icon>favorite_border</mat-icon>
+      <h2>Sua lista de desejos está vazia</h2>
+      <p>Explore a loja e adicione pijamas que você amou!</p>
+      <a mat-flat-button color="primary" routerLink="/">Ver Pijamas</a>
+    </div>
+  }
+
+  <div class="cards-grid">
+    @for (pijama of pijamas(); track pijama.id) {
+      <mat-card class="pijama-card" (click)="verDetalhe(pijama.id)">
+        <div class="card-img-wrap">
+          <img [src]="getImageUrl(pijama)" [alt]="pijama.nome" class="card-img" />
+          <button class="remove-btn" (click)="remover(pijama); $event.stopPropagation()"
+            matTooltip="Remover dos desejos" aria-label="Remover">
+            <mat-icon>favorite</mat-icon>
+          </button>
+        </div>
+
+        <mat-card-content class="card-content">
+          <p class="card-categoria">{{ pijama.categoria?.nome }}</p>
+          <h3 class="card-nome">{{ pijama.nome }}</h3>
+          <p class="card-meta">Tam. {{ $any(pijama.tamanho)?.nome ?? pijama.tamanho }}</p>
+          <p class="card-preco">R$ {{ pijama.preco | number:'1.2-2' }}</p>
+        </mat-card-content>
+
+        <mat-card-actions class="card-actions">
+          <button mat-stroked-button color="primary" type="button" (click)="verDetalhe(pijama.id); $event.stopPropagation()">
+            Ver Detalhes
+          </button>
+          <button mat-flat-button color="accent" type="button"
+            [disabled]="!pijama.ativo || pijama.estoque === 0"
+            (click)="adicionarCarrinho(pijama); $event.stopPropagation()">
+            <mat-icon>shopping_cart</mat-icon>
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    }
+  </div>
+
+</div>

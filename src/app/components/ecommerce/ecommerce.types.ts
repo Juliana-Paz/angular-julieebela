@@ -1,16 +1,15 @@
-import { Plano } from '../../models/plano.model';
+import { Pijama } from '../../models/pijama.model';
 
-export type PlanoImagem = {
+export type PijamaImagem = {
   fid?: string;
   nomeOriginal?: string;
 };
 
-export type PlanoEcommerce = Plano & {
-  imagens?: PlanoImagem[];
-  arquivos?: PlanoImagem[];
+export type PijamaEcommerce = Pijama & {
+  imagens?: PijamaImagem[];
 };
 
 export type CarrinhoItem = {
-  plano: PlanoEcommerce;
+  pijama: PijamaEcommerce;
   quantidade: number;
 };

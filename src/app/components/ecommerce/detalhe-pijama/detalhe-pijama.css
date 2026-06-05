@@ -1,0 +1,54 @@
+.detalhe-container { max-width: 1100px; margin: 0 auto; padding: 24px 16px; }
+
+.back-link { display: inline-flex; align-items: center; gap: 4px; color: #9e1b19; font-weight: 600; text-decoration: none; margin-bottom: 24px; font-size: 14px; }
+.back-link:hover { text-decoration: underline; }
+.back-link mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+.detalhe-state { text-align: center; padding: 60px 0; color: #888; font-size: 1.1rem; }
+
+.detalhe-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+
+/* Galeria */
+.galeria { display: flex; flex-direction: column; gap: 12px; }
+.main-img-wrap { position: relative; border-radius: 16px; overflow: hidden; background: #f5f5f5; }
+.main-img { width: 100%; height: 500px; object-fit: cover; display: block; }
+.arrow-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 44px; height: 44px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; z-index: 2; }
+.arrow-btn:hover:not(:disabled) { background: #fff; }
+.arrow-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.prev { left: 12px; }
+.next { right: 12px; }
+.thumbnails { display: flex; gap: 8px; flex-wrap: wrap; }
+.thumb { width: 72px; height: 72px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: border-color 0.15s; }
+.thumb.active { border-color: #9e1b19; }
+
+/* Produto info */
+.produto-info { display: flex; flex-direction: column; gap: 16px; }
+.categoria-label { margin: 0; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #9e1b19; }
+.produto-nome { margin: 0; font-size: 2rem; font-weight: 800; color: #1a1a1a; line-height: 1.2; }
+.produto-marca { margin: 0; color: #777; font-size: 14px; }
+.produto-preco { margin: 0; font-size: 2rem; font-weight: 800; color: #9e1b19; }
+
+.meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.meta-item { display: flex; flex-direction: column; gap: 2px; }
+.meta-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #aaa; }
+.meta-value { font-weight: 600; color: #1a1a1a; font-size: 15px; }
+.meta-value.sem-estoque { color: #d32f2f; }
+
+.cores-wrap, .materiais-wrap, .descricao-wrap { display: flex; flex-direction: column; gap: 6px; }
+.cores-list { display: flex; gap: 8px; flex-wrap: wrap; }
+.cor-chip { width: 28px; height: 28px; border-radius: 50%; display: inline-block; border: 2px solid #e0e0e0; box-shadow: 0 1px 4px rgba(0,0,0,0.15); }
+.chips-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.mat-chip { background: #f3f3f3; border-radius: 8px; padding: 4px 10px; font-size: 13px; font-weight: 600; color: #555; }
+.descricao-texto { margin: 0; color: #555; line-height: 1.6; font-size: 14px; }
+
+.actions-row { display: flex; gap: 12px; align-items: center; }
+.btn-carrinho { flex: 1; height: 52px; font-size: 15px; font-weight: 700; }
+.btn-desejo { width: 52px; height: 52px; border: 1.5px solid #e0e0e0; border-radius: 50% !important; }
+.btn-desejo mat-icon { color: #bbb; font-size: 22px; }
+.btn-desejo.ativo mat-icon { color: #e53935; }
+
+@media (max-width: 768px) {
+  .detalhe-grid { grid-template-columns: 1fr; gap: 24px; }
+  .main-img { height: 320px; }
+  .meta-grid { grid-template-columns: 1fr 1fr; }
+}

@@ -1,0 +1,27 @@
+.confirmado-container { max-width: 720px; margin: 0 auto; padding: 48px 16px; }
+
+.state-msg { text-align: center; padding: 60px 0; color: #888; }
+.state-msg.error { color: #d32f2f; }
+
+.confirmado-content { display: flex; flex-direction: column; align-items: center; gap: 24px; }
+
+.success-icon mat-icon { font-size: 88px; width: 88px; height: 88px; color: #2e7d32; }
+
+.confirmado-titulo { margin: 0; font-size: 2rem; font-weight: 800; color: #1a1a1a; text-align: center; }
+.confirmado-sub { margin: 0; color: #555; text-align: center; font-size: 1rem; }
+
+.pedido-card { width: 100%; border-radius: 16px !important; box-shadow: 0 4px 24px rgba(0,0,0,0.08) !important; }
+
+.detalhes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+.detalhe-item { display: flex; flex-direction: column; gap: 4px; }
+.label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #aaa; }
+.status-badge { background: #e8f5e9; color: #2e7d32; font-weight: 700; font-size: 12px; padding: 3px 10px; border-radius: 12px; display: inline-block; text-transform: uppercase; }
+.desconto { color: #388e3c; font-weight: 600; }
+.detalhe-item.total .label { color: #9e1b19; }
+.total-valor { font-size: 1.5rem; font-weight: 800; color: #9e1b19; }
+
+.itens-titulo { margin: 0 0 10px; font-size: 1rem; font-weight: 700; color: #1a1a1a; }
+.itens-list { display: flex; flex-direction: column; gap: 8px; }
+.item-row { display: flex; justify-content: space-between; font-size: 14px; color: #555; padding: 6px 0; border-bottom: 1px solid #f0f0f0; }
+
+.confirmado-acoes { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }

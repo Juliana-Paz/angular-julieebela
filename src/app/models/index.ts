@@ -1,3 +1,15 @@
 export type { LoginPayload } from './login-payload.model';
 export type { LoginResponse } from './login-response.model';
 export type { PerfilUsuario, Usuario } from './usuario.model';
+export { Pijama } from './pijama.model';
+export { Categoria } from './categoria.model';
+export { Marca } from './marca.model';
+export { Cor } from './cor.model';
+export { Material } from './material.model';
+export { Estampa } from './estampa.model';
+export { Cupom } from './cupom.model';
+export { Cliente } from './cliente.model';
+export { Endereco } from './endereco.model';
+export { Pedido } from './pedido.model';
+export { ItemPedido } from './item-pedido.model';
+export { Arquivo } from './arquivo.model';

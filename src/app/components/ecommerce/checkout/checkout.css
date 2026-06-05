@@ -1,0 +1,49 @@
+.checkout-container { max-width: 1100px; margin: 0 auto; padding: 32px 16px; }
+
+.checkout-header { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; }
+.btn-voltar { flex-shrink: 0; }
+.page-title { margin: 0; font-size: 2rem; font-weight: 800; color: #1a1a1a; }
+
+.btn-salvar-end { align-self: flex-start; margin-top: 4px; margin-bottom: 8px; }
+.checkout-state { text-align: center; padding: 60px 0; color: #888; }
+
+.checkout-layout { display: grid; grid-template-columns: 1fr 360px; gap: 32px; align-items: start; }
+
+.checkout-forms { display: flex; flex-direction: column; gap: 20px; }
+
+.checkout-card { border-radius: 16px !important; box-shadow: 0 2px 16px rgba(0,0,0,0.08) !important; }
+.checkout-card mat-card-header { padding: 16px 16px 0; }
+.checkout-card mat-card-content { padding: 16px !important; }
+
+.enderecos-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.endereco-option { display: flex; align-items: flex-start; gap: 10px; padding: 12px; border-radius: 12px; border: 1.5px solid #e0e0e0; cursor: pointer; transition: border-color 0.15s; }
+.endereco-option:hover { border-color: #9e1b19; }
+.endereco-option.selecionado { border-color: #9e1b19; background: #fff5f4; }
+.end-texto p { margin: 0 0 2px; font-size: 14px; }
+.end-principal { font-weight: 600; color: #1a1a1a; }
+.end-secundario { color: #777; font-size: 13px !important; }
+
+.btn-novo-end { margin-bottom: 16px; }
+
+.end-form { display: flex; flex-direction: column; gap: 12px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.full-width { width: 100%; }
+
+.pagamento-radio { display: flex; flex-direction: column; gap: 10px; }
+.radio-option { padding: 10px 0; }
+
+/* Resumo */
+.resumo-card { background: #fff; border-radius: 16px; padding: 24px; box-shadow: 0 2px 16px rgba(0,0,0,0.08); display: flex; flex-direction: column; gap: 14px; position: sticky; top: 24px; }
+.resumo-title { margin: 0; font-size: 1.2rem; font-weight: 800; color: #1a1a1a; }
+.resumo-itens { display: flex; flex-direction: column; gap: 8px; }
+.resumo-item { display: flex; justify-content: space-between; font-size: 14px; color: #555; }
+.resumo-linha { display: flex; justify-content: space-between; align-items: center; font-size: 15px; color: #444; }
+.resumo-linha.desconto { color: #388e3c; }
+.resumo-linha.total { font-size: 1.1rem; font-weight: 800; color: #1a1a1a; }
+.btn-finalizar { width: 100%; height: 52px; font-size: 15px; font-weight: 700; margin-top: 4px; }
+
+@media (max-width: 768px) {
+  .checkout-layout { grid-template-columns: 1fr; }
+  .resumo-card { position: static; }
+  .form-row { grid-template-columns: 1fr; }
+}

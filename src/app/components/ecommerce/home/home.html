@@ -1,39 +1,95 @@
 <div class="home-container">
-  <div class="home-topbar">
-    <h1 class="home-title">Nossos Planos</h1>
+
+  <!-- Header + Search -->
+  <div class="home-hero">
+    <div>
+      <h1 class="home-title">Pijamas Julie e Bela</h1>
+      <p class="home-subtitle">Conforto e fofura para os pequenos dorminhocas ✨</p>
+    </div>
   </div>
 
-  @if (loading) {
-    <div class="home-state">Carregando planos...</div>
+  <!-- Search + Filter -->
+  <div class="home-toolbar">
+    <div class="search-wrap">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input class="search-input" [formControl]="searchControl" placeholder="Buscar pijamas por nome..." />
+    </div>
+  </div>
+
+  <!-- Category chips -->
+  <div class="category-chips">
+    <button class="chip" [class.active]="categoriaAtiva() === null" (click)="filtrarCategoria(null)">
+      Todos
+    </button>
+    @for (cat of categorias(); track cat.id) {
+      <button class="chip" [class.active]="categoriaAtiva() === cat.id" (click)="filtrarCategoria(cat.id)">
+        {{ cat.nome }}
+      </button>
+    }
+  </div>
+
+  <!-- Estado -->
+  @if (loading()) {
+    <div class="home-state">Carregando pijamas...</div>
+  }
+  @if (!loading() && errorMessage()) {
+    <div class="home-state error">{{ errorMessage() }}</div>
+  }
+  @if (!loading() && !errorMessage() && pijamasFiltrados().length === 0) {
+    <div class="home-state">Nenhum pijama encontrado para este filtro.</div>
   }
 
-  @if (!loading && errorMessage) {
-    <div class="home-state error">{{ errorMessage }}</div>
-  }
-
-  @if (!loading && !errorMessage && planos.length === 0) {
-    <div class="home-state">Nenhum plano encontrado.</div>
-  }
-
+  <!-- Grid de cards -->
   <div class="cards-grid">
-    @for (plano of planos; track plano.id) {
-      <mat-card class="plano-card">
-        <img mat-card-image [src]="getImageUrl(plano)" [alt]="plano.nome" class="card-img">
-        <mat-card-header>
-          <mat-card-title>{{ plano.nome }}</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <p class="plano-info">Até {{ plano.maxAlunos }} alunos</p>
-          <p class="plano-info">Até {{ plano.maxProfessores }} professores</p>
-          <p class="preco">R$ {{ plano.precoMensal | number:'1.2-2' }}<span>/mês</span></p>
+    @for (pijama of pijamasPagina(); track pijama.id) {
+      <mat-card class="pijama-card" (click)="verDetalhe(pijama.id)">
+        <div class="card-img-wrap">
+          <img [src]="getImageUrl(pijama)" [alt]="pijama.nome" class="card-img" />
+          <button
+            class="desejos-btn"
+            [class.ativo]="noDesejo(pijama.id)"
+            (click)="toggleDesejos(pijama, $event)"
+            [matTooltip]="noDesejo(pijama.id) ? 'Remover dos desejos' : 'Adicionar aos desejos'"
+            aria-label="Lista de desejos">
+            <mat-icon>{{ noDesejo(pijama.id) ? 'favorite' : 'favorite_border' }}</mat-icon>
+          </button>
+          @if (!pijama.ativo) {
+            <span class="badge-inativo">Esgotado</span>
+          }
+        </div>
+
+        <mat-card-content class="card-content">
+          <p class="card-categoria">{{ pijama.categoria?.nome }}</p>
+          <h3 class="card-nome">{{ pijama.nome }}</h3>
+          <div class="card-meta">
+            <span class="card-tamanho">Tam. {{ $any(pijama.tamanho)?.nome ?? pijama.tamanho }}</span>
+          </div>
+          <p class="card-preco">R$ {{ pijama.preco | number:'1.2-2' }}</p>
         </mat-card-content>
-        <mat-card-actions>
-          <button mat-stroked-button color="primary" type="button" (click)="verDetalhe(plano.id)">Detalhes</button>
-          <button mat-flat-button color="accent" (click)="adicionarCarrinho(plano)">
-            <mat-icon>shopping_cart</mat-icon> Carrinho
+
+        <mat-card-actions class="card-actions">
+          <button mat-stroked-button color="primary" type="button" (click)="verDetalhe(pijama.id); $event.stopPropagation()">
+            Ver Detalhes
+          </button>
+          <button mat-flat-button color="accent" type="button"
+            [disabled]="!pijama.ativo || pijama.estoque === 0"
+            (click)="adicionarCarrinho(pijama); $event.stopPropagation()">
+            <mat-icon>shopping_cart</mat-icon>
           </button>
         </mat-card-actions>
       </mat-card>
     }
   </div>
+
+  <!-- Paginação -->
+  @if (pijamasFiltrados().length > pageSize()) {
+    <mat-paginator
+      [length]="pijamasFiltrados().length"
+      [pageSize]="pageSize()"
+      [pageIndex]="pageIndex()"
+      [pageSizeOptions]="[8, 12, 24]"
+      (page)="mudarPagina($event)"
+      showFirstLastButtons />
+  }
+
 </div>

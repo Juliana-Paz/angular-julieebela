@@ -1,15 +1,212 @@
-<section class="perfil-page">
-  <h1>Meu Perfil</h1>
+<div class="perfil-container">
 
-  @if (usuario(); as usuarioLogado) {
-    <p><strong>Nome:</strong> {{ usuarioLogado.nome }}</p>
-    <p><strong>Usuário:</strong> {{ usuarioLogado.username }}</p>
-    <p><strong>Perfil:</strong> {{ usuarioLogado.perfil.nome }}</p>
-  } @else {
-    <p>Não foi possível carregar os dados do usuário logado.</p>
+  <div class="perfil-header">
+    <div class="perfil-avatar">
+      <mat-icon>account_circle</mat-icon>
+    </div>
+    <div>
+      <h1 class="perfil-nome">{{ cliente()?.nome ?? usuario()?.nome ?? 'Meu Perfil' }}</h1>
+      <p class="perfil-email">{{ cliente()?.email ?? '' }}</p>
+    </div>
+    <button mat-stroked-button color="warn" (click)="sairConta()" class="sair-btn" routerLink="/login">
+      <mat-icon>logout</mat-icon> Sair
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div class="perfil-state">Carregando dados...</div>
   }
 
-  <div class="actions">
-    <a mat-stroked-button color="primary" routerLink="/">Voltar para a home</a>
-  </div>
-</section>
+  @if (!loading()) {
+    <mat-tab-group class="perfil-tabs" animationDuration="200ms" [selectedIndex]="tabIndex()">
+
+      <!-- TAB 1: DADOS PESSOAIS -->
+      <mat-tab label="Dados Pessoais">
+        <div class="tab-content">
+          <form [formGroup]="dadosForm" (ngSubmit)="salvarDados()">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Nome completo</mat-label>
+              <input matInput formControlName="nome" />
+              @if (erroDados('nome')) { <mat-error>{{ erroDados('nome') }}</mat-error> }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>CPF</mat-label>
+              <input matInput formControlName="cpf" />
+              @if (erroDados('cpf')) { <mat-error>{{ erroDados('cpf') }}</mat-error> }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>E-mail</mat-label>
+              <input matInput formControlName="email" type="email" />
+              @if (erroDados('email')) { <mat-error>{{ erroDados('email') }}</mat-error> }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Data de Nascimento</mat-label>
+              <input matInput formControlName="dataNascimento" type="date" />
+              @if (erroDados('dataNascimento')) { <mat-error>{{ erroDados('dataNascimento') }}</mat-error> }
+            </mat-form-field>
+
+            <button mat-flat-button color="primary" type="submit" [disabled]="salvandoDados()">
+              {{ salvandoDados() ? 'Salvando...' : 'Salvar Dados' }}
+            </button>
+          </form>
+        </div>
+      </mat-tab>
+
+      <!-- TAB 2: ALTERAR SENHA -->
+      <mat-tab label="Alterar Senha">
+        <div class="tab-content">
+          <form [formGroup]="senhaForm" (ngSubmit)="alterarSenha()">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Senha atual</mat-label>
+              <input matInput formControlName="senhaAtual" type="password" />
+              @if (erroSenha('senhaAtual')) { <mat-error>{{ erroSenha('senhaAtual') }}</mat-error> }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Nova senha</mat-label>
+              <input matInput formControlName="novaSenha" type="password" />
+              @if (erroSenha('novaSenha')) { <mat-error>{{ erroSenha('novaSenha') }}</mat-error> }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Confirmar nova senha</mat-label>
+              <input matInput formControlName="confirmarSenha" type="password" />
+              @if (senhaForm.errors?.['senhasNaoConferem'] && senhaForm.get('confirmarSenha')?.touched) {
+                <mat-error>As senhas não conferem.</mat-error>
+              }
+            </mat-form-field>
+
+            <button mat-flat-button color="primary" type="submit" [disabled]="salvandoSenha()">
+              {{ salvandoSenha() ? 'Alterando...' : 'Alterar Senha' }}
+            </button>
+          </form>
+        </div>
+      </mat-tab>
+
+      <!-- TAB 3: ENDEREÇOS -->
+      <mat-tab label="Endereços">
+        <div class="tab-content">
+          @if (enderecos.length === 0 && !mostrarFormEndereco()) {
+            <p class="empty-msg">Nenhum endereço cadastrado.</p>
+          }
+
+          @for (end of enderecos; track $index) {
+            <div class="endereco-card">
+              <mat-icon>location_on</mat-icon>
+              <div class="end-info">
+                <p>{{ end.logradouro }}, {{ end.numero }}
+                  @if (end.complemento) { — {{ end.complemento }} }
+                </p>
+                <p class="end-sec">{{ end.bairro }} • {{ end.municipio }}/{{ end.estado }} • CEP {{ end.cep }}</p>
+              </div>
+              <button mat-icon-button color="warn" (click)="removerEndereco($index)" matTooltip="Remover">
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            </div>
+          }
+
+          <button mat-stroked-button color="primary" (click)="toggleFormEndereco()" class="btn-add-end">
+            <mat-icon>{{ mostrarFormEndereco() ? 'close' : 'add' }}</mat-icon>
+            {{ mostrarFormEndereco() ? 'Cancelar' : 'Adicionar Endereço' }}
+          </button>
+
+          @if (mostrarFormEndereco()) {
+            <form [formGroup]="enderecoForm" (ngSubmit)="salvarEndereco()" class="end-form">
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>CEP</mat-label>
+                  <input matInput formControlName="cep" placeholder="00000-000" />
+                  @if (erroEndereco('cep')) { <mat-error>{{ erroEndereco('cep') }}</mat-error> }
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>UF</mat-label>
+                  <input matInput formControlName="estado" maxlength="2" />
+                  @if (erroEndereco('estado')) { <mat-error>{{ erroEndereco('estado') }}</mat-error> }
+                </mat-form-field>
+              </div>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Logradouro</mat-label>
+                <input matInput formControlName="logradouro" />
+                @if (erroEndereco('logradouro')) { <mat-error>{{ erroEndereco('logradouro') }}</mat-error> }
+              </mat-form-field>
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Número</mat-label>
+                  <input matInput formControlName="numero" />
+                  @if (erroEndereco('numero')) { <mat-error>{{ erroEndereco('numero') }}</mat-error> }
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Complemento</mat-label>
+                  <input matInput formControlName="complemento" />
+                </mat-form-field>
+              </div>
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Bairro</mat-label>
+                  <input matInput formControlName="bairro" />
+                  @if (erroEndereco('bairro')) { <mat-error>{{ erroEndereco('bairro') }}</mat-error> }
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Município</mat-label>
+                  <input matInput formControlName="municipio" />
+                  @if (erroEndereco('municipio')) { <mat-error>{{ erroEndereco('municipio') }}</mat-error> }
+                </mat-form-field>
+              </div>
+              <button mat-flat-button color="primary" type="submit">
+                <mat-icon>save</mat-icon> Salvar Endereço
+              </button>
+            </form>
+          }
+        </div>
+      </mat-tab>
+
+      <!-- TAB 4: HISTÓRICO DE PEDIDOS -->
+      <mat-tab label="Meus Pedidos">
+        <div class="tab-content">
+          @if (pedidos().length === 0) {
+            <p class="empty-msg">Nenhum pedido realizado ainda.</p>
+            <a mat-flat-button color="primary" routerLink="/">Explorar pijamas</a>
+          }
+
+          @if (pedidos().length > 0) {
+            <table mat-table [dataSource]="pedidos()" class="pedidos-table">
+
+              <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef>Pedido</th>
+                <td mat-cell *matCellDef="let p">#{{ p.id }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="data">
+                <th mat-header-cell *matHeaderCellDef>Data</th>
+                <td mat-cell *matCellDef="let p">{{ p.data | date:'dd/MM/yyyy' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef>Status</th>
+                <td mat-cell *matCellDef="let p"><span class="status-badge">{{ $any(p.status)?.nome ?? p.status }}</span></td>
+              </ng-container>
+
+              <ng-container matColumnDef="total">
+                <th mat-header-cell *matHeaderCellDef>Total</th>
+                <td mat-cell *matCellDef="let p">R$ {{ p.total | number:'1.2-2' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="formaPagamento">
+                <th mat-header-cell *matHeaderCellDef>Pagamento</th>
+                <td mat-cell *matCellDef="let p">{{ $any(p.formaPagamento)?.nome ?? p.formaPagamento }}</td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="pedidoColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: pedidoColumns;"></tr>
+            </table>
+          }
+        </div>
+      </mat-tab>
+
+    </mat-tab-group>
+  }
+
+</div>

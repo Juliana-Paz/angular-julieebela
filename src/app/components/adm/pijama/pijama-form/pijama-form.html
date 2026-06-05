@@ -1,0 +1,229 @@
+<section class="page">
+
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a class="bc-link" routerLink="/adm/dashboard">Home</a>
+    <mat-icon class="bc-sep">chevron_right</mat-icon>
+    <a class="bc-link" routerLink="/adm/pijamas">Pijamas</a>
+    <mat-icon class="bc-sep">chevron_right</mat-icon>
+    <span class="bc-current">{{ form.value.id ? 'Editar Pijama' : 'Novo Pijama' }}</span>
+  </nav>
+
+  <div class="form-hero-row">
+    <div>
+      <h1 class="page-title display">Cadastro de Pijama</h1>
+      <p class="page-subtitle">Preencha todas as informações do produto.</p>
+    </div>
+    <button class="voltar-btn" type="button" routerLink="/adm/pijamas">
+      <mat-icon>arrow_back</mat-icon> Voltar
+    </button>
+  </div>
+
+  <form [formGroup]="form" class="form-layout">
+
+    <!-- SEÇÃO 1: Informações Básicas -->
+    <div class="form-section-card">
+      <div class="section-header">
+        <mat-icon class="section-icon">bedroom_baby</mat-icon>
+        <h3 class="section-title">Informações Básicas</h3>
+      </div>
+      <div class="section-grid">
+
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>Nome do Pijama</mat-label>
+          <input matInput formControlName="nome" placeholder="Ex.: Pijama Turma da Mônica Menina" />
+          @if (form.get('nome')?.hasError('required') && form.get('nome')?.touched) {
+            <mat-error>Nome é obrigatório.</mat-error>
+          }
+          @if (form.get('nome')?.hasError('minlength') && form.get('nome')?.touched) {
+            <mat-error>Nome deve ter ao menos 3 caracteres.</mat-error>
+          }
+          @if (form.get('nome')?.hasError('backendError') && form.get('nome')?.touched) {
+            <mat-error>{{ form.get('nome')?.getError('backendError') }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>Descrição</mat-label>
+          <textarea matInput formControlName="descricao" rows="3"
+            placeholder="Descreva o pijama, materiais, detalhes..."></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Preço (R$)</mat-label>
+          <input matInput type="number" formControlName="preco" min="0.01" step="0.01" placeholder="0,00" />
+          @if (form.get('preco')?.hasError('required') && form.get('preco')?.touched) {
+            <mat-error>Preço é obrigatório.</mat-error>
+          }
+          @if (form.get('preco')?.hasError('min') && form.get('preco')?.touched) {
+            <mat-error>Preço deve ser maior que zero.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Estoque</mat-label>
+          <input matInput type="number" formControlName="estoque" min="0" step="1" />
+          @if (form.get('estoque')?.hasError('min') && form.get('estoque')?.touched) {
+            <mat-error>Estoque não pode ser negativo.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Modelo</mat-label>
+          <mat-select formControlName="modelo">
+            @for (m of modelos; track m) {
+              <mat-option [value]="m">{{ m }}</mat-option>
+            }
+          </mat-select>
+          @if (form.get('modelo')?.hasError('required') && form.get('modelo')?.touched) {
+            <mat-error>Modelo é obrigatório.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Tamanho</mat-label>
+          <mat-select formControlName="idTamanho">
+            @for (t of tamanhos; track t.id) {
+              <mat-option [value]="t.id">{{ t.nome }}</mat-option>
+            }
+          </mat-select>
+          @if (form.get('idTamanho')?.hasError('required') && form.get('idTamanho')?.touched) {
+            <mat-error>Tamanho é obrigatório.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Sexo</mat-label>
+          <mat-select formControlName="idSexo">
+            @for (s of sexos; track s.id) {
+              <mat-option [value]="s.id">{{ s.nome }}</mat-option>
+            }
+          </mat-select>
+          @if (form.get('idSexo')?.hasError('required') && form.get('idSexo')?.touched) {
+            <mat-error>Sexo é obrigatório.</mat-error>
+          }
+        </mat-form-field>
+
+        <div class="toggle-row">
+          <mat-slide-toggle formControlName="ativo" color="primary">Pijama ativo (visível na loja)</mat-slide-toggle>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO 2: Classificação -->
+    <div class="form-section-card">
+      <div class="section-header">
+        <mat-icon class="section-icon">category</mat-icon>
+        <h3 class="section-title">Classificação</h3>
+      </div>
+      <div class="section-grid">
+
+        <mat-form-field appearance="outline">
+          <mat-label>Categoria</mat-label>
+          <mat-select formControlName="idCategoria">
+            @for (c of categorias; track c.id) {
+              <mat-option [value]="c.id">{{ c.nome }}</mat-option>
+            }
+          </mat-select>
+          @if (form.get('idCategoria')?.hasError('required') && form.get('idCategoria')?.touched) {
+            <mat-error>Categoria é obrigatória.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Marca</mat-label>
+          <mat-select formControlName="idMarca">
+            @for (m of marcas; track m.id) {
+              <mat-option [value]="m.id">{{ m.nome }}</mat-option>
+            }
+          </mat-select>
+          @if (form.get('idMarca')?.hasError('required') && form.get('idMarca')?.touched) {
+            <mat-error>Marca é obrigatória.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Estampa (opcional)</mat-label>
+          <mat-select formControlName="idEstampa">
+            <mat-option [value]="null">Nenhuma</mat-option>
+            @for (e of estampas; track e.id) {
+              <mat-option [value]="e.id">{{ e.nome }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Cores</mat-label>
+          <mat-select formControlName="idsCores" multiple>
+            @for (c of cores; track c.id) {
+              <mat-option [value]="c.id">
+                <span class="cor-dot" [style.background]="c.hexadecimal"></span>
+                {{ c.nome }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Materiais</mat-label>
+          <mat-select formControlName="idsMateriais" multiple>
+            @for (m of materiais; track m.id) {
+              <mat-option [value]="m.id">{{ m.nome }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- SEÇÃO 3: Imagens -->
+    <div class="form-section-card">
+      <div class="section-header">
+        <mat-icon class="section-icon">photo_library</mat-icon>
+        <h3 class="section-title">Imagens do Produto</h3>
+      </div>
+
+      @if (arquivosExistentes.length > 0) {
+        <div class="imgs-existentes">
+          <p class="imgs-label">Imagens cadastradas:</p>
+          <div class="imgs-grid">
+            @for (arq of arquivosExistentes; track arq.fid) {
+              <div class="img-wrap">
+                <img [src]="'http://localhost:8080/pijamas/imagens/download/' + arq.fid"
+                     [alt]="arq.nomeOriginal" class="img-preview" />
+                <button type="button" class="img-remove-btn" (click)="removerArquivoExistente(arq.fid)"
+                        aria-label="Remover imagem">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <div class="upload-area">
+        <label class="upload-label" for="fileInput">
+          <mat-icon>upload</mat-icon>
+          <span>Clique para selecionar uma imagem</span>
+          <small>JPG, PNG ou WEBP</small>
+        </label>
+        <input id="fileInput" type="file" accept="image/*" (change)="onFileChange($event)" class="hidden-input" />
+      </div>
+
+      @if (previewUrl) {
+        <div class="imgs-grid">
+          <img [src]="previewUrl" alt="Preview" class="img-preview" />
+        </div>
+      }
+    </div>
+
+    <div class="form-footer">
+      <button matButton="text" type="button" routerLink="/adm/pijamas">Cancelar</button>
+      <button matButton="outlined" type="button" (click)="excluir()" [disabled]="!form.value.id">
+        <mat-icon>delete</mat-icon> Excluir
+      </button>
+      <button matButton="filled" type="submit" (click)="salvar()" [disabled]="form.invalid">
+        <mat-icon>save</mat-icon> Salvar Pijama
+      </button>
+    </div>
+  </form>
+
+</section>

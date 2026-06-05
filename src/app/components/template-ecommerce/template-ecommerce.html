@@ -1,41 +1,86 @@
 <div class="ecommerce-shell">
-  <mat-toolbar class="topbar" role="banner">
-    <a class="brand" routerLink="/">SGA Store</a>
 
+  <mat-toolbar class="topbar" role="banner">
+
+    <!-- Logo -->
+    <a class="brand" routerLink="/">
+      <span class="brand-julie">Julie</span>&nbsp;<span class="brand-e">&</span>&nbsp;<span class="brand-bela">Bela</span>
+    </a>
+
+    <!-- Navegação principal -->
     <nav class="main-nav" aria-label="Menu principal">
-      <a mat-button routerLink="/">Planos</a>
-      <a mat-button routerLink="/carrinho">Carrinho</a>
+      <a mat-button routerLink="/" routerLinkActive="nav-ativo" [routerLinkActiveOptions]="{exact:true}">
+        <mat-icon>store</mat-icon> Loja
+      </a>
+      <a mat-button routerLink="/lista-desejos" routerLinkActive="nav-ativo">
+        <mat-icon>favorite_border</mat-icon> Desejos
+      </a>
     </nav>
 
-    <button mat-stroked-button type="button" [matMenuTriggerFor]="menuConta" aria-label="Abrir menu da conta">
-      <mat-icon>account_circle</mat-icon>
-      Conta
-    </button>
+    <div class="topbar-right">
+
+      <!-- Área Admin (só para Adm) -->
+      @if (logado() && perfil() === 'Adm') {
+        <a mat-stroked-button routerLink="/adm" class="btn-admin">
+          <mat-icon>admin_panel_settings</mat-icon>
+          <span class="btn-label">Admin</span>
+        </a>
+      }
+
+      <!-- Carrinho -->
+      <a mat-icon-button routerLink="/carrinho" class="btn-carrinho" aria-label="Carrinho"
+        [matBadge]="quantidadeCarrinho() > 0 ? quantidadeCarrinho() : null"
+        matBadgeColor="warn" matBadgeSize="small">
+        <mat-icon>shopping_cart</mat-icon>
+      </a>
+
+      <!-- Não logado: dois botões diretos -->
+      @if (!logado()) {
+        <a mat-stroked-button routerLink="/login" class="btn-entrar">
+          <mat-icon>login</mat-icon>
+          <span class="btn-label">Entrar</span>
+        </a>
+        <a mat-flat-button color="primary" routerLink="/cadastro" class="btn-criar">
+          <mat-icon>person_add</mat-icon>
+          <span class="btn-label">Criar conta</span>
+        </a>
+      }
+
+      <!-- Logado: dropdown -->
+      @if (logado()) {
+        <button mat-stroked-button type="button" [matMenuTriggerFor]="menuConta" class="btn-conta">
+          <mat-icon>account_circle</mat-icon>
+          <span class="btn-label">{{ nomeUsuario() ?? 'Minha Conta' }}</span>
+        </button>
+      }
+
+    </div>
   </mat-toolbar>
 
+  <!-- Menu dropdown da conta (logado) -->
   <mat-menu #menuConta="matMenu">
-    @if (!logado()) {
-      <button mat-menu-item type="button" (click)="login()">
-        <mat-icon>login</mat-icon>
-        <span>Logar</span>
-      </button>
-    } @else {
-      <button mat-menu-item type="button" disabled>
-        <mat-icon>alternate_email</mat-icon>
-        <span>{{ nomeUsuario() ?? username() }}</span>
-      </button>
-      <button mat-menu-item type="button" (click)="perfil()">
-        <mat-icon>person</mat-icon>
-        <span>Perfil</span>
-      </button>
-      <button mat-menu-item type="button" (click)="logout()">
-        <mat-icon>logout</mat-icon>
-        <span>Deslogar</span>
+    <button mat-menu-item type="button" disabled>
+      <mat-icon>badge</mat-icon>
+      <span>{{ nomeUsuario() }}</span>
+    </button>
+    <button mat-menu-item type="button" (click)="irPerfil()">
+      <mat-icon>manage_accounts</mat-icon>
+      <span>Meu Perfil</span>
+    </button>
+    @if (perfil() === 'Adm') {
+      <button mat-menu-item type="button" routerLink="/adm">
+        <mat-icon>admin_panel_settings</mat-icon>
+        <span>Área Admin</span>
       </button>
     }
+    <button mat-menu-item type="button" (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      <span>Sair</span>
+    </button>
   </mat-menu>
 
   <main class="content" role="main">
     <router-outlet />
   </main>
+
 </div>
