@@ -35,6 +35,7 @@ import { Checkout } from './components/ecommerce/checkout/checkout';
 import { PedidoConfirmado } from './components/ecommerce/pedido-confirmado/pedido-confirmado';
 import { Cadastro } from './components/ecommerce/cadastro/cadastro';
 import { ListaDesejos } from './components/ecommerce/lista-desejos/lista-desejos';
+import { RecuperarSenha } from './components/ecommerce/recuperar-senha/recuperar-senha';
 import { authGuard } from './guards/auth.guard';
 import { roleChildGuard, roleGuard } from './guards/role.guard';
 
@@ -53,6 +54,7 @@ export const routes: Routes = [
             { path: 'lista-desejos', component: ListaDesejos, title: 'Lista de Desejos', canActivate: [authGuard] },
             { path: 'cadastro', component: Cadastro, title: 'Cadastro' },
             { path: 'login', component: Login, title: 'Login' },
+            { path: 'recuperar-senha', component: RecuperarSenha, title: 'Recuperar Senha' },
         ]
     },
     {
