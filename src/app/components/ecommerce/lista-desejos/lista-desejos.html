@@ -34,7 +34,7 @@
         <mat-card-content class="card-content">
           <p class="card-categoria">{{ pijama.categoria?.nome }}</p>
           <h3 class="card-nome">{{ pijama.nome }}</h3>
-          <p class="card-meta">Tam. {{ $any(pijama.tamanho)?.nome ?? pijama.tamanho }}</p>
+          <p class="card-meta">{{ pijama.variantes?.length ?? 0 }} variante(s)</p>
           <p class="card-preco">R$ {{ pijama.preco | number:'1.2-2' }}</p>
         </mat-card-content>
 
@@ -43,8 +43,8 @@
             Ver Detalhes
           </button>
           <button mat-flat-button color="accent" type="button"
-            [disabled]="!pijama.ativo || pijama.estoque === 0"
-            (click)="adicionarCarrinho(pijama); $event.stopPropagation()">
+            [disabled]="!pijama.ativo"
+            (click)="verDetalhe(pijama.id); $event.stopPropagation()">
             <mat-icon>shopping_cart</mat-icon>
           </button>
         </mat-card-actions>

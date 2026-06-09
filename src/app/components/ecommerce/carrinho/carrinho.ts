@@ -12,7 +12,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { CarrinhoService } from '../../../services/carrinho.service';
 import { CupomService } from '../../../services/cupom.service';
 import { EcommerceAuthService } from '../../../services/ecommerce-auth.service';
-import { PijamaEcommerce } from '../ecommerce.types';
+import { CarrinhoItem, PijamaEcommerce } from '../ecommerce.types';
 
 @Component({
   selector: 'app-carrinho',
@@ -47,16 +47,16 @@ export class Carrinho {
     return imagem?.fid ? this.imageBase + encodeURIComponent(imagem.fid) : 'https://placehold.co/120x90?text=Pijama';
   }
 
-  aumentar(pijamaId: number, qtd: number): void {
-    this.carrinhoService.atualizarQuantidade(pijamaId, qtd + 1);
+  aumentar(item: CarrinhoItem, qtd: number): void {
+    this.carrinhoService.atualizarQuantidade(item.pijama.id, qtd + 1, item.idVariante);
   }
 
-  diminuir(pijamaId: number, qtd: number): void {
-    this.carrinhoService.atualizarQuantidade(pijamaId, qtd - 1);
+  diminuir(item: CarrinhoItem, qtd: number): void {
+    this.carrinhoService.atualizarQuantidade(item.pijama.id, qtd - 1, item.idVariante);
   }
 
-  remover(pijamaId: number): void {
-    this.carrinhoService.remover(pijamaId);
+  remover(item: CarrinhoItem): void {
+    this.carrinhoService.remover(item.pijama.id, item.idVariante);
   }
 
   limpar(): void {

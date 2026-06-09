@@ -128,7 +128,7 @@ export class Checkout implements OnInit {
     const cupomAtual = this.cupom();
 
     const dto = {
-      itens: this.itens().map(i => ({ idPijama: i.pijama.id, quantidade: i.quantidade })),
+      itens: this.itens().map(i => ({ idPijama: i.pijama.id, idVariante: i.idVariante ?? null, quantidade: i.quantidade })),
       ...(cupomAtual ? { codigoCupom: cupomAtual.codigo } : {}),
       enderecoEntrega: {
         logradouro: endereco.logradouro,

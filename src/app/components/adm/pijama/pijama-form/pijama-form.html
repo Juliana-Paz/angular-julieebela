@@ -61,14 +61,6 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Estoque</mat-label>
-          <input matInput type="number" formControlName="estoque" min="0" step="1" />
-          @if (form.get('estoque')?.hasError('min') && form.get('estoque')?.touched) {
-            <mat-error>Estoque não pode ser negativo.</mat-error>
-          }
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
           <mat-label>Modelo</mat-label>
           <mat-select formControlName="modelo">
             @for (m of modelos; track m) {
@@ -77,18 +69,6 @@
           </mat-select>
           @if (form.get('modelo')?.hasError('required') && form.get('modelo')?.touched) {
             <mat-error>Modelo é obrigatório.</mat-error>
-          }
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Tamanho</mat-label>
-          <mat-select formControlName="idTamanho">
-            @for (t of tamanhos; track t.id) {
-              <mat-option [value]="t.id">{{ t.nome }}</mat-option>
-            }
-          </mat-select>
-          @if (form.get('idTamanho')?.hasError('required') && form.get('idTamanho')?.touched) {
-            <mat-error>Tamanho é obrigatório.</mat-error>
           }
         </mat-form-field>
 
@@ -153,18 +133,6 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Cores</mat-label>
-          <mat-select formControlName="idsCores" multiple>
-            @for (c of cores; track c.id) {
-              <mat-option [value]="c.id">
-                <span class="cor-dot" [style.background]="c.hexadecimal"></span>
-                {{ c.nome }}
-              </mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
           <mat-label>Materiais</mat-label>
           <mat-select formControlName="idsMateriais" multiple>
             @for (m of materiais; track m.id) {
@@ -175,7 +143,68 @@
       </div>
     </div>
 
-    <!-- SEÇÃO 3: Imagens -->
+    <!-- SEÇÃO 3: Variantes -->
+    <div class="form-section-card">
+      <div class="section-header">
+        <mat-icon class="section-icon">inventory_2</mat-icon>
+        <h3 class="section-title">Variantes (Tamanho + Cor + Estoque)</h3>
+      </div>
+
+      <div formArrayName="variantes">
+        @for (variante of variantesArray.controls; track $index; let i = $index) {
+          <div [formGroupName]="i" class="variante-row">
+
+            <mat-form-field appearance="outline" class="variante-field">
+              <mat-label>Tamanho *</mat-label>
+              <mat-select formControlName="idTamanho">
+                @for (t of tamanhos; track t.id) {
+                  <mat-option [value]="t.id">{{ t.nome }}</mat-option>
+                }
+              </mat-select>
+              @if (variante.get('idTamanho')?.hasError('required') && variante.get('idTamanho')?.touched) {
+                <mat-error>Obrigatório.</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="variante-field">
+              <mat-label>Cor (opcional)</mat-label>
+              <mat-select formControlName="idCor">
+                <mat-option [value]="null">— Sem cor —</mat-option>
+                @for (c of cores; track c.id) {
+                  <mat-option [value]="c.id">
+                    <span class="cor-dot" [style.background]="'#' + c.hexadecimal"></span>
+                    {{ c.nome }}
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="variante-field-sm">
+              <mat-label>Estoque *</mat-label>
+              <input matInput type="number" formControlName="estoque" min="0" />
+              @if (variante.get('estoque')?.hasError('min') && variante.get('estoque')?.touched) {
+                <mat-error>Mínimo 0.</mat-error>
+              }
+            </mat-form-field>
+
+            <button mat-icon-button color="warn" type="button"
+                    (click)="removerVariante(i)"
+                    [disabled]="variantesArray.length === 1"
+                    matTooltip="Remover variante">
+              <mat-icon>delete</mat-icon>
+            </button>
+
+          </div>
+        }
+      </div>
+
+      <button mat-stroked-button type="button" color="primary"
+              (click)="adicionarVariante()" class="btn-add-variante">
+        <mat-icon>add</mat-icon> Adicionar Variante
+      </button>
+    </div>
+
+    <!-- SEÇÃO 4: Imagens -->
     <div class="form-section-card">
       <div class="section-header">
         <mat-icon class="section-icon">photo_library</mat-icon>

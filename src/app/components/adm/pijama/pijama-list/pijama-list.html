@@ -46,7 +46,11 @@
         <th mat-header-cell *matHeaderCellDef>Nome</th>
         <td mat-cell *matCellDef="let obj">
           <strong>{{ obj.nome }}</strong>
+<<<<<<< Updated upstream
           <br><small class="text-muted">{{ obj.tamanho?.nome }} | {{ obj.modelo }}</small>
+=======
+          <br><small class="text-muted">{{ obj.modelo }}</small>
+>>>>>>> Stashed changes
         </td>
       </ng-container>
 
@@ -65,10 +69,10 @@
         <td mat-cell *matCellDef="let obj">R$ {{ obj.preco | number:'1.2-2' }}</td>
       </ng-container>
 
-      <ng-container matColumnDef="estoque">
-        <th mat-header-cell *matHeaderCellDef>Estoque</th>
+      <ng-container matColumnDef="variantes">
+        <th mat-header-cell *matHeaderCellDef>Variantes</th>
         <td mat-cell *matCellDef="let obj">
-          <span class="estoque-badge" [class.baixo]="obj.estoque <= 5">{{ obj.estoque }}</span>
+          <span class="estoque-badge">{{ obj.variantes?.length ?? 0 }}</span>
         </td>
       </ng-container>
 

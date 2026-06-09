@@ -23,22 +23,24 @@
             <div class="item-info">
               <p class="item-categoria">{{ item.pijama.categoria?.nome }}</p>
               <h3 class="item-nome">{{ item.pijama.nome }}</h3>
-              <p class="item-meta">Tam. {{ $any(item.pijama.tamanho)?.nome ?? item.pijama.tamanho }}</p>
+              @if (item.varianteInfo) {
+                <p class="item-meta">{{ item.varianteInfo.tamanhoNome }}{{ item.varianteInfo.corNome ? ' / ' + item.varianteInfo.corNome : '' }}</p>
+              }
               <p class="item-preco">R$ {{ item.pijama.preco | number:'1.2-2' }}</p>
             </div>
 
             <div class="item-controles">
               <div class="quantidade-row">
-                <button mat-icon-button (click)="diminuir(item.pijama.id, item.quantidade)" class="qty-btn">
+                <button mat-icon-button (click)="diminuir(item, item.quantidade)" class="qty-btn">
                   <mat-icon>remove</mat-icon>
                 </button>
                 <span class="qty-value">{{ item.quantidade }}</span>
-                <button mat-icon-button (click)="aumentar(item.pijama.id, item.quantidade)" class="qty-btn">
+                <button mat-icon-button (click)="aumentar(item, item.quantidade)" class="qty-btn">
                   <mat-icon>add</mat-icon>
                 </button>
               </div>
               <p class="item-subtotal">R$ {{ (item.pijama.preco * item.quantidade) | number:'1.2-2' }}</p>
-              <button mat-icon-button color="warn" (click)="remover(item.pijama.id)" matTooltip="Remover">
+              <button mat-icon-button color="warn" (click)="remover(item)" matTooltip="Remover">
                 <mat-icon>delete_outline</mat-icon>
               </button>
             </div>

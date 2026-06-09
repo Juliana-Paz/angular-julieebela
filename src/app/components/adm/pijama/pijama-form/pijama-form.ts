@@ -1,17 +1,26 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormArray, FormBuilder, FormGroup,
+  ReactiveFormsModule, Validators,
+} from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
+<<<<<<< Updated upstream
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { Pijama } from '../../../../models/pijama.model';
+=======
+import { Pijama, PijamaVariante } from '../../../../models/pijama.model';
+>>>>>>> Stashed changes
 import { Categoria } from '../../../../models/categoria.model';
 import { Marca } from '../../../../models/marca.model';
 import { Cor } from '../../../../models/cor.model';
@@ -32,8 +41,13 @@ interface BackendErrorResponse { errors?: ValidationError[]; }
   imports: [
     CommonModule, MatFormField, MatLabel, MatError,
     ReactiveFormsModule, MatInputModule, MatSelectModule,
+<<<<<<< Updated upstream
     MatButtonModule, MatIconModule, MatSlideToggleModule, RouterLink,
     NgxMaskDirective,
+=======
+    MatButtonModule, MatIconModule, MatSlideToggleModule,
+    MatDividerModule, MatTooltipModule, RouterLink,
+>>>>>>> Stashed changes
   ],
   providers: [provideNgxMask()],
   templateUrl: './pijama-form.html',
@@ -92,16 +106,36 @@ export class PijamaForm implements OnInit {
       descricao: [''],
       preco: [null, [Validators.required, Validators.min(0.01)]],
       modelo: ['', Validators.required],
-      estoque: [0, [Validators.required, Validators.min(0)]],
       ativo: [true],
-      idTamanho: [null, Validators.required],
       idSexo: [null, Validators.required],
       idCategoria: [null, Validators.required],
       idMarca: [null, Validators.required],
       idEstampa: [null],
-      idsCores: [[]],
       idsMateriais: [[]],
+      variantes: this.fb.array([]),
     });
+  }
+
+  get variantesArray(): FormArray {
+    return this.form.get('variantes') as FormArray;
+  }
+
+  criarVarianteGroup(v?: { idTamanho?: number | null; idCor?: number | null; estoque?: number }): FormGroup {
+    return this.fb.group({
+      idTamanho: [v?.idTamanho ?? null, Validators.required],
+      idCor: [v?.idCor ?? null],
+      estoque: [v?.estoque ?? 0, [Validators.required, Validators.min(0)]],
+    });
+  }
+
+  adicionarVariante(): void {
+    this.variantesArray.push(this.criarVarianteGroup());
+  }
+
+  removerVariante(index: number): void {
+    if (this.variantesArray.length > 1) {
+      this.variantesArray.removeAt(index);
+    }
   }
 
   ngOnInit(): void {
@@ -129,16 +163,29 @@ export class PijamaForm implements OnInit {
             descricao: pijama.descricao,
             preco: pijama.preco,
             modelo: pijama.modelo,
-            estoque: pijama.estoque,
             ativo: pijama.ativo,
-            idTamanho: pijama.tamanho?.id ?? null,
             idSexo: pijama.sexo?.id ?? null,
             idCategoria: pijama.categoria?.id ?? null,
             idMarca: pijama.marca?.id ?? null,
             idEstampa: pijama.estampa?.id ?? null,
-            idsCores: pijama.cores?.map(c => c.id) ?? [],
             idsMateriais: pijama.materiais?.map(m => m.id) ?? [],
           });
+
+          while (this.variantesArray.length) {
+            this.variantesArray.removeAt(0);
+          }
+          pijama.variantes?.forEach((v: PijamaVariante) => {
+            const idTamanho = this.tamanhos.find(t => t.nome === v.tamanhoNome)?.id ?? null;
+            this.variantesArray.push(this.criarVarianteGroup({
+              idTamanho,
+              idCor: v.cor?.id ?? null,
+              estoque: v.estoque,
+            }));
+          });
+        }
+
+        if (this.variantesArray.length === 0) {
+          this.adicionarVariante();
         }
       },
       error: () => this.exibirMensagem('Erro ao carregar dados. Verifique a conexão com o servidor.'),
@@ -175,15 +222,22 @@ export class PijamaForm implements OnInit {
     formData.append('descricao', valores.descricao ?? '');
     formData.append('preco', String(precoNum));
     formData.append('modelo', valores.modelo);
-    formData.append('estoque', String(valores.estoque));
     formData.append('ativo', String(valores.ativo));
-    formData.append('idTamanho', String(valores.idTamanho));
     formData.append('idSexo', String(valores.idSexo));
     formData.append('idCategoria', String(valores.idCategoria));
     formData.append('idMarca', String(valores.idMarca));
     if (valores.idEstampa) formData.append('idEstampa', String(valores.idEstampa));
-    (valores.idsCores as number[]).forEach(id => formData.append('idsCores', String(id)));
     (valores.idsMateriais as number[]).forEach(id => formData.append('idsMateriais', String(id)));
+
+    const variantesJson = JSON.stringify(
+      this.variantesArray.value.map((v: any) => ({
+        idTamanho: v.idTamanho,
+        idCor: v.idCor || null,
+        estoque: Number(v.estoque),
+      })),
+    );
+    formData.append('variantes', new Blob([variantesJson], { type: 'application/json' }));
+
     if (this.arquivoSelecionado) formData.append('file', this.arquivoSelecionado, this.arquivoSelecionado.name);
 
     const req = valores.id

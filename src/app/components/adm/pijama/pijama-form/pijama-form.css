@@ -20,6 +20,22 @@
 .section-grid mat-form-field.full { grid-column: 1 / -1; }
 .toggle-row { grid-column: 1 / -1; display: flex; gap: 24px; align-items: center; padding: 4px 0; }
 
+/* Variantes */
+.variante-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  background: #fafafa;
+}
+.variante-field { flex: 2; min-width: 160px; }
+.variante-field-sm { flex: 1; min-width: 100px; }
+.btn-add-variante { margin-top: 4px; }
+
 /* Cor dot in select option */
 .cor-dot { display: inline-block; width: 14px; height: 14px; border-radius: 50%; border: 1px solid var(--outline-light); margin-right: 6px; vertical-align: middle; flex-shrink: 0; }
 
@@ -53,4 +69,5 @@
 @media (max-width: 640px) {
   .section-grid { grid-template-columns: 1fr; }
   .section-grid mat-form-field.full, .toggle-row { grid-column: 1; }
+  .variante-row { flex-direction: column; align-items: stretch; }
 }

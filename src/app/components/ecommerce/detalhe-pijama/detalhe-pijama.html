@@ -47,16 +47,12 @@
 
         <div class="meta-grid">
           <div class="meta-item">
-            <span class="meta-label">Tamanho</span>
-            <span class="meta-value">{{ $any(p.tamanho)?.nome ?? p.tamanho }}</span>
-          </div>
-          <div class="meta-item">
             <span class="meta-label">Sexo</span>
             <span class="meta-value">{{ $any(p.sexo)?.nome ?? p.sexo }}</span>
           </div>
           <div class="meta-item">
             <span class="meta-label">Modelo</span>
-            <span class="meta-value">{{ $any(p.modelo)?.nome ?? p.modelo }}</span>
+            <span class="meta-value">{{ p.modelo }}</span>
           </div>
           @if (p.estampa) {
             <div class="meta-item">
@@ -64,21 +60,58 @@
               <span class="meta-value">{{ p.estampa.nome }}</span>
             </div>
           }
-          <div class="meta-item">
-            <span class="meta-label">Estoque</span>
-            <span class="meta-value" [class.sem-estoque]="p.estoque === 0">{{ p.estoque === 0 ? 'Esgotado' : p.estoque + ' unidades' }}</span>
-          </div>
         </div>
 
-        @if (p.cores?.length) {
-          <div class="cores-wrap">
-            <span class="meta-label">Cores</span>
-            <div class="cores-list">
-              @for (cor of p.cores; track cor.id) {
-                <span class="cor-chip" [style.background]="cor.hexadecimal" [matTooltip]="cor.nome"></span>
+        <!-- Seleção de cor (se houver) -->
+        @if (coresDisponiveis().length > 0) {
+          <div class="selecao-section">
+            <span class="selecao-label">Cor:</span>
+            <div class="chips-row">
+              @for (cor of coresDisponiveis(); track cor.id) {
+                <button class="chip-cor"
+                        [class.chip-ativo]="corSelecionada()?.id === cor.id"
+                        (click)="selecionarCor(cor)"
+                        type="button">
+                  <span class="bolinha-cor" [style.background]="'#' + cor.hexadecimal"></span>
+                  {{ cor.nome }}
+                </button>
               }
             </div>
           </div>
+        }
+
+        <!-- Seleção de tamanho -->
+        @if (tamanhosDaCorSelecionada().length > 0) {
+          <div class="selecao-section">
+            <span class="selecao-label">Tamanho:</span>
+            <div class="chips-row">
+              @for (v of tamanhosDaCorSelecionada(); track v.id) {
+                <button class="chip-tamanho"
+                        [class.chip-ativo]="varianteSelecionada()?.id === v.id"
+                        [class.chip-esgotado]="v.estoque === 0"
+                        [disabled]="v.estoque === 0"
+                        (click)="selecionarVariante(v)"
+                        type="button">
+                  {{ v.tamanhoNome }}
+                  @if (v.estoque === 0) {
+                    <span class="tag-esgotado">Esgotado</span>
+                  }
+                </button>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Estoque da variante selecionada -->
+        @if (varianteSelecionada()) {
+          <p class="estoque-info">
+            <mat-icon>inventory</mat-icon>
+            {{ varianteSelecionada()!.estoque }} unidades disponíveis
+          </p>
+        }
+
+        @if (!p.variantes?.length) {
+          <p class="sem-variantes">Sem variantes cadastradas.</p>
         }
 
         @if (p.materiais?.length) {
@@ -101,11 +134,19 @@
 
         <mat-divider />
 
-        <div class="actions-row">
+        <div class="acoes-row">
           <button mat-flat-button color="primary" class="btn-carrinho"
-            [disabled]="!p.ativo || p.estoque === 0" (click)="adicionarCarrinho()">
+                  [disabled]="!podePedir()"
+                  (click)="adicionarCarrinho()">
             <mat-icon>shopping_cart</mat-icon>
-            {{ p.estoque === 0 ? 'Esgotado' : 'Adicionar ao Carrinho' }}
+            Adicionar ao Carrinho
+          </button>
+
+          <button mat-flat-button color="accent" class="btn-carrinho"
+                  [disabled]="!podePedir()"
+                  (click)="comprarAgora()">
+            <mat-icon>flash_on</mat-icon>
+            Comprar Agora
           </button>
 
           <button mat-flat-button color="accent" class="btn-comprar"

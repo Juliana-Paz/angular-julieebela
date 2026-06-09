@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,7 +7,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
-import { Pijama } from '../../../models/pijama.model';
+import { Pijama, PijamaVariante } from '../../../models/pijama.model';
 import { CarrinhoService } from '../../../services/carrinho.service';
 import { ListaDesejosService } from '../../../services/lista-desejos.service';
 import { EcommerceAuthService } from '../../../services/ecommerce-auth.service';
@@ -35,9 +35,52 @@ export class DetalhePijama implements OnInit {
   readonly logado = this.authService.logado;
   readonly imageBase = 'http://localhost:8080/pijamas/imagens/download/';
 
+  readonly varianteSelecionada = signal<PijamaVariante | null>(null);
+  readonly coresDisponiveis = signal<{ id: number; nome: string; hexadecimal: string }[]>([]);
+  readonly tamanhosDaCorSelecionada = signal<PijamaVariante[]>([]);
+  readonly corSelecionada = signal<{ id: number; nome: string; hexadecimal: string } | null>(null);
+  readonly semCor = signal(false);
+
+  readonly podePedir = computed(() => {
+    const v = this.varianteSelecionada();
+    return v !== null && v.estoque > 0;
+  });
+
   ngOnInit(): void {
     const p: Pijama = this.route.snapshot.data['pijama'];
     this.pijama.set(p);
+    this.inicializarVariantes(p);
+  }
+
+  private inicializarVariantes(p: Pijama): void {
+    if (!p?.variantes?.length) return;
+
+    const temCor = p.variantes.some(v => v.cor !== null);
+
+    if (temCor) {
+      const mapa = new Map<number, { id: number; nome: string; hexadecimal: string }>();
+      p.variantes
+        .filter(v => v.cor !== null)
+        .forEach(v => mapa.set(v.cor!.id, v.cor!));
+      this.coresDisponiveis.set(Array.from(mapa.values()));
+    } else {
+      this.semCor.set(true);
+      this.tamanhosDaCorSelecionada.set(p.variantes);
+    }
+  }
+
+  selecionarCor(cor: { id: number; nome: string; hexadecimal: string }): void {
+    this.corSelecionada.set(cor);
+    this.varianteSelecionada.set(null);
+    const p = this.pijama();
+    if (!p?.variantes) return;
+    this.tamanhosDaCorSelecionada.set(p.variantes.filter(v => v.cor?.id === cor.id));
+  }
+
+  selecionarVariante(variante: PijamaVariante): void {
+    if (variante.estoque > 0) {
+      this.varianteSelecionada.set(variante);
+    }
   }
 
   getImageUrl(index: number): string {
@@ -65,16 +108,23 @@ export class DetalhePijama implements OnInit {
 
   adicionarCarrinho(): void {
     const p = this.pijama();
-    if (!p) return;
-    this.carrinhoService.adicionar(p as PijamaEcommerce);
+    const v = this.varianteSelecionada();
+    if (!p || !v) return;
+    this.carrinhoService.adicionar(p as PijamaEcommerce, 1, v);
     this.snack.open(`${p.nome} adicionado ao carrinho!`, 'Ver carrinho', { duration: 3000, verticalPosition: 'top' })
       .onAction().subscribe(() => this.router.navigate(['/carrinho']));
   }
 
   comprarAgora(): void {
     const p = this.pijama();
+<<<<<<< Updated upstream
     if (!p) return;
     this.carrinhoService.adicionar(p as PijamaEcommerce);
+=======
+    const v = this.varianteSelecionada();
+    if (!p || !v) return;
+    this.carrinhoService.adicionar(p as PijamaEcommerce, 1, v);
+>>>>>>> Stashed changes
     this.router.navigate(['/checkout']);
   }
 

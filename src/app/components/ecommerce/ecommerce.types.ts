@@ -1,4 +1,4 @@
-import { Pijama } from '../../models/pijama.model';
+import { Pijama, PijamaVariante } from '../../models/pijama.model';
 
 export type PijamaImagem = {
   fid?: string;
@@ -12,4 +12,8 @@ export type PijamaEcommerce = Pijama & {
 export type CarrinhoItem = {
   pijama: PijamaEcommerce;
   quantidade: number;
+  idVariante?: number;
+  varianteInfo?: { tamanhoNome: string; corNome?: string };
 };
+
+export type { PijamaVariante };

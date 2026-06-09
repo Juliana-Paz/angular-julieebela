@@ -1,5 +1,6 @@
 import { computed, Injectable, signal } from '@angular/core';
 import { CarrinhoItem, PijamaEcommerce } from '../components/ecommerce/ecommerce.types';
+import { PijamaVariante } from '../models/pijama.model';
 
 interface CupomAplicado { codigo: string; desconto: number; }
 
@@ -21,28 +22,47 @@ export class CarrinhoService {
   readonly desconto = computed(() => this.cupomSignal()?.desconto ?? 0);
   readonly valorTotalFinal = computed(() => Math.max(0, this.valorTotal() - this.desconto()));
 
-  adicionar(pijama: PijamaEcommerce): void {
+  adicionar(pijama: PijamaEcommerce, quantidade: number = 1, variante?: PijamaVariante): void {
+    const idVariante = variante?.id;
     const itensAtuais = this.itemsSignal();
-    const itemExistente = itensAtuais.find(item => item.pijama.id === pijama.id);
+    const itemExistente = itensAtuais.find(
+      item => item.pijama.id === pijama.id && item.idVariante === idVariante,
+    );
     const novosItens = itemExistente
       ? itensAtuais.map(item =>
-          item.pijama.id === pijama.id ? { ...item, quantidade: item.quantidade + 1 } : item,
+          item.pijama.id === pijama.id && item.idVariante === idVariante
+            ? { ...item, quantidade: item.quantidade + quantidade }
+            : item,
         )
-      : [...itensAtuais, { pijama, quantidade: 1 }];
+      : [
+          ...itensAtuais,
+          {
+            pijama,
+            quantidade,
+            idVariante,
+            varianteInfo: variante
+              ? { tamanhoNome: variante.tamanhoNome, corNome: variante.cor?.nome }
+              : undefined,
+          },
+        ];
     this.itemsSignal.set(novosItens);
     this.saveToStorage(novosItens);
   }
 
-  remover(pijamaId: number): void {
-    const novosItens = this.itemsSignal().filter(item => item.pijama.id !== pijamaId);
+  remover(pijamaId: number, idVariante?: number): void {
+    const novosItens = this.itemsSignal().filter(
+      item => !(item.pijama.id === pijamaId && item.idVariante === idVariante),
+    );
     this.itemsSignal.set(novosItens);
     this.saveToStorage(novosItens);
   }
 
-  atualizarQuantidade(pijamaId: number, quantidade: number): void {
-    if (quantidade <= 0) { this.remover(pijamaId); return; }
+  atualizarQuantidade(pijamaId: number, quantidade: number, idVariante?: number): void {
+    if (quantidade <= 0) { this.remover(pijamaId, idVariante); return; }
     const novosItens = this.itemsSignal().map(item =>
-      item.pijama.id === pijamaId ? { ...item, quantidade } : item,
+      item.pijama.id === pijamaId && item.idVariante === idVariante
+        ? { ...item, quantidade }
+        : item,
     );
     this.itemsSignal.set(novosItens);
     this.saveToStorage(novosItens);
@@ -90,7 +110,9 @@ export class CarrinhoService {
           const pijama = candidate['pijama'] as PijamaEcommerce | undefined;
           const quantidade = Number(candidate['quantidade'] ?? 0);
           if (!pijama || typeof pijama.id !== 'number' || Number.isNaN(quantidade) || quantidade <= 0) return null;
-          return { pijama, quantidade };
+          const idVariante = candidate['idVariante'] != null ? Number(candidate['idVariante']) : undefined;
+          const varianteInfo = candidate['varianteInfo'] as { tamanhoNome: string; corNome?: string } | undefined;
+          return { pijama, quantidade, idVariante, varianteInfo };
         })
         .filter((item): item is CarrinhoItem => item !== null);
     } catch { return []; }

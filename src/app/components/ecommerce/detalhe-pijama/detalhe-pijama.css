@@ -32,18 +32,43 @@
 .meta-item { display: flex; flex-direction: column; gap: 2px; }
 .meta-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #aaa; }
 .meta-value { font-weight: 600; color: #1a1a1a; font-size: 15px; }
-.meta-value.sem-estoque { color: #d32f2f; }
 
-.cores-wrap, .materiais-wrap, .descricao-wrap { display: flex; flex-direction: column; gap: 6px; }
-.cores-list { display: flex; gap: 8px; flex-wrap: wrap; }
-.cor-chip { width: 28px; height: 28px; border-radius: 50%; display: inline-block; border: 2px solid #e0e0e0; box-shadow: 0 1px 4px rgba(0,0,0,0.15); }
-.chips-row { display: flex; gap: 6px; flex-wrap: wrap; }
+/* Seleção de variantes */
+.selecao-section { margin: 4px 0; }
+.selecao-label { font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: #aaa; display: block; margin-bottom: 8px; }
+.chips-row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.chip-cor, .chip-tamanho {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 2px solid #ddd;
+  border-radius: 20px;
+  background: white;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.chip-cor:hover:not(:disabled), .chip-tamanho:hover:not(:disabled) { border-color: #8B0000; }
+.chip-ativo { border-color: #8B0000 !important; background: #fff5f5 !important; color: #8B0000; font-weight: 600; }
+.chip-esgotado { opacity: 0.4; cursor: not-allowed; text-decoration: line-through; }
+.bolinha-cor { width: 14px; height: 14px; border-radius: 50%; border: 1px solid #ccc; flex-shrink: 0; }
+.tag-esgotado { font-size: 10px; color: #999; margin-left: 4px; }
+
+.estoque-info { display: flex; align-items: center; gap: 4px; font-size: 13px; color: #2e7d32; margin: 0; }
+.estoque-info mat-icon { font-size: 16px; width: 16px; height: 16px; }
+
+.sem-variantes { color: #999; font-size: 13px; margin: 0; }
+
+.materiais-wrap, .descricao-wrap { display: flex; flex-direction: column; gap: 6px; }
 .mat-chip { background: #f3f3f3; border-radius: 8px; padding: 4px 10px; font-size: 13px; font-weight: 600; color: #555; }
 .descricao-texto { margin: 0; color: #555; line-height: 1.6; font-size: 14px; }
 
-.actions-row { display: flex; gap: 12px; align-items: center; }
-.btn-carrinho { flex: 1; height: 52px; font-size: 15px; font-weight: 700; }
-.btn-desejo { width: 52px; height: 52px; border: 1.5px solid #e0e0e0; border-radius: 50% !important; }
+.acoes-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.btn-carrinho { flex: 1; height: 52px; font-size: 15px; font-weight: 700; min-width: 160px; }
+.btn-desejo { width: 52px; height: 52px; border: 1.5px solid #e0e0e0; border-radius: 50% !important; flex-shrink: 0; }
 .btn-desejo mat-icon { color: #bbb; font-size: 22px; }
 .btn-desejo.ativo mat-icon { color: #e53935; }
 
@@ -51,4 +76,5 @@
   .detalhe-grid { grid-template-columns: 1fr; gap: 24px; }
   .main-img { height: 320px; }
   .meta-grid { grid-template-columns: 1fr 1fr; }
+  .btn-carrinho { min-width: unset; }
 }
