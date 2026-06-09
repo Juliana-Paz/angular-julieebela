@@ -118,6 +118,9 @@
                 </p>
                 <p class="end-sec">{{ end.bairro }} • {{ end.municipio }}/{{ end.estado }} • CEP {{ end.cep }}</p>
               </div>
+              <button mat-icon-button color="primary" (click)="editarEndereco($index, end)" matTooltip="Editar endereço">
+                <mat-icon>edit</mat-icon>
+              </button>
               <button mat-icon-button color="warn" (click)="removerEndereco($index)" matTooltip="Remover">
                 <mat-icon>delete_outline</mat-icon>
               </button>
@@ -134,7 +137,7 @@
               <div class="form-row">
                 <mat-form-field appearance="outline">
                   <mat-label>CEP</mat-label>
-                  <input matInput formControlName="cep" placeholder="00000-000" />
+                  <input matInput formControlName="cep" mask="00000-000" placeholder="00000-000" maxlength="9" />
                   @if (erroEndereco('cep')) { <mat-error>{{ erroEndereco('cep') }}</mat-error> }
                 </mat-form-field>
                 <mat-form-field appearance="outline">
@@ -171,9 +174,15 @@
                   @if (erroEndereco('municipio')) { <mat-error>{{ erroEndereco('municipio') }}</mat-error> }
                 </mat-form-field>
               </div>
-              <button mat-flat-button color="primary" type="submit">
-                <mat-icon>save</mat-icon> Salvar Endereço
-              </button>
+              <div class="end-form-actions">
+                <button mat-flat-button color="primary" type="submit">
+                  <mat-icon>save</mat-icon>
+                  {{ enderecoEmEdicao !== null ? 'Atualizar Endereço' : 'Salvar Endereço' }}
+                </button>
+                @if (enderecoEmEdicao !== null) {
+                  <button mat-button type="button" (click)="cancelarEdicao()">Cancelar</button>
+                }
+              </div>
             </form>
           }
         </div>

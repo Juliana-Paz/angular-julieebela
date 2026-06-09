@@ -38,4 +38,19 @@ export class PijamaService {
   delete(id: number): Observable<void> {
     return this.httpClient.delete<void>(`${this.api}/${id}`);
   }
+
+  adicionarImagem(pijamaId: number, formData: FormData): Observable<void> {
+    return this.httpClient.patch<void>(`${this.api}/${pijamaId}/imagens/upload`, formData);
+  }
+
+  removerImagem(pijamaId: number, fid: string): Observable<void> {
+    return this.httpClient.delete<void>(`${this.api}/${pijamaId}/imagens/${fid}`);
+  }
+
+  reordenarImagens(
+    pijamaId: number,
+    ordens: { arquivoId: number; ordem: number; capa: boolean }[]
+  ): Observable<any> {
+    return this.httpClient.patch<any>(`${this.api}/${pijamaId}/imagens/reordenar`, ordens);
+  }
 }

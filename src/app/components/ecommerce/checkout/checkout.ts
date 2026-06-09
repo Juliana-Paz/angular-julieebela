@@ -10,6 +10,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { ClienteService } from '../../../services/cliente.service';
 import { PedidoService } from '../../../services/pedido.service';
 import { CarrinhoService } from '../../../services/carrinho.service';
@@ -20,7 +21,9 @@ interface FormaPagamento { id: number; nome: string; }
 @Component({
   selector: 'app-checkout',
   imports: [CommonModule, ReactiveFormsModule, RouterLink, MatButtonModule, MatCardModule,
-            MatFormFieldModule, MatInputModule, MatRadioModule, MatDividerModule, MatIconModule],
+            MatFormFieldModule, MatInputModule, MatRadioModule, MatDividerModule, MatIconModule,
+            NgxMaskDirective],
+  providers: [provideNgxMask()],
   templateUrl: './checkout.html',
   styleUrl: './checkout.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -94,7 +97,8 @@ export class Checkout implements OnInit {
   salvarNovoEndereco(): void {
     if (this.novoEnderecoForm.invalid) { this.novoEnderecoForm.markAllAsTouched(); return; }
     this.salvandoEndereco.set(true);
-    const novoEnd: Partial<Endereco> = { ...this.novoEnderecoForm.value, principal: false };
+    const val = this.novoEnderecoForm.value;
+    const novoEnd: Partial<Endereco> = { ...val, cep: (val.cep ?? '').replace(/\D/g, ''), principal: false };
 
     this.clienteService.adicionarEndereco(novoEnd).subscribe({
       next: cliente => {

@@ -66,6 +66,7 @@ export class Perfil implements OnInit {
   hideSenhaAtual = true;
   hideNovaSenha = true;
   hideConfirmarSenha = true;
+  enderecoEmEdicao: number | null = null;
 
   readonly usuario = this.authService.usuario;
 
@@ -215,23 +216,54 @@ export class Perfil implements OnInit {
 
   get enderecos(): Endereco[] { return this.cliente()?.enderecos ?? []; }
 
-  toggleFormEndereco(): void { this.mostrarFormEndereco.update(v => !v); this.enderecoForm.reset(); }
+  toggleFormEndereco(): void {
+    this.enderecoEmEdicao = null;
+    this.mostrarFormEndereco.update(v => !v);
+    this.enderecoForm.reset();
+  }
+
+  editarEndereco(index: number, endereco: Endereco): void {
+    this.enderecoEmEdicao = index;
+    this.mostrarFormEndereco.set(true);
+    this.enderecoForm.patchValue(endereco);
+  }
+
+  cancelarEdicao(): void {
+    this.enderecoEmEdicao = null;
+    this.mostrarFormEndereco.set(false);
+    this.enderecoForm.reset();
+  }
 
   salvarEndereco(): void {
     if (this.enderecoForm.invalid) { this.enderecoForm.markAllAsTouched(); return; }
-    const novoEnd: Partial<Endereco> = { ...this.enderecoForm.value, principal: false };
-    this.clienteService.adicionarEndereco(novoEnd).subscribe({
-      next: cliente => {
-        this.cliente.set(cliente);
-        this.mostrarFormEndereco.set(false);
-        this.enderecoForm.reset();
-        this.snack.open('Endereço adicionado!', 'OK', { duration: 3000 });
-      },
-      error: (e) => {
-        console.error('[Perfil] Erro ao salvar endereço:', e);
-        this.snack.open('Erro ao salvar endereço.', 'OK', { duration: 3000 });
-      },
-    });
+    const val = this.enderecoForm.value;
+    const endPayload: Partial<Endereco> = { ...val, cep: (val.cep ?? '').replace(/\D/g, ''), principal: false };
+
+    if (this.enderecoEmEdicao !== null) {
+      this.clienteService.atualizarEndereco(this.enderecoEmEdicao, endPayload).subscribe({
+        next: cliente => {
+          this.cliente.set(cliente);
+          this.enderecoEmEdicao = null;
+          this.mostrarFormEndereco.set(false);
+          this.enderecoForm.reset();
+          this.snack.open('Endereço atualizado!', 'OK', { duration: 3000 });
+        },
+        error: () => this.snack.open('Erro ao atualizar endereço.', 'OK', { duration: 3000 }),
+      });
+    } else {
+      this.clienteService.adicionarEndereco(endPayload).subscribe({
+        next: cliente => {
+          this.cliente.set(cliente);
+          this.mostrarFormEndereco.set(false);
+          this.enderecoForm.reset();
+          this.snack.open('Endereço adicionado!', 'OK', { duration: 3000 });
+        },
+        error: (e) => {
+          console.error('[Perfil] Erro ao salvar endereço:', e);
+          this.snack.open('Erro ao salvar endereço.', 'OK', { duration: 3000 });
+        },
+      });
+    }
   }
 
   removerEndereco(index: number): void {

@@ -30,6 +30,10 @@ export class ClienteService {
     return this.httpClient.post<Cliente>(`${this.api}/me/enderecos`, endereco);
   }
 
+  atualizarEndereco(index: number, endereco: Partial<Endereco>): Observable<Cliente> {
+    return this.httpClient.patch<Cliente>(`${this.api}/me/enderecos/${index}`, endereco);
+  }
+
   removerEndereco(index: number): Observable<Cliente> {
     return this.httpClient.delete<Cliente>(`${this.api}/me/enderecos/${index}`);
   }

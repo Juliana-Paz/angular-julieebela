@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { EcommerceAuthService } from '../../../services/ecommerce-auth.service';
+import { CarrinhoService } from '../../../services/carrinho.service';
 
 @Component({
   selector: 'app-login',
@@ -28,6 +29,7 @@ import { EcommerceAuthService } from '../../../services/ecommerce-auth.service';
 export class Login {
   private readonly formBuilder = inject(FormBuilder);
   private readonly authService = inject(EcommerceAuthService);
+  private readonly carrinhoService = inject(CarrinhoService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
@@ -57,7 +59,13 @@ export class Login {
       .login(login, senha)
       .pipe(finalize(() => this.enviando.set(false)))
       .subscribe({
-        next: () => {
+        next: (usuario) => {
+          this.carrinhoService.onLogin(usuario.username);
+          const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+          if (returnUrl) {
+            this.router.navigateByUrl(returnUrl);
+            return;
+          }
           const redirectTo = this.route.snapshot.queryParamMap.get('redirectTo');
           if (redirectTo) {
             this.router.navigateByUrl('/' + redirectTo);

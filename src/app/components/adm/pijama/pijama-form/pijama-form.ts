@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 import {
@@ -14,13 +14,9 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { forkJoin } from 'rxjs';
-<<<<<<< Updated upstream
-import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
-import { Pijama } from '../../../../models/pijama.model';
-=======
+import { firstValueFrom, forkJoin } from 'rxjs';
+import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Pijama, PijamaVariante } from '../../../../models/pijama.model';
->>>>>>> Stashed changes
 import { Categoria } from '../../../../models/categoria.model';
 import { Marca } from '../../../../models/marca.model';
 import { Cor } from '../../../../models/cor.model';
@@ -41,15 +37,9 @@ interface BackendErrorResponse { errors?: ValidationError[]; }
   imports: [
     CommonModule, MatFormField, MatLabel, MatError,
     ReactiveFormsModule, MatInputModule, MatSelectModule,
-<<<<<<< Updated upstream
-    MatButtonModule, MatIconModule, MatSlideToggleModule, RouterLink,
-    NgxMaskDirective,
-=======
     MatButtonModule, MatIconModule, MatSlideToggleModule,
-    MatDividerModule, MatTooltipModule, RouterLink,
->>>>>>> Stashed changes
+    MatDividerModule, MatTooltipModule, RouterLink, DragDropModule,
   ],
-  providers: [provideNgxMask()],
   templateUrl: './pijama-form.html',
   styleUrl: './pijama-form.css',
 })
@@ -82,11 +72,18 @@ export class PijamaForm implements OnInit {
     { id: 2, nome: 'Masculino' },
     { id: 3, nome: 'Unissex' },
   ];
-  readonly modelos = ['Calça e Camiseta', 'Macacão', 'Body', 'Camisola', 'Short e Camiseta'];
+  readonly modelos = [
+    'Manga Longa', 'Manga Curta', 'Short e Camiseta',
+    'Calça e Camiseta', 'Body', 'Macacão', 'Camisola',
+  ];
 
-  arquivoSelecionado: File | null = null;
-  previewUrl: string | null = null;
-  arquivosExistentes: { fid: string; nomeOriginal: string }[] = [];
+  private readonly ngZone = inject(NgZone);
+  private readonly cdr = inject(ChangeDetectorRef);
+
+  imagensSalvas: { fid: string; nomeOriginal: string }[] = [];
+  novasImagens: { file: File; preview: string; name: string }[] = [];
+  indiceCapa = signal(0);
+  imagensParaRemover: string[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -156,7 +153,8 @@ export class PijamaForm implements OnInit {
         this.estampas = estampas;
 
         if (pijama) {
-          this.arquivosExistentes = pijama.imagens?.map(a => ({ fid: a.fid, nomeOriginal: a.nomeOriginal })) ?? [];
+          this.imagensSalvas = pijama.imagens?.map(a => ({ fid: a.fid, nomeOriginal: a.nomeOriginal })) ?? [];
+          this.indiceCapa.set(0);
           this.form.patchValue({
             id: pijama.id,
             nome: pijama.nome,
@@ -192,20 +190,195 @@ export class PijamaForm implements OnInit {
     });
   }
 
-  onFileChange(event: Event): void {
+  onImagensChange(event: Event): void {
     const input = event.target as HTMLInputElement;
-    if (!input.files?.length) return;
-
-    this.arquivoSelecionado = input.files[0];
-    this.previewUrl = null;
-
-    const reader = new FileReader();
-    reader.onload = e => (this.previewUrl = e.target?.result as string);
-    reader.readAsDataURL(this.arquivoSelecionado);
+    if (!input.files) return;
+    Array.from(input.files).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        this.ngZone.run(() => {
+          this.novasImagens.push({ file, preview: e.target?.result as string, name: file.name });
+          if (this.imagensSalvas.length === 0 && this.novasImagens.length === 1) {
+            this.indiceCapa.set(0);
+          }
+          this.cdr.detectChanges();
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+    input.value = '';
   }
 
-  removerArquivoExistente(fid: string): void {
-    this.arquivosExistentes = this.arquivosExistentes.filter(a => a.fid !== fid);
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    const files = event.dataTransfer?.files;
+    if (!files) return;
+    Array.from(files).forEach(file => {
+      if (!file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        this.ngZone.run(() => {
+          this.novasImagens.push({ file, preview: e.target?.result as string, name: file.name });
+          if (this.imagensSalvas.length === 0 && this.novasImagens.length === 1) {
+            this.indiceCapa.set(0);
+          }
+          this.cdr.detectChanges();
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  removerNovaImagem(index: number): void {
+    this.novasImagens.splice(index, 1);
+  }
+
+  removerImagemSalva(index: number): void {
+    const img = this.imagensSalvas[index];
+    this.imagensParaRemover.push(img.fid);
+    this.imagensSalvas.splice(index, 1);
+    if (this.indiceCapa() >= this.imagensSalvas.length) {
+      this.indiceCapa.set(0);
+    }
+  }
+
+  get imagensSalvasEmLinhas(): { fid: string; nomeOriginal: string }[][] {
+    const linhas: { fid: string; nomeOriginal: string }[][] = [];
+    for (let i = 0; i < this.imagensSalvas.length; i += 4) {
+      linhas.push(this.imagensSalvas.slice(i, i + 4));
+    }
+    return linhas;
+  }
+
+  get novasImagensEmLinhas(): { file: File; preview: string; name: string }[][] {
+    const linhas: { file: File; preview: string; name: string }[][] = [];
+    for (let i = 0; i < this.novasImagens.length; i += 4) {
+      linhas.push(this.novasImagens.slice(i, i + 4));
+    }
+    return linhas;
+  }
+
+  indexGlobal(linha: number, coluna: number): number {
+    return linha * 4 + coluna;
+  }
+
+  moverNaLinhaSalvas(event: CdkDragDrop<any[]>, linhaIndex: number): void {
+    const offsetInicio = linhaIndex * 4;
+    moveItemInArray(this.imagensSalvas, offsetInicio + event.previousIndex, offsetInicio + event.currentIndex);
+    this.indiceCapa.set(0);
+  }
+
+  moverImagemSalva(de: number, para: number): void {
+    moveItemInArray(this.imagensSalvas, de, para);
+    this.indiceCapa.set(0);
+  }
+
+  moverLinhaParaCima(linhaIndex: number): void {
+    const inicio = linhaIndex * 4;
+    const fimAtual = Math.min(inicio + 4, this.imagensSalvas.length);
+    const inicioAnterior = (linhaIndex - 1) * 4;
+    const linhaAtual = this.imagensSalvas.splice(inicio, fimAtual - inicio);
+    const linhaAnterior = this.imagensSalvas.splice(inicioAnterior, inicio - inicioAnterior);
+    this.imagensSalvas.splice(inicioAnterior, 0, ...linhaAtual, ...linhaAnterior);
+    this.indiceCapa.set(0);
+  }
+
+  moverLinhaParaBaixo(linhaIndex: number): void {
+    const inicio = linhaIndex * 4;
+    const fimAtual = Math.min(inicio + 4, this.imagensSalvas.length);
+    const fimProxima = Math.min(fimAtual + 4, this.imagensSalvas.length);
+    const linhaAtual = this.imagensSalvas.splice(inicio, fimAtual - inicio);
+    const proximaLinha = this.imagensSalvas.splice(inicio, fimProxima - fimAtual);
+    this.imagensSalvas.splice(inicio, 0, ...proximaLinha, ...linhaAtual);
+    this.indiceCapa.set(0);
+  }
+
+  moverNaLinhaNovas(event: CdkDragDrop<any[]>, linhaIndex: number): void {
+    const offsetInicio = linhaIndex * 4;
+    moveItemInArray(this.novasImagens, offsetInicio + event.previousIndex, offsetInicio + event.currentIndex);
+    if (this.imagensSalvas.length === 0) this.indiceCapa.set(0);
+  }
+
+  moverImagemNova(de: number, para: number): void {
+    moveItemInArray(this.novasImagens, de, para);
+    if (this.imagensSalvas.length === 0) this.indiceCapa.set(0);
+  }
+
+  moverLinhaNovasParaCima(linhaIndex: number): void {
+    const inicio = linhaIndex * 4;
+    const fimAtual = Math.min(inicio + 4, this.novasImagens.length);
+    const inicioAnterior = (linhaIndex - 1) * 4;
+    const linhaAtual = this.novasImagens.splice(inicio, fimAtual - inicio);
+    const linhaAnterior = this.novasImagens.splice(inicioAnterior, inicio - inicioAnterior);
+    this.novasImagens.splice(inicioAnterior, 0, ...linhaAtual, ...linhaAnterior);
+    if (this.imagensSalvas.length === 0) this.indiceCapa.set(0);
+  }
+
+  moverLinhaNovasParaBaixo(linhaIndex: number): void {
+    const inicio = linhaIndex * 4;
+    const fimAtual = Math.min(inicio + 4, this.novasImagens.length);
+    const fimProxima = Math.min(fimAtual + 4, this.novasImagens.length);
+    const linhaAtual = this.novasImagens.splice(inicio, fimAtual - inicio);
+    const proximaLinha = this.novasImagens.splice(inicio, fimProxima - fimAtual);
+    this.novasImagens.splice(inicio, 0, ...proximaLinha, ...linhaAtual);
+    if (this.imagensSalvas.length === 0) this.indiceCapa.set(0);
+  }
+
+  definirCapa(index: number): void {
+    this.indiceCapa.set(index);
+  }
+
+  async salvarImagens(pijamaId: number): Promise<void> {
+    // 1. Remove imagens marcadas
+    for (const fid of this.imagensParaRemover) {
+      try {
+        await firstValueFrom(this.pijamaService.removerImagem(pijamaId, fid));
+      } catch { this.exibirMensagem('Erro ao remover imagem.'); }
+    }
+
+    // 2. Adiciona novas imagens
+    for (const img of this.novasImagens) {
+      const fd = new FormData();
+      fd.append('file', img.file, img.name);
+      try {
+        await firstValueFrom(this.pijamaService.adicionarImagem(pijamaId, fd));
+      } catch { this.exibirMensagem(`Erro ao salvar: ${img.name}`); }
+    }
+
+    // 3. Recarrega o pijama para obter IDs atualizados
+    try {
+      const pijamaAtualizado = await firstValueFrom(
+        this.pijamaService.findById(pijamaId)
+      );
+      const todasImagens: any[] = pijamaAtualizado.imagens ?? [];
+
+      // 4. Monta a lista de ordem baseada na posição atual no grid
+      const capaIndex = this.indiceCapa();
+      const ordens = todasImagens.map((img: any) => {
+        const posGrid = this.imagensSalvas.findIndex(s => s.fid === img.fid);
+        const ordem = posGrid >= 0
+          ? posGrid
+          : this.imagensSalvas.length + this.novasImagens.findIndex(
+              n => n.name === img.nomeOriginal
+            );
+        return {
+          arquivoId: img.id,
+          ordem: ordem >= 0 ? ordem : 99,
+          capa: (ordem >= 0 ? ordem : 99) === capaIndex,
+        };
+      });
+
+      if (ordens.length > 0) {
+        await firstValueFrom(
+          this.pijamaService.reordenarImagens(pijamaId, ordens)
+        );
+      }
+    } catch {
+      this.exibirMensagem('Erro ao salvar ordem das imagens.');
+    }
+
+    this.novasImagens = [];
+    this.imagensParaRemover = [];
   }
 
   salvar(): void {
@@ -238,14 +411,16 @@ export class PijamaForm implements OnInit {
     );
     formData.append('variantes', new Blob([variantesJson], { type: 'application/json' }));
 
-    if (this.arquivoSelecionado) formData.append('file', this.arquivoSelecionado, this.arquivoSelecionado.name);
-
     const req = valores.id
       ? this.pijamaService.update(valores.id, formData)
       : this.pijamaService.create(formData);
 
     req.subscribe({
-      next: () => { this.router.navigateByUrl('/adm/pijamas'); this.exibirMensagem('Pijama salvo com sucesso!'); },
+      next: async (criado) => {
+        await this.salvarImagens(criado.id);
+        this.router.navigateByUrl('/adm/pijamas');
+        this.exibirMensagem('Pijama salvo com sucesso!');
+      },
       error: (e) => {
         if (e.status === 400 && e.error?.errors) { this.processarErros(e.error); this.exibirMensagem('Corrija os erros indicados.'); }
         else this.exibirMensagem('Erro ao salvar pijama.');

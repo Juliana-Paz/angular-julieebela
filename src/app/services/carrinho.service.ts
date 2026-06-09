@@ -1,15 +1,17 @@
-import { computed, Injectable, signal } from '@angular/core';
+import { computed, effect, Injectable, inject, signal } from '@angular/core';
 import { CarrinhoItem, PijamaEcommerce } from '../components/ecommerce/ecommerce.types';
 import { PijamaVariante } from '../models/pijama.model';
+import { EcommerceAuthService } from './ecommerce-auth.service';
 
 interface CupomAplicado { codigo: string; desconto: number; }
 
 @Injectable({ providedIn: 'root' })
 export class CarrinhoService {
-  private readonly storageKey = 'julie-bela-carrinho';
+  private readonly authService = inject(EcommerceAuthService);
   private readonly cupomStorageKey = 'julie-bela-cupom';
-  private readonly itemsSignal = signal<CarrinhoItem[]>(this.loadFromStorage());
+  private readonly itemsSignal = signal<CarrinhoItem[]>(this.loadFromStorageKey(this.getStorageKey()));
   private readonly cupomSignal = signal<CupomAplicado | null>(this.loadCupomFromStorage());
+  private prevLogado = this.authService.logado();
 
   readonly items = this.itemsSignal.asReadonly();
   readonly cupom = this.cupomSignal.asReadonly();
@@ -21,6 +23,43 @@ export class CarrinhoService {
   );
   readonly desconto = computed(() => this.cupomSignal()?.desconto ?? 0);
   readonly valorTotalFinal = computed(() => Math.max(0, this.valorTotal() - this.desconto()));
+
+  constructor() {
+    // Limpa o carrinho da tela quando o usuário faz logout
+    effect(() => {
+      const logado = this.authService.logado();
+      if (this.prevLogado && !logado) {
+        this.itemsSignal.set([]);
+      }
+      this.prevLogado = logado;
+    }, { allowSignalWrites: true });
+  }
+
+  /** Chamado após login bem-sucedido para mesclar carrinho anônimo com o do usuário. */
+  onLogin(username: string): void {
+    const userKey = `julie-bela-carrinho_${username}`;
+    const anonKey = 'julie-bela-carrinho_anonimo';
+    const userItems = this.loadFromStorageKey(userKey);
+    const anonItems = this.loadFromStorageKey(anonKey);
+
+    const merged = [...userItems];
+    for (const anonItem of anonItems) {
+      const existing = merged.find(
+        i => i.pijama.id === anonItem.pijama.id && i.idVariante === anonItem.idVariante,
+      );
+      if (existing) {
+        existing.quantidade += anonItem.quantidade;
+      } else {
+        merged.push(anonItem);
+      }
+    }
+
+    this.itemsSignal.set(merged);
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(userKey, JSON.stringify(merged));
+      localStorage.removeItem(anonKey);
+    }
+  }
 
   adicionar(pijama: PijamaEcommerce, quantidade: number = 1, variante?: PijamaVariante): void {
     const idVariante = variante?.id;
@@ -85,6 +124,11 @@ export class CarrinhoService {
     if (typeof localStorage !== 'undefined') localStorage.removeItem(this.cupomStorageKey);
   }
 
+  private getStorageKey(): string {
+    const username = this.authService.username();
+    return username ? `julie-bela-carrinho_${username}` : 'julie-bela-carrinho_anonimo';
+  }
+
   private loadCupomFromStorage(): CupomAplicado | null {
     if (typeof localStorage === 'undefined') return null;
     try {
@@ -96,10 +140,10 @@ export class CarrinhoService {
     } catch { return null; }
   }
 
-  private loadFromStorage(): CarrinhoItem[] {
+  private loadFromStorageKey(key: string): CarrinhoItem[] {
     if (typeof localStorage === 'undefined') return [];
     try {
-      const raw = localStorage.getItem(this.storageKey);
+      const raw = localStorage.getItem(key);
       if (!raw) return [];
       const parsed = JSON.parse(raw) as unknown;
       if (!Array.isArray(parsed)) return [];
@@ -120,6 +164,6 @@ export class CarrinhoService {
 
   private saveToStorage(items: CarrinhoItem[]): void {
     if (typeof localStorage === 'undefined') return;
-    localStorage.setItem(this.storageKey, JSON.stringify(items));
+    localStorage.setItem(this.getStorageKey(), JSON.stringify(items));
   }
 }

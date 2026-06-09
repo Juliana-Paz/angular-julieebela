@@ -52,7 +52,7 @@
                 <div class="form-row">
                   <mat-form-field appearance="outline">
                     <mat-label>CEP</mat-label>
-                    <input matInput formControlName="cep" placeholder="00000-000" />
+                    <input matInput formControlName="cep" mask="00000-000" placeholder="00000-000" maxlength="9" />
                     @if (novoEnderecoForm.get('cep')?.touched && novoEnderecoForm.get('cep')?.invalid) {
                       <mat-error>CEP inválido.</mat-error>
                     }

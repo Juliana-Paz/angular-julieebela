@@ -108,23 +108,28 @@ export class DetalhePijama implements OnInit {
 
   adicionarCarrinho(): void {
     const p = this.pijama();
-    const v = this.varianteSelecionada();
-    if (!p || !v) return;
-    this.carrinhoService.adicionar(p as PijamaEcommerce, 1, v);
+    if (!p) return;
+    if (p.variantes?.length && !this.varianteSelecionada()) {
+      this.snack.open('Selecione um tamanho antes de adicionar ao carrinho.', 'Fechar', { duration: 3000, verticalPosition: 'top' });
+      return;
+    }
+    this.carrinhoService.adicionar(p as PijamaEcommerce, 1, this.varianteSelecionada() ?? undefined);
     this.snack.open(`${p.nome} adicionado ao carrinho!`, 'Ver carrinho', { duration: 3000, verticalPosition: 'top' })
       .onAction().subscribe(() => this.router.navigate(['/carrinho']));
   }
 
   comprarAgora(): void {
     const p = this.pijama();
-<<<<<<< Updated upstream
     if (!p) return;
-    this.carrinhoService.adicionar(p as PijamaEcommerce);
-=======
-    const v = this.varianteSelecionada();
-    if (!p || !v) return;
-    this.carrinhoService.adicionar(p as PijamaEcommerce, 1, v);
->>>>>>> Stashed changes
+    if (p.variantes?.length && !this.varianteSelecionada()) {
+      this.snack.open('Selecione um tamanho antes de continuar.', 'Fechar', { duration: 3000, verticalPosition: 'top' });
+      return;
+    }
+    this.carrinhoService.adicionar(p as PijamaEcommerce, 1, this.varianteSelecionada() ?? undefined);
+    if (!this.authService.logado()) {
+      this.router.navigate(['/login'], { queryParams: { returnUrl: '/checkout' } });
+      return;
+    }
     this.router.navigate(['/checkout']);
   }
 

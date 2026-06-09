@@ -72,7 +72,7 @@
                         [class.chip-ativo]="corSelecionada()?.id === cor.id"
                         (click)="selecionarCor(cor)"
                         type="button">
-                  <span class="bolinha-cor" [style.background]="'#' + cor.hexadecimal"></span>
+                  <span class="bolinha-cor" [style.background]="cor.hexadecimal"></span>
                   {{ cor.nome }}
                 </button>
               }
@@ -136,21 +136,13 @@
 
         <div class="acoes-row">
           <button mat-flat-button color="primary" class="btn-carrinho"
-                  [disabled]="!podePedir()"
                   (click)="adicionarCarrinho()">
             <mat-icon>shopping_cart</mat-icon>
             Adicionar ao Carrinho
           </button>
 
           <button mat-flat-button color="accent" class="btn-carrinho"
-                  [disabled]="!podePedir()"
                   (click)="comprarAgora()">
-            <mat-icon>flash_on</mat-icon>
-            Comprar Agora
-          </button>
-
-          <button mat-flat-button color="accent" class="btn-comprar"
-            [disabled]="!p.ativo || p.estoque === 0" (click)="comprarAgora()">
             <mat-icon>flash_on</mat-icon>
             Comprar Agora
           </button>
