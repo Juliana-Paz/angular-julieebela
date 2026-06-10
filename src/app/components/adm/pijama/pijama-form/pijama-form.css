@@ -41,25 +41,64 @@
 
 /* Multi-image upload */
 .label-imagens { font-size: 13px; color: #666; margin: 0 0 8px; }
-.linha-wrapper {
+
+.imagens-grid-sortable {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-.imagens-linha {
-  display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   gap: 12px;
-  flex: 1;
+  margin-bottom: 16px;
 }
+
 .imagem-item {
-  position: relative; width: 120px; height: 120px;
-  border-radius: 8px; overflow: hidden;
-  border: 2px solid #e0e0e0; cursor: grab;
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  overflow: visible;
+  border: 2px solid #e0e0e0;
+  cursor: grab;
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
+
+.imagem-item:hover {
+  transform: scale(1.05);
+  border-color: #8B0000;
+  box-shadow: 0 4px 12px rgba(139, 0, 0, 0.25);
+  z-index: 10;
+}
+
+.imagem-item img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 6px;
+  display: block;
+  transition: filter 0.2s;
+}
+
+.imagem-item:hover img {
+  filter: brightness(0.85);
+}
+
 .imagem-item.nova { border-color: #1565c0; }
-.imagem-item img { width: 100%; height: 100%; object-fit: cover; }
+
+/* SortableJS feedback visual */
+.sortable-ghost {
+  opacity: 0.3;
+  border: 2px dashed #8B0000 !important;
+}
+
+.sortable-chosen {
+  border-color: #8B0000 !important;
+  box-shadow: 0 4px 12px rgba(139, 0, 0, 0.3);
+}
+
+.sortable-drag {
+  opacity: 0.9;
+  transform: rotate(2deg);
+}
+
+/* Lixeira */
 .imagem-actions-top {
   position: absolute;
   top: 4px;
@@ -69,7 +108,11 @@
   z-index: 3;
   pointer-events: all;
 }
-.imagem-item:hover .imagem-actions-top { opacity: 1; }
+
+.imagem-item:hover .imagem-actions-top {
+  opacity: 1;
+}
+
 .imagem-actions-top button {
   background: transparent;
   color: white;
@@ -77,83 +120,38 @@
   box-shadow: none;
   --mdc-icon-button-state-layer-color: transparent;
   --mat-icon-button-ripple-color: transparent;
-  --mdc-icon-button-icon-color: white;
 }
-.imagem-actions-top button:hover {
-  background: transparent;
-  box-shadow: none;
-  --mdc-icon-button-icon-color: #cc0000;
-}
-.imagem-actions-top button mat-icon,
-.imagem-actions-top button .mat-icon {
-  color: white;
-  transition: color 0.2s;
-}
+
 .imagem-actions-top button:hover mat-icon,
 .imagem-actions-top button:hover .mat-icon {
   color: #cc0000;
 }
 
-.imagem-actions-center {
+/* Badge capa */
+.badge-capa {
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 2px;
-  opacity: 0;
-  transition: opacity 0.2s;
-  pointer-events: none;
-}
-.imagem-item:hover .imagem-actions-center { opacity: 1; pointer-events: all; }
-.imagem-actions-center button {
-  background: rgba(0,0,0,0.5);
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 0;
   color: white;
-  border-radius: 50%;
-}
-.imagem-actions-center button:hover { background: rgba(139,0,0,0.8); }
-.seta-placeholder { width: 40px; height: 40px; display: inline-block; }
-.badge-capa, .badge-nova {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  text-align: center; font-size: 11px; font-weight: 600;
-  padding: 2px 0; color: white;
-}
-.badge-capa { background: #8B0000; }
-.badge-nova { background: #1565c0; }
-.capa-ativa mat-icon { color: #FFD700 !important; }
-
-.setas-verticais {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  min-width: 40px;
-}
-.setas-verticais button {
-  background: #f5f5f5;
-  border-radius: 50%;
-}
-.setas-verticais button:hover {
   background: #8B0000;
-  color: white;
+  border-radius: 0 0 6px 6px;
+  z-index: 2;
 }
 
-.cdk-drag-preview {
-  box-sizing: border-box;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  opacity: 0.8;
-}
-.cdk-drag-placeholder {
-  opacity: 0.3;
-  border: 2px dashed #8B0000;
-  border-radius: 8px;
-}
-.cdk-drag-animating {
-  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-}
-.imagens-linha.cdk-drop-list-dragging .imagem-item:not(.cdk-drag-placeholder) {
-  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+.badge-nova {
+  position: absolute;
+  bottom: 32px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 11px;
+  color: white;
+  background: #1565c0;
 }
 
 /* Upload area */

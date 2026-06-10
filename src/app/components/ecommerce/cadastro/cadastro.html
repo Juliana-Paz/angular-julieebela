@@ -1,82 +1,82 @@
-<div class="cadastro-page">
+<div class="auth-card">
+  <p class="auth-logo">Julie <span>&amp;</span> Bela</p>
+  <p class="auth-tag">Loja Online</p>
+  <p class="auth-title">Criar Conta</p>
+  <p class="auth-sub">Preencha os dados abaixo para se cadastrar.</p>
+  <div class="rainbow-divider"></div>
 
-  <mat-card class="cadastro-card">
-    <mat-card-header>
-      <mat-card-title>Criar Conta</mat-card-title>
-      <mat-card-subtitle>Julie e Bela — Pijamas Infantis</mat-card-subtitle>
-    </mat-card-header>
+  <form [formGroup]="form" (ngSubmit)="salvar()" autocomplete="off">
 
-    <mat-card-content>
-      <form [formGroup]="form" (ngSubmit)="salvar()" class="cadastro-form" autocomplete="off">
+    <div class="field">
+      <label>Nome completo</label>
+      <input formControlName="nome" placeholder="Seu nome completo" autocomplete="new-password" />
+      @if (erro('nome')) { <span class="field-error">{{ erro('nome') }}</span> }
+    </div>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Nome completo</mat-label>
-          <input matInput formControlName="nome" placeholder="Digite seu nome completo" autocomplete="new-password" />
-          @if (erro('nome')) { <mat-error>{{ erro('nome') }}</mat-error> }
-        </mat-form-field>
+    <div class="field">
+      <label>CPF</label>
+      <input formControlName="cpf" placeholder="000.000.000-00"
+        (input)="onCpfInput($event)" maxlength="14" autocomplete="new-password" inputmode="numeric" />
+      @if (erro('cpf')) { <span class="field-error">{{ erro('cpf') }}</span> }
+    </div>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>CPF</mat-label>
-          <input matInput formControlName="cpf" placeholder="000.000.000-00"
-            (input)="onCpfInput($event)" maxlength="14" autocomplete="new-password" inputmode="numeric" />
-          @if (erro('cpf')) { <mat-error>{{ erro('cpf') }}</mat-error> }
-        </mat-form-field>
+    <div class="field">
+      <label>E-mail</label>
+      <input formControlName="email" type="email" placeholder="seu@email.com" autocomplete="new-password" />
+      @if (erro('email')) { <span class="field-error">{{ erro('email') }}</span> }
+    </div>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>E-mail</mat-label>
-          <input matInput formControlName="email" type="email" placeholder="seu@email.com" autocomplete="new-password" />
-          @if (erro('email')) { <mat-error>{{ erro('email') }}</mat-error> }
-        </mat-form-field>
+    <div class="field">
+      <label>Data de Nascimento</label>
+      <div class="date-wrap">
+        <input [matDatepicker]="pickerNasc" formControlName="dataNascimento"
+          placeholder="DD/MM/AAAA" autocomplete="new-password" dateMask />
+        <mat-datepicker-toggle [for]="pickerNasc" />
+        <mat-datepicker #pickerNasc startView="multi-year" />
+      </div>
+      @if (erro('dataNascimento')) { <span class="field-error">{{ erro('dataNascimento') }}</span> }
+    </div>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Data de Nascimento</mat-label>
-          <input matInput [matDatepicker]="pickerNasc" formControlName="dataNascimento"
-            placeholder="DD/MM/AAAA" autocomplete="new-password" dateMask />
-          <mat-datepicker-toggle matIconSuffix [for]="pickerNasc" />
-          <mat-datepicker #pickerNasc startView="multi-year" />
-          @if (erro('dataNascimento')) { <mat-error>{{ erro('dataNascimento') }}</mat-error> }
-        </mat-form-field>
+    <div class="field">
+      <label>Nome de usuário</label>
+      <input formControlName="username" placeholder="Seu nome de usuário" autocomplete="new-password" />
+      @if (erro('username')) { <span class="field-error">{{ erro('username') }}</span> }
+    </div>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Nome de usuário</mat-label>
-          <input matInput formControlName="username" placeholder="Digite seu nome de usuário" autocomplete="new-password" />
-          @if (erro('username')) { <mat-error>{{ erro('username') }}</mat-error> }
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Senha</mat-label>
-          <input matInput formControlName="senha" [type]="mostrarSenha() ? 'text' : 'password'" autocomplete="new-password" />
-          <button mat-icon-button matSuffix type="button" (click)="mostrarSenha.set(!mostrarSenha())">
-            <mat-icon>{{ mostrarSenha() ? 'visibility_off' : 'visibility' }}</mat-icon>
-          </button>
-          @if (erro('senha')) { <mat-error>{{ erro('senha') }}</mat-error> }
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Confirmar senha</mat-label>
-          <input matInput formControlName="confirmarSenha" [type]="mostrarConfirmar() ? 'text' : 'password'" autocomplete="new-password" />
-          <button mat-icon-button matSuffix type="button" (click)="mostrarConfirmar.set(!mostrarConfirmar())">
-            <mat-icon>{{ mostrarConfirmar() ? 'visibility_off' : 'visibility' }}</mat-icon>
-          </button>
-          @if (form.get('confirmarSenha')?.hasError('required')) {
-            <mat-error>Campo obrigatório.</mat-error>
-          }
-          @if (form.get('confirmarSenha')?.hasError('passwordMismatch')) {
-            <mat-error>As senhas não coincidem.</mat-error>
-          }
-        </mat-form-field>
-
-        <button mat-flat-button color="primary" type="submit" class="btn-cadastrar" [disabled]="salvando()">
-          {{ salvando() ? 'Criando conta...' : 'Criar Conta' }}
+    <div class="field">
+      <label>Senha</label>
+      <div class="pw-wrap">
+        <input formControlName="senha" [type]="mostrarSenha() ? 'text' : 'password'"
+          autocomplete="new-password" placeholder="Mínimo 6 caracteres" />
+        <button type="button" class="toggle-pw" (click)="mostrarSenha.set(!mostrarSenha())">
+          <mat-icon>{{ mostrarSenha() ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
+      </div>
+      @if (erro('senha')) { <span class="field-error">{{ erro('senha') }}</span> }
+    </div>
 
-      </form>
-    </mat-card-content>
+    <div class="field">
+      <label>Confirmar senha</label>
+      <div class="pw-wrap">
+        <input formControlName="confirmarSenha" [type]="mostrarConfirmar() ? 'text' : 'password'"
+          autocomplete="new-password" placeholder="Repita a senha" />
+        <button type="button" class="toggle-pw" (click)="mostrarConfirmar.set(!mostrarConfirmar())">
+          <mat-icon>{{ mostrarConfirmar() ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+      </div>
+      @if (form.get('confirmarSenha')?.hasError('required') && form.get('confirmarSenha')?.touched) {
+        <span class="field-error">Campo obrigatório.</span>
+      }
+      @if (form.get('confirmarSenha')?.hasError('passwordMismatch') && form.get('confirmarSenha')?.touched) {
+        <span class="field-error">As senhas não coincidem.</span>
+      }
+    </div>
 
-    <mat-card-actions class="card-footer">
-      <span>Já tem uma conta?</span>
-      <a mat-button color="primary" routerLink="/login">Entrar</a>
-    </mat-card-actions>
-  </mat-card>
+    <button class="btn-auth-primary" type="submit" [disabled]="salvando()">
+      {{ salvando() ? 'Criando conta...' : 'Criar Conta' }}
+    </button>
 
+  </form>
+
+  <p class="auth-link">Já tem uma conta? <a routerLink="/login">Entrar</a></p>
 </div>

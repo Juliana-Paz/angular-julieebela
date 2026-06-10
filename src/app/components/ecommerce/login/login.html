@@ -1,42 +1,43 @@
-<section class="login-page">
-  <mat-card class="login-card">
-    <p class="eyebrow">Ecommerce</p>
-    <h1>Entrar na conta</h1>
+<div class="auth-card">
+  <p class="auth-logo">Julie <span>&amp;</span> Bela</p>
+  <p class="auth-tag">Loja Online</p>
+  <p class="auth-title">Entrar na conta</p>
+  <p class="auth-sub">Bem-vindo(a) de volta! Acesse sua conta para continuar.</p>
+  <div class="rainbow-divider"></div>
 
-    <form [formGroup]="form" (ngSubmit)="enviar()" class="login-form">
-      <mat-form-field appearance="outline">
-        <mat-label>Login</mat-label>
-        <input matInput type="text" formControlName="login" autocomplete="username">
-        <mat-icon matSuffix>person</mat-icon>
-        @if (form.controls.login.touched && form.controls.login.invalid) {
-          <mat-error>Informe seu login.</mat-error>
-        }
-      </mat-form-field>
+  <form [formGroup]="form" (ngSubmit)="enviar()">
 
-      <mat-form-field appearance="outline">
-        <mat-label>Senha</mat-label>
-        <input matInput [type]="hideSenha ? 'password' : 'text'" formControlName="senha" autocomplete="current-password">
-        <button mat-icon-button matSuffix type="button" (click)="hideSenha = !hideSenha">
+    @if (erro()) {
+      <div class="error-msg">
+        <mat-icon>error_outline</mat-icon>
+        {{ erro() }}
+      </div>
+    }
+
+    <div class="field">
+      <label>Usuário</label>
+      <input type="text" formControlName="login" autocomplete="username" placeholder="Seu nome de usuário" />
+    </div>
+
+    <div class="field">
+      <label>Senha</label>
+      <div class="pw-wrap">
+        <input [type]="hideSenha ? 'password' : 'text'" formControlName="senha"
+          autocomplete="current-password" placeholder="Sua senha" />
+        <button type="button" class="toggle-pw" (click)="hideSenha = !hideSenha">
           <mat-icon>{{ hideSenha ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
-        @if (form.controls.senha.touched && form.controls.senha.errors?.['required']) {
-          <mat-error>Informe sua senha.</mat-error>
-        }
-      </mat-form-field>
+      </div>
+    </div>
 
-      @if (erro()) {
-        <p class="error-msg">{{ erro() }}</p>
-      }
+    <a routerLink="/recuperar-senha" class="forgot-link">Esqueceu a senha?</a>
 
-      <button mat-flat-button color="accent" type="submit" [disabled]="enviando()">
-        @if (enviando()) {
-          Entrando...
-        } @else {
-          Entrar
-        }
-      </button>
-      <a mat-button routerLink="/recuperar-senha">Esqueceu a senha?</a>
-      <a mat-stroked-button color="primary" routerLink="/">Voltar para loja</a>
-    </form>
-  </mat-card>
-</section>
+    <button class="btn-auth-primary" type="submit" [disabled]="enviando()">
+      {{ enviando() ? 'Entrando...' : 'Entrar' }}
+    </button>
+
+  </form>
+
+  <p class="auth-link">Ainda não tem conta? <a routerLink="/cadastro">Criar conta</a></p>
+  <p class="auth-link"><a routerLink="/">← Voltar para a loja</a></p>
+</div>

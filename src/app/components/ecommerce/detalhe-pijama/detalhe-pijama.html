@@ -35,7 +35,14 @@
       <!-- Detalhes do produto -->
       <div class="produto-info">
         @if (p.categoria) {
-          <p class="categoria-label">{{ p.categoria.nome }}</p>
+          <p class="categoria-badge"
+             [ngClass]="{
+               'cat-menina':   p.categoria.nome.toLowerCase().includes('menina'),
+               'cat-menino':   p.categoria.nome.toLowerCase().includes('menino'),
+               'cat-unissex':  p.categoria.nome.toLowerCase().includes('unissex'),
+               'cat-bebe':     p.categoria.nome.toLowerCase().includes('beb'),
+               'cat-especial': p.categoria.nome.toLowerCase().includes('adult')
+             }">{{ p.categoria.nome }}</p>
         }
         <h1 class="produto-nome">{{ p.nome }}</h1>
         @if (p.marca) {
@@ -62,7 +69,7 @@
           }
         </div>
 
-        <!-- Seleção de cor (se houver) -->
+        <!-- Seleção de cor -->
         @if (coresDisponiveis().length > 0) {
           <div class="selecao-section">
             <span class="selecao-label">Cor:</span>
@@ -135,22 +142,34 @@
         <mat-divider />
 
         <div class="acoes-row">
-          <button mat-flat-button color="primary" class="btn-carrinho"
-                  (click)="adicionarCarrinho()">
+          <button class="btn-carrinho-principal" type="button" (click)="adicionarCarrinho()">
             <mat-icon>shopping_cart</mat-icon>
             Adicionar ao Carrinho
           </button>
-
-          <button mat-flat-button color="accent" class="btn-carrinho"
-                  (click)="comprarAgora()">
+          <button class="btn-comprar-agora" type="button" (click)="comprarAgora()">
             <mat-icon>flash_on</mat-icon>
             Comprar Agora
           </button>
-
-          <button mat-icon-button class="btn-desejo" [class.ativo]="noDesejo()"
+          <button class="btn-desejo" [class.ativo]="noDesejo()"
             (click)="toggleDesejos()" [matTooltip]="noDesejo() ? 'Remover dos desejos' : 'Adicionar aos desejos'">
             <mat-icon>{{ noDesejo() ? 'favorite' : 'favorite_border' }}</mat-icon>
           </button>
+        </div>
+
+        <!-- Features -->
+        <div class="features-row">
+          <div class="feature-item">
+            <mat-icon>eco</mat-icon>
+            <span>Material sustentável</span>
+          </div>
+          <div class="feature-item">
+            <mat-icon>local_shipping</mat-icon>
+            <span>Frete grátis acima de R$ 199</span>
+          </div>
+          <div class="feature-item">
+            <mat-icon>replay</mat-icon>
+            <span>Troca em até 30 dias</span>
+          </div>
         </div>
       </div>
 

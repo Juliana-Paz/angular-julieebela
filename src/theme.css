@@ -1,292 +1,109 @@
-/* ==================================================
-   DESIGN TOKENS - SGA
-================================================== */
 :root {
+  /* ── BRAND COLORS ─────────────────────────────── */
+  --rosa:        #F472A0;
+  --rosa-light:  #FEE8F0;
+  --rosa-dark:   #a02a60;
 
-  /* BRAND */
-  --primary: #af101a;
-  --primary-hover: #930010;
-  --primary-strong: #d32f2f;
-  --secondary: #5f5e5e;
-  --tertiary: #005f7b;
+  --laranja:        #FF8C42;
+  --laranja-light:  #FFF0E5;
+  --laranja-dark:   #a04a10;
 
-  /* BACKGROUNDS */
-  --background: #f5f5f5;
-  --background-accent: #ffe9e7;
-  --surface: #ffffff;
-  --surface-low: #f6f5f5;
-  --surface-container: #efefef;
+  --verde:        #5BAD6F;
+  --verde-light:  #E8F5EC;
+  --verde-dark:   #1a6a30;
 
-  /* TEXT */
-  --text: #271816;
-  --text-muted: #5b403d;
+  --azul:        #4A90D9;
+  --azul-light:  #E5F0FC;
+  --azul-dark:   #1a4a90;
 
-  /* BORDER */
-  --outline: #8e7775;
-  --outline-light: #dad9d9;
+  --lilas:        #A07CC8;
+  --lilas-light:  #F2ECF9;
+  --lilas-dark:   #5a3a90;
 
-  /* RADIUS */
+  --amarelo:        #F5C842;
+  --amarelo-light:  #FFFAE5;
+  --amarelo-dark:   #7a6a00;
+
+  --marrom:        #8B5E3C;
+  --marrom-light:  #F5ECE5;
+  --marrom-dark:   #5a3a1a;
+
+  /* ── SEMANTIC (mantém compatibilidade) ──────────── */
+  --primary:        #F472A0;
+  --primary-hover:  #e05090;
+  --primary-strong: #a02a60;
+  --secondary:      #FF8C42;
+  --tertiary:       #A07CC8;
+
+  /* ── NEUTRALS ───────────────────────────────────── */
+  --background:       #F9F5F0;
+  --surface:          #FFFFFF;
+  --surface-low:      #F9F5F0;
+  --surface-container:#F2EFE8;
+
+  --text:       #2C2A26;
+  --text-muted: #888880;
+
+  --outline:       #E8E0D8;
+  --outline-light: #F2EFE8;
+
+  /* ── CATEGORY COLORS (usadas nos badges/tags) ───── */
+  --cat-menina:        var(--rosa);
+  --cat-menina-light:  var(--rosa-light);
+  --cat-menina-dark:   var(--rosa-dark);
+
+  --cat-menino:        var(--azul);
+  --cat-menino-light:  var(--azul-light);
+  --cat-menino-dark:   var(--azul-dark);
+
+  --cat-unissex:       var(--laranja);
+  --cat-unissex-light: var(--laranja-light);
+  --cat-unissex-dark:  var(--laranja-dark);
+
+  --cat-bebe:          var(--verde);
+  --cat-bebe-light:    var(--verde-light);
+  --cat-bebe-dark:     var(--verde-dark);
+
+  --cat-especial:      var(--lilas);
+  --cat-especial-light:var(--lilas-light);
+  --cat-especial-dark: var(--lilas-dark);
+
+  --cat-destaque:      var(--amarelo);
+  --cat-destaque-light:var(--amarelo-light);
+  --cat-destaque-dark: var(--amarelo-dark);
+
+  /* ── RAINBOW BAR ─────────────────────────────────── */
+  --rainbow: linear-gradient(
+    90deg,
+    #F472A0, #FF8C42, #F5C842,
+    #5BAD6F, #4A90D9, #A07CC8, #F472A0
+  );
+
+  /* ── RADIUS ──────────────────────────────────────── */
   --radius-sm: 4px;
-  --radius: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
 
-  /* SPACING */
+  /* ── SPACING ─────────────────────────────────────── */
   --space-xs: 4px;
-  --space-sm: 12px;
-  --space-md: 24px;
-  --space-lg: 40px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
 
-  /* SHADOW */
-  --shadow-sm: 0 2px 4px rgba(0,0,0,.02);
-  --shadow-md: 0 10px 20px rgba(0,0,0,.04);
-  --shadow-lg: 0 20px 40px rgba(0,0,0,.08);
+  /* ── SHADOW ──────────────────────────────────────── */
+  --shadow-sm: 0 1px 3px rgba(44,42,38,.08);
+  --shadow-md: 0 4px 12px rgba(44,42,38,.10);
+  --shadow-lg: 0 8px 24px rgba(44,42,38,.12);
 
-  /* FONT */
-  --font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-}
-
-/* ==================================================
-   GLOBAL
-================================================== */
-html,
-body {
-  margin: 0;
-  height: 100%;
-  background-color: var(--background);
-  background-image: radial-gradient(circle at top right, var(--background-accent) 0%, var(--background) 46%);
-  color: var(--text);
-  font-family: var(--font-family);
-}
-
-body,
-button,
-input,
-textarea,
-select {
-  font-family: var(--font-family);
-}
-
-/* ==================================================
-   ANGULAR MATERIAL - TYPOGRAPHY
-================================================== */
-.mat-typography,
-.mat-mdc-button,
-.mat-mdc-form-field,
-.mat-mdc-card,
-.mat-toolbar,
-.mat-mdc-table {
-  font-family: var(--font-family) !important;
-}
-
-/* ==================================================
-   BUTTONS
-================================================== */
-.mat-mdc-button.mat-primary,
-.mat-mdc-raised-button.mat-primary,
-.mat-mdc-unelevated-button:not(:disabled):not(.mat-mdc-button-disabled),
-.mat-mdc-fab.mat-primary,
-.mat-mdc-mini-fab.mat-primary {
-  background: var(--primary) !important;
-  color: #fff !important;
-}
-
-.mat-mdc-button.mat-primary:hover,
-.mat-mdc-raised-button.mat-primary:hover,
-.mat-mdc-unelevated-button:not(:disabled):not(.mat-mdc-button-disabled):hover {
-  background: var(--primary-hover) !important;
-}
-
-.mat-mdc-button,
-.mat-mdc-raised-button,
-.mat-mdc-unelevated-button,
-.mat-mdc-outlined-button {
-  border-radius: var(--radius) !important;
-  font-weight: 600 !important;
-}
-
-/* ==================================================
-   CARDS
-================================================== */
-.mat-mdc-card {
-  background: var(--surface) !important;
-  border-radius: var(--radius-lg) !important;
-  box-shadow: var(--shadow-md) !important;
-  border: 1px solid rgba(0,0,0,.03);
-}
-
-/* ==================================================
-   TOOLBAR
-================================================== */
-.mat-toolbar,
-.mat-mdc-toolbar {
-  background: var(--surface) !important;
-  color: var(--text) !important;
-  border-bottom: 1px solid var(--outline-light);
-}
-
-/* ==================================================
-   INPUTS / FORM FIELDS
-================================================== */
-
-/* fundo branco */
-.mat-mdc-form-field .mat-mdc-text-field-wrapper {
-  background-color: var(--surface) !important;
-  border-radius: var(--radius) !important;
-}
-
-/* corrige padding interno */
-.mat-mdc-form-field-infix {
-  min-height: 48px;
-  padding-top: 14px !important;
-  padding-bottom: 10px !important;
-}
-
-/* texto */
-.mat-mdc-input-element,
-.mat-mdc-select-value-text,
-.mat-mdc-form-field input,
-.mat-mdc-form-field textarea {
-  color: var(--text) !important;
-}
-
-/* placeholder */
-.mat-mdc-input-element::placeholder {
-  color: var(--text-muted);
-}
-
-/* label */
-.mat-mdc-floating-label,
-.mat-mdc-form-field .mdc-floating-label {
-  color: var(--text-muted) !important;
-}
-
-/* focus label */
-.mat-focused .mat-mdc-floating-label,
-.mat-mdc-form-field.mat-focused .mdc-floating-label {
-  color: var(--primary) !important;
-}
-
-/* borda focus */
-.mdc-text-field--focused .mdc-notched-outline__leading,
-.mdc-text-field--focused .mdc-notched-outline__notch,
-.mdc-text-field--focused .mdc-notched-outline__trailing {
-  border-color: var(--primary) !important;
-}
-
-/* borda normal */
-.mdc-notched-outline__leading,
-.mdc-notched-outline__notch,
-.mdc-notched-outline__trailing {
-  border-color: var(--outline-light) !important;
-}
-
-/* ==================================================
-   SELECT
-================================================== */
-select {
-  background-color: var(--surface);
-  color: var(--text);
-}
-
-.mat-mdc-select-arrow {
-  color: var(--text) !important;
-}
-
-.mat-mdc-select-panel {
-  background-color: var(--surface) !important;
-  border-radius: var(--radius-md) !important;
-}
-
-.mat-mdc-option .mdc-list-item__primary-text {
-  color: var(--text) !important;
-}
-
-.mat-mdc-option:hover {
-  background: var(--surface-low) !important;
-}
-
-.mat-mdc-option.mdc-list-item--selected {
-  background: var(--surface-container) !important;
-}
-
-/* ==================================================
-   TABLES
-================================================== */
-.mat-mdc-table {
-  background: var(--surface) !important;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-}
-
-.mat-mdc-header-row {
-  background: var(--surface-container) !important;
-}
-
-.mat-mdc-header-cell {
-  color: var(--text-muted) !important;
-  font-weight: 700 !important;
-  font-size: 12px;
-  text-transform: uppercase;
-}
-
-.mat-mdc-row:hover {
-  background: rgba(0,0,0,.02);
-}
-
-/* ==================================================
-   PAGINATOR
-================================================== */
-.mat-mdc-paginator,
-.mat-mdc-paginator .mat-mdc-paginator-container {
-  background: var(--surface) !important;
-}
-
-.mat-mdc-paginator {
-  border-top: 1px solid var(--outline-light);
-}
-
-/* ==================================================
-   SIDEBAR (usar class="sidebar")
-================================================== */
-.sidebar {
-  width: 250px;
-  background: #111111;
-  color: #fff;
-  padding: 16px;
-  border-right: 1px solid rgba(255,255,255,.05);
-}
-
-.sidebar a {
-  display: block;
-  padding: 12px;
-  margin-bottom: 8px;
-  text-decoration: none;
-  color: #fff;
-  border-radius: var(--radius);
-  transition: .2s ease;
-}
-
-.sidebar a:hover,
-.sidebar a.active {
-  background: rgba(255,255,255,.08);
-  border-left: 4px solid var(--primary);
-}
-
-/* ==================================================
-   SCROLLBAR (opcional)
-================================================== */
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #d8d8d8;
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #bdbdbd;
+  /* ── TYPOGRAPHY ──────────────────────────────────── */
+  --font-family: 'Roboto', sans-serif;
+  --font-size-xs:  11px;
+  --font-size-sm:  12px;
+  --font-size-md:  14px;
+  --font-size-lg:  18px;
+  --font-size-xl:  24px;
+  --font-size-2xl: 32px;
 }

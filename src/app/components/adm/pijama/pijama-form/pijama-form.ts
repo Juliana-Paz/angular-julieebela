@@ -1,4 +1,7 @@
-import { ChangeDetectorRef, Component, NgZone, OnInit, inject, signal } from '@angular/core';
+import {
+  AfterViewInit, ChangeDetectorRef, Component, ElementRef,
+  NgZone, OnInit, ViewChild, inject, signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 import {
@@ -15,7 +18,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { firstValueFrom, forkJoin } from 'rxjs';
-import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
+import Sortable from 'sortablejs';
 import { Pijama, PijamaVariante } from '../../../../models/pijama.model';
 import { Categoria } from '../../../../models/categoria.model';
 import { Marca } from '../../../../models/marca.model';
@@ -38,12 +41,12 @@ interface BackendErrorResponse { errors?: ValidationError[]; }
     CommonModule, MatFormField, MatLabel, MatError,
     ReactiveFormsModule, MatInputModule, MatSelectModule,
     MatButtonModule, MatIconModule, MatSlideToggleModule,
-    MatDividerModule, MatTooltipModule, RouterLink, DragDropModule,
+    MatDividerModule, MatTooltipModule, RouterLink,
   ],
   templateUrl: './pijama-form.html',
   styleUrl: './pijama-form.css',
 })
-export class PijamaForm implements OnInit {
+export class PijamaForm implements OnInit, AfterViewInit {
   readonly form: FormGroup;
 
   categorias: Categoria[] = [];
@@ -80,7 +83,13 @@ export class PijamaForm implements OnInit {
   private readonly ngZone = inject(NgZone);
   private readonly cdr = inject(ChangeDetectorRef);
 
-  imagensSalvas: { fid: string; nomeOriginal: string }[] = [];
+  @ViewChild('gridSalvas') gridSalvasRef!: ElementRef;
+  @ViewChild('gridNovas') gridNovasRef!: ElementRef;
+
+  private sortableSalvas?: Sortable;
+  private sortableNovas?: Sortable;
+
+  imagensSalvas: { fid: string; nomeOriginal: string; url: string }[] = [];
   novasImagens: { file: File; preview: string; name: string }[] = [];
   indiceCapa = signal(0);
   imagensParaRemover: string[] = [];
@@ -153,7 +162,11 @@ export class PijamaForm implements OnInit {
         this.estampas = estampas;
 
         if (pijama) {
-          this.imagensSalvas = pijama.imagens?.map(a => ({ fid: a.fid, nomeOriginal: a.nomeOriginal })) ?? [];
+          this.imagensSalvas = pijama.imagens?.map(a => ({
+            fid: a.fid,
+            nomeOriginal: a.nomeOriginal,
+            url: 'http://localhost:8080/pijamas/imagens/download/' + a.fid,
+          })) ?? [];
           this.indiceCapa.set(0);
           this.form.patchValue({
             id: pijama.id,
@@ -185,9 +198,91 @@ export class PijamaForm implements OnInit {
         if (this.variantesArray.length === 0) {
           this.adicionarVariante();
         }
+
+        setTimeout(() => this.inicializarSortable(), 100);
       },
       error: () => this.exibirMensagem('Erro ao carregar dados. Verifique a conexão com o servidor.'),
     });
+  }
+
+  ngAfterViewInit(): void {
+    this.inicializarSortable();
+  }
+
+  private inicializarSortable(): void {
+    if (this.gridSalvasRef?.nativeElement) {
+      this.sortableSalvas?.destroy();
+      this.sortableSalvas = Sortable.create(this.gridSalvasRef.nativeElement, {
+        animation: 150,
+        ghostClass: 'sortable-ghost',
+        chosenClass: 'sortable-chosen',
+        dragClass: 'sortable-drag',
+        onEnd: (event) => {
+          if (event.oldIndex === undefined || event.newIndex === undefined) return;
+          const item = this.imagensSalvas.splice(event.oldIndex, 1)[0];
+          this.imagensSalvas.splice(event.newIndex, 0, item);
+          this.indiceCapa.set(0);
+        },
+      });
+    }
+
+    if (this.gridNovasRef?.nativeElement && this.novasImagens.length > 0) {
+      this.sortableNovas?.destroy();
+      this.sortableNovas = Sortable.create(this.gridNovasRef.nativeElement, {
+        animation: 150,
+        ghostClass: 'sortable-ghost',
+        chosenClass: 'sortable-chosen',
+        dragClass: 'sortable-drag',
+        onEnd: (event) => {
+          if (event.oldIndex === undefined || event.newIndex === undefined) return;
+          const item = this.novasImagens.splice(event.oldIndex, 1)[0];
+          this.novasImagens.splice(event.newIndex, 0, item);
+          if (this.imagensSalvas.length === 0) this.indiceCapa.set(0);
+        },
+      });
+    }
+  }
+
+  private reinicializarSortableSalvas(): void {
+    setTimeout(() => {
+      this.sortableSalvas?.destroy();
+      this.sortableSalvas = undefined;
+      if (this.gridSalvasRef?.nativeElement) {
+        this.sortableSalvas = Sortable.create(this.gridSalvasRef.nativeElement, {
+          animation: 150,
+          ghostClass: 'sortable-ghost',
+          chosenClass: 'sortable-chosen',
+          dragClass: 'sortable-drag',
+          onEnd: (event) => {
+            if (event.oldIndex === undefined || event.newIndex === undefined) return;
+            const item = this.imagensSalvas.splice(event.oldIndex, 1)[0];
+            this.imagensSalvas.splice(event.newIndex, 0, item);
+            this.indiceCapa.set(0);
+          },
+        });
+      }
+    }, 100);
+  }
+
+  private reinicializarSortableNovas(): void {
+    setTimeout(() => {
+      this.sortableNovas?.destroy();
+      this.sortableNovas = undefined;
+      if (this.gridNovasRef?.nativeElement) {
+        this.sortableNovas = Sortable.create(this.gridNovasRef.nativeElement, {
+          animation: 150,
+          ghostClass: 'sortable-ghost',
+          chosenClass: 'sortable-chosen',
+          dragClass: 'sortable-drag',
+          onEnd: (event) => {
+            if (event.oldIndex === undefined || event.newIndex === undefined) return;
+            const item = this.novasImagens.splice(event.oldIndex, 1)[0];
+            this.novasImagens.splice(event.newIndex, 0, item);
+            if (this.imagensSalvas.length === 0) this.indiceCapa.set(0);
+          },
+        });
+      }
+    }, 100);
   }
 
   onImagensChange(event: Event): void {
@@ -202,6 +297,7 @@ export class PijamaForm implements OnInit {
             this.indiceCapa.set(0);
           }
           this.cdr.detectChanges();
+          this.reinicializarSortableNovas();
         });
       };
       reader.readAsDataURL(file);
@@ -223,6 +319,7 @@ export class PijamaForm implements OnInit {
             this.indiceCapa.set(0);
           }
           this.cdr.detectChanges();
+          this.reinicializarSortableNovas();
         });
       };
       reader.readAsDataURL(file);
@@ -231,6 +328,7 @@ export class PijamaForm implements OnInit {
 
   removerNovaImagem(index: number): void {
     this.novasImagens.splice(index, 1);
+    this.reinicializarSortableNovas();
   }
 
   removerImagemSalva(index: number): void {
@@ -240,87 +338,19 @@ export class PijamaForm implements OnInit {
     if (this.indiceCapa() >= this.imagensSalvas.length) {
       this.indiceCapa.set(0);
     }
-  }
-
-  get imagensSalvasEmLinhas(): { fid: string; nomeOriginal: string }[][] {
-    const linhas: { fid: string; nomeOriginal: string }[][] = [];
-    for (let i = 0; i < this.imagensSalvas.length; i += 4) {
-      linhas.push(this.imagensSalvas.slice(i, i + 4));
-    }
-    return linhas;
-  }
-
-  get novasImagensEmLinhas(): { file: File; preview: string; name: string }[][] {
-    const linhas: { file: File; preview: string; name: string }[][] = [];
-    for (let i = 0; i < this.novasImagens.length; i += 4) {
-      linhas.push(this.novasImagens.slice(i, i + 4));
-    }
-    return linhas;
-  }
-
-  indexGlobal(linha: number, coluna: number): number {
-    return linha * 4 + coluna;
-  }
-
-  moverNaLinhaSalvas(event: CdkDragDrop<any[]>, linhaIndex: number): void {
-    const offsetInicio = linhaIndex * 4;
-    moveItemInArray(this.imagensSalvas, offsetInicio + event.previousIndex, offsetInicio + event.currentIndex);
-    this.indiceCapa.set(0);
+    this.reinicializarSortableSalvas();
   }
 
   moverImagemSalva(de: number, para: number): void {
-    moveItemInArray(this.imagensSalvas, de, para);
+    const item = this.imagensSalvas.splice(de, 1)[0];
+    this.imagensSalvas.splice(para, 0, item);
     this.indiceCapa.set(0);
-  }
-
-  moverLinhaParaCima(linhaIndex: number): void {
-    const inicio = linhaIndex * 4;
-    const fimAtual = Math.min(inicio + 4, this.imagensSalvas.length);
-    const inicioAnterior = (linhaIndex - 1) * 4;
-    const linhaAtual = this.imagensSalvas.splice(inicio, fimAtual - inicio);
-    const linhaAnterior = this.imagensSalvas.splice(inicioAnterior, inicio - inicioAnterior);
-    this.imagensSalvas.splice(inicioAnterior, 0, ...linhaAtual, ...linhaAnterior);
-    this.indiceCapa.set(0);
-  }
-
-  moverLinhaParaBaixo(linhaIndex: number): void {
-    const inicio = linhaIndex * 4;
-    const fimAtual = Math.min(inicio + 4, this.imagensSalvas.length);
-    const fimProxima = Math.min(fimAtual + 4, this.imagensSalvas.length);
-    const linhaAtual = this.imagensSalvas.splice(inicio, fimAtual - inicio);
-    const proximaLinha = this.imagensSalvas.splice(inicio, fimProxima - fimAtual);
-    this.imagensSalvas.splice(inicio, 0, ...proximaLinha, ...linhaAtual);
-    this.indiceCapa.set(0);
-  }
-
-  moverNaLinhaNovas(event: CdkDragDrop<any[]>, linhaIndex: number): void {
-    const offsetInicio = linhaIndex * 4;
-    moveItemInArray(this.novasImagens, offsetInicio + event.previousIndex, offsetInicio + event.currentIndex);
-    if (this.imagensSalvas.length === 0) this.indiceCapa.set(0);
+    this.reinicializarSortableSalvas();
   }
 
   moverImagemNova(de: number, para: number): void {
-    moveItemInArray(this.novasImagens, de, para);
-    if (this.imagensSalvas.length === 0) this.indiceCapa.set(0);
-  }
-
-  moverLinhaNovasParaCima(linhaIndex: number): void {
-    const inicio = linhaIndex * 4;
-    const fimAtual = Math.min(inicio + 4, this.novasImagens.length);
-    const inicioAnterior = (linhaIndex - 1) * 4;
-    const linhaAtual = this.novasImagens.splice(inicio, fimAtual - inicio);
-    const linhaAnterior = this.novasImagens.splice(inicioAnterior, inicio - inicioAnterior);
-    this.novasImagens.splice(inicioAnterior, 0, ...linhaAtual, ...linhaAnterior);
-    if (this.imagensSalvas.length === 0) this.indiceCapa.set(0);
-  }
-
-  moverLinhaNovasParaBaixo(linhaIndex: number): void {
-    const inicio = linhaIndex * 4;
-    const fimAtual = Math.min(inicio + 4, this.novasImagens.length);
-    const fimProxima = Math.min(fimAtual + 4, this.novasImagens.length);
-    const linhaAtual = this.novasImagens.splice(inicio, fimAtual - inicio);
-    const proximaLinha = this.novasImagens.splice(inicio, fimProxima - fimAtual);
-    this.novasImagens.splice(inicio, 0, ...proximaLinha, ...linhaAtual);
+    const item = this.novasImagens.splice(de, 1)[0];
+    this.novasImagens.splice(para, 0, item);
     if (this.imagensSalvas.length === 0) this.indiceCapa.set(0);
   }
 
@@ -329,14 +359,12 @@ export class PijamaForm implements OnInit {
   }
 
   async salvarImagens(pijamaId: number): Promise<void> {
-    // 1. Remove imagens marcadas
     for (const fid of this.imagensParaRemover) {
       try {
         await firstValueFrom(this.pijamaService.removerImagem(pijamaId, fid));
       } catch { this.exibirMensagem('Erro ao remover imagem.'); }
     }
 
-    // 2. Adiciona novas imagens
     for (const img of this.novasImagens) {
       const fd = new FormData();
       fd.append('file', img.file, img.name);
@@ -345,14 +373,12 @@ export class PijamaForm implements OnInit {
       } catch { this.exibirMensagem(`Erro ao salvar: ${img.name}`); }
     }
 
-    // 3. Recarrega o pijama para obter IDs atualizados
     try {
       const pijamaAtualizado = await firstValueFrom(
         this.pijamaService.findById(pijamaId)
       );
       const todasImagens: any[] = pijamaAtualizado.imagens ?? [];
 
-      // 4. Monta a lista de ordem baseada na posição atual no grid
       const capaIndex = this.indiceCapa();
       const ordens = todasImagens.map((img: any) => {
         const posGrid = this.imagensSalvas.findIndex(s => s.fid === img.fid);

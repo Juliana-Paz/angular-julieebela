@@ -1,61 +1,65 @@
 <div class="ecommerce-shell">
 
-  <mat-toolbar class="topbar" role="banner">
+  <!-- ANNOUNCEMENT BAR (não-sticky, rola com a página) -->
+  <div class="announcement-bar">
+    Frete grátis em pedidos acima de R$&nbsp;199&nbsp;&middot;&nbsp;Tecido ultrasuave&nbsp;&middot;&nbsp;Troca fácil em 30 dias
+  </div>
 
-    <!-- Logo -->
-    <a class="brand" routerLink="/">
-      <span class="brand-julie">Julie</span>&nbsp;<span class="brand-e">&</span>&nbsp;<span class="brand-bela">Bela</span>
-    </a>
+  <!-- STICKY WRAPPER: header + rainbow bar abaixo -->
+  <div class="header-sticky">
 
-    <!-- Navegação principal -->
-    <nav class="main-nav" aria-label="Menu principal">
-      <a mat-button routerLink="/" routerLinkActive="nav-ativo" [routerLinkActiveOptions]="{exact:true}">
-        <mat-icon>store</mat-icon> Loja
-      </a>
-      <a mat-button routerLink="/lista-desejos" routerLinkActive="nav-ativo">
-        <mat-icon>favorite_border</mat-icon> Desejos
-      </a>
-    </nav>
+    <header class="site-header">
 
-    <div class="topbar-right">
-
-      <!-- Área Admin (só para Adm) -->
-      @if (logado() && perfil() === 'Adm') {
-        <a mat-stroked-button routerLink="/adm" class="btn-admin">
-          <mat-icon>admin_panel_settings</mat-icon>
-          <span class="btn-label">Admin</span>
-        </a>
-      }
-
-      <!-- Carrinho -->
-      <a mat-icon-button routerLink="/carrinho" class="btn-carrinho" aria-label="Carrinho"
-        [matBadge]="quantidadeCarrinho() > 0 ? quantidadeCarrinho() : null"
-        matBadgeColor="warn" matBadgeSize="small">
-        <mat-icon>shopping_cart</mat-icon>
+      <!-- Logo -->
+      <a class="brand" routerLink="/">
+        Julie&nbsp;<span class="brand-e">&amp;</span>&nbsp;Bela
       </a>
 
-      <!-- Não logado: dois botões diretos -->
-      @if (!logado()) {
-        <a mat-stroked-button routerLink="/login" class="btn-entrar">
-          <mat-icon>login</mat-icon>
-          <span class="btn-label">Entrar</span>
-        </a>
-        <a mat-flat-button color="primary" routerLink="/cadastro" class="btn-criar">
-          <mat-icon>person_add</mat-icon>
-          <span class="btn-label">Criar conta</span>
-        </a>
-      }
+      <!-- Navegação de categorias -->
+      <nav class="cat-nav" aria-label="Categorias">
+        <a routerLink="/" class="nav-menina">Menina</a>
+        <a routerLink="/" class="nav-menino">Menino</a>
+        <a routerLink="/" class="nav-bebe">Bebê</a>
+        <a routerLink="/" class="nav-unissex">Unissex</a>
+        <a routerLink="/" class="nav-novidades">Novidades</a>
+        <a routerLink="/" class="nav-sale">Sale</a>
+      </nav>
 
-      <!-- Logado: dropdown -->
-      @if (logado()) {
-        <button mat-stroked-button type="button" [matMenuTriggerFor]="menuConta" class="btn-conta">
-          <mat-icon>account_circle</mat-icon>
-          <span class="btn-label">{{ nomeUsuario() ?? 'Minha Conta' }}</span>
+      <!-- Ações à direita -->
+      <div class="header-actions">
+
+        <button mat-icon-button class="action-search" aria-label="Buscar">
+          <mat-icon>search</mat-icon>
         </button>
-      }
 
-    </div>
-  </mat-toolbar>
+        <a mat-icon-button routerLink="/lista-desejos" class="action-heart" aria-label="Lista de desejos">
+          <mat-icon>favorite_border</mat-icon>
+        </a>
+
+        @if (!logado()) {
+          <a mat-icon-button routerLink="/login" class="action-user" aria-label="Entrar">
+            <mat-icon>person_outline</mat-icon>
+          </a>
+        }
+        @if (logado()) {
+          <button mat-icon-button [matMenuTriggerFor]="menuConta" class="action-user" aria-label="Minha conta">
+            <mat-icon>person</mat-icon>
+          </button>
+        }
+
+        <a mat-icon-button routerLink="/carrinho" class="action-cart btn-carrinho" aria-label="Carrinho"
+           [matBadge]="quantidadeCarrinho() > 0 ? quantidadeCarrinho() : null"
+           matBadgeSize="small">
+          <mat-icon>shopping_cart</mat-icon>
+        </a>
+
+      </div>
+    </header>
+
+    <!-- RAINBOW BAR abaixo do header -->
+    <div class="rainbow-bar"></div>
+
+  </div><!-- /header-sticky -->
 
   <!-- Menu dropdown da conta (logado) -->
   <mat-menu #menuConta="matMenu">
@@ -79,8 +83,26 @@
     </button>
   </mat-menu>
 
+  <!-- CONTEÚDO -->
   <main class="content" role="main">
     <router-outlet />
   </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="rainbow-bar"></div>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        Julie&nbsp;<span class="brand-e">&amp;</span>&nbsp;Bela
+      </div>
+      <nav class="footer-links" aria-label="Links do rodapé">
+        <a routerLink="/">Loja</a>
+        <a routerLink="/lista-desejos">Desejos</a>
+        <a routerLink="/carrinho">Carrinho</a>
+        <a routerLink="/perfil">Minha Conta</a>
+      </nav>
+      <p class="footer-copy">© 2026 Julie &amp; Bela. Todos os direitos reservados.</p>
+    </div>
+  </footer>
 
 </div>

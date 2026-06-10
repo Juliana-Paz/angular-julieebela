@@ -2,10 +2,6 @@ import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@ang
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -20,9 +16,8 @@ function confirmarSenhaValidator(control: AbstractControl): ValidationErrors | n
 
 @Component({
   selector: 'app-cadastro',
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, MatButtonModule, MatCardModule,
-            MatFormFieldModule, MatInputModule, MatIconModule, MatDatepickerModule,
-            DateMaskDirective],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink,
+            MatIconModule, MatDatepickerModule, DateMaskDirective],
   templateUrl: './cadastro.html',
   styleUrl: './cadastro.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

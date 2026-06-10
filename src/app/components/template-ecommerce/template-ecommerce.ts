@@ -1,16 +1,15 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatBadgeModule } from '@angular/material/badge';
 import { EcommerceAuthService } from '../../services/ecommerce-auth.service';
 import { CarrinhoService } from '../../services/carrinho.service';
 
 @Component({
   selector: 'app-template-ecommerce',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, MatToolbarModule,
+  imports: [RouterOutlet, RouterLink,
             MatButtonModule, MatIconModule, MatMenuModule, MatBadgeModule],
   templateUrl: './template-ecommerce.html',
   styleUrl: './template-ecommerce.css',

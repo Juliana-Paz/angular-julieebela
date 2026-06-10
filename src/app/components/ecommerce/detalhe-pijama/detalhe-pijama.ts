@@ -1,9 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
@@ -15,8 +13,7 @@ import { PijamaEcommerce } from '../ecommerce.types';
 
 @Component({
   selector: 'app-detalhe-pijama',
-  imports: [CommonModule, RouterLink, MatButtonModule, MatIconModule,
-            MatChipsModule, MatTooltipModule, MatDividerModule],
+  imports: [CommonModule, RouterLink, MatIconModule, MatTooltipModule, MatDividerModule],
   templateUrl: './detalhe-pijama.html',
   styleUrl: './detalhe-pijama.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

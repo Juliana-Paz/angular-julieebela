@@ -211,139 +211,60 @@
         <h3 class="section-title">Imagens do Produto</h3>
       </div>
 
+      <!-- IMAGENS SALVAS -->
       @if (imagensSalvas.length > 0) {
         <p class="label-imagens">Imagens cadastradas:</p>
-        @for (linha of imagensSalvasEmLinhas; track $index; let li = $index) {
-          <div class="linha-wrapper">
-            <div class="imagens-linha"
-                 cdkDropList
-                 cdkDropListOrientation="horizontal"
-                 (cdkDropListDropped)="moverNaLinhaSalvas($event, li)">
-              @for (img of linha; track img.fid; let ci = $index) {
-                @let idx = indexGlobal(li, ci);
-                <div class="imagem-item" cdkDrag>
-                  <img [src]="'http://localhost:8080/pijamas/imagens/download/' + img.fid"
-                       [alt]="img.nomeOriginal">
-                  <div class="imagem-actions-top">
-                    <button mat-icon-button color="warn" type="button"
-                            (click)="removerImagemSalva(idx)" matTooltip="Remover">
-                      <mat-icon>delete</mat-icon>
-                    </button>
-                  </div>
-                  <div class="imagem-actions-center">
-                    @if (idx > 0) {
-                      <button mat-icon-button type="button"
-                              (click)="moverImagemSalva(idx, idx - 1)"
-                              matTooltip="Mover para esquerda">
-                        <mat-icon>chevron_left</mat-icon>
-                      </button>
-                    } @else {
-                      <span class="seta-placeholder"></span>
-                    }
-                    @if (idx < imagensSalvas.length - 1) {
-                      <button mat-icon-button type="button"
-                              (click)="moverImagemSalva(idx, idx + 1)"
-                              matTooltip="Mover para direita">
-                        <mat-icon>chevron_right</mat-icon>
-                      </button>
-                    } @else {
-                      <span class="seta-placeholder"></span>
-                    }
-                  </div>
-                  @if (idx === 0) {
-                    <span class="badge-capa">Capa</span>
-                  }
-                </div>
-              }
-            </div>
-            <div class="setas-verticais">
-              @if (li > 0) {
+        <div #gridSalvas class="imagens-grid-sortable">
+          @for (img of imagensSalvas; track img.fid; let i = $index) {
+            <div class="imagem-item">
+              <img [src]="img.url" [alt]="'Imagem ' + (i + 1)">
+
+              <div class="imagem-actions-top">
                 <button mat-icon-button type="button"
-                        (click)="moverLinhaParaCima(li)"
-                        matTooltip="Mover linha para cima">
-                  <mat-icon>keyboard_arrow_up</mat-icon>
+                        (click)="removerImagemSalva(i)"
+                        matTooltip="Remover">
+                  <mat-icon>delete</mat-icon>
                 </button>
+              </div>
+
+              @if (i === 0) {
+                <span class="badge-capa">Capa</span>
               }
-              @if (li < imagensSalvasEmLinhas.length - 1) {
-                <button mat-icon-button type="button"
-                        (click)="moverLinhaParaBaixo(li)"
-                        matTooltip="Mover linha para baixo">
-                  <mat-icon>keyboard_arrow_down</mat-icon>
-                </button>
-              }
+
+              
             </div>
-          </div>
-        }
+          }
+        </div>
       }
 
+      <!-- NOVAS IMAGENS -->
       @if (novasImagens.length > 0) {
         <p class="label-imagens">Novas imagens (serão salvas):</p>
-        @for (linha of novasImagensEmLinhas; track $index; let li = $index) {
-          <div class="linha-wrapper">
-            <div class="imagens-linha"
-                 cdkDropList
-                 cdkDropListOrientation="horizontal"
-                 (cdkDropListDropped)="moverNaLinhaNovas($event, li)">
-              @for (img of linha; track img.name; let ci = $index) {
-                @let idx = indexGlobal(li, ci);
-                <div class="imagem-item nova" cdkDrag>
-                  <img [src]="img.preview" [alt]="img.name">
-                  <div class="imagem-actions-top">
-                    <button mat-icon-button color="warn" type="button"
-                            (click)="removerNovaImagem(idx)" matTooltip="Remover">
-                      <mat-icon>close</mat-icon>
-                    </button>
-                  </div>
-                  <div class="imagem-actions-center">
-                    @if (idx > 0) {
-                      <button mat-icon-button type="button"
-                              (click)="moverImagemNova(idx, idx - 1)"
-                              matTooltip="Mover para esquerda">
-                        <mat-icon>chevron_left</mat-icon>
-                      </button>
-                    } @else {
-                      <span class="seta-placeholder"></span>
-                    }
-                    @if (idx < novasImagens.length - 1) {
-                      <button mat-icon-button type="button"
-                              (click)="moverImagemNova(idx, idx + 1)"
-                              matTooltip="Mover para direita">
-                        <mat-icon>chevron_right</mat-icon>
-                      </button>
-                    } @else {
-                      <span class="seta-placeholder"></span>
-                    }
-                  </div>
-                  @if (imagensSalvas.length === 0 && idx === 0) {
-                    <span class="badge-capa">Capa</span>
-                  }
-                </div>
-              }
-            </div>
-            <div class="setas-verticais">
-              @if (li > 0) {
+        <div #gridNovas class="imagens-grid-sortable">
+          @for (img of novasImagens; track img.name; let i = $index) {
+            <div class="imagem-item nova">
+              <img [src]="img.preview" [alt]="img.name">
+
+              <div class="imagem-actions-top">
                 <button mat-icon-button type="button"
-                        (click)="moverLinhaNovasParaCima(li)"
-                        matTooltip="Mover linha para cima">
-                  <mat-icon>keyboard_arrow_up</mat-icon>
+                        (click)="removerNovaImagem(i)"
+                        matTooltip="Remover">
+                  <mat-icon>delete</mat-icon>
                 </button>
+              </div>
+
+              @if (imagensSalvas.length === 0 && i === 0) {
+                <span class="badge-capa">Capa</span>
               }
-              @if (li < novasImagensEmLinhas.length - 1) {
-                <button mat-icon-button type="button"
-                        (click)="moverLinhaNovasParaBaixo(li)"
-                        matTooltip="Mover linha para baixo">
-                  <mat-icon>keyboard_arrow_down</mat-icon>
-                </button>
-              }
+
             </div>
-          </div>
-        }
+          }
+        </div>
       }
 
-      <div class="upload-area"
-           (click)="inputImagem.click()"
-           (dragover)="$event.preventDefault()"
-           (drop)="onDrop($event)">
+      <!-- Área de upload -->
+      <div class="upload-area" (click)="inputImagem.click()"
+           (dragover)="$event.preventDefault()" (drop)="onDrop($event)">
         <mat-icon>cloud_upload</mat-icon>
         <p>Clique ou arraste imagens aqui</p>
         <p class="upload-hint">JPG, PNG ou WEBP — múltiplas permitidas</p>

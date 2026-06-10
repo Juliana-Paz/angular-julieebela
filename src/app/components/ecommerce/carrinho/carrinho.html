@@ -1,107 +1,95 @@
-<div class="carrinho-container">
+@if (itens().length === 0) {
+  <div class="carrinho-vazio">
+    <mat-icon>shopping_cart</mat-icon>
+    <h2>Seu carrinho está vazio</h2>
+    <p>Explore nossa coleção e adicione produtos incríveis!</p>
+    <a routerLink="/" class="btn-ver-loja">Ver Pijamas</a>
+  </div>
+}
 
-  <h1 class="page-title">Meu Carrinho</h1>
+@if (itens().length > 0) {
+  <div class="carrinho-layout">
 
-  @if (itens().length === 0) {
-    <div class="carrinho-vazio">
-      <mat-icon>shopping_cart</mat-icon>
-      <h2>Seu carrinho está vazio</h2>
-      <p>Explore nossa coleção e adicione produtos incríveis!</p>
-      <a mat-flat-button color="primary" routerLink="/">Ver Pijamas</a>
-    </div>
-  }
+    <!-- Coluna de itens -->
+    <div>
+      <h2 class="carrinho-title">
+        <mat-icon>shopping_bag</mat-icon>
+        Meu Carrinho
+      </h2>
 
-  @if (itens().length > 0) {
-    <div class="carrinho-layout">
+      @for (item of itens(); track item.pijama.id) {
+        <div class="carrinho-item">
+          <img [src]="getImageUrl(item.pijama)" [alt]="item.pijama.nome" class="item-img" />
 
-      <!-- Lista de itens -->
-      <div class="itens-lista">
-        @for (item of itens(); track item.pijama.id) {
-          <div class="item-card">
-            <img [src]="getImageUrl(item.pijama)" [alt]="item.pijama.nome" class="item-img" />
+          <div class="item-info">
+            <p class="item-nome">{{ item.pijama.nome }}</p>
 
-            <div class="item-info">
-              <p class="item-categoria">{{ item.pijama.categoria?.nome }}</p>
-              <h3 class="item-nome">{{ item.pijama.nome }}</h3>
-              @if (item.varianteInfo) {
-                <p class="item-meta">{{ item.varianteInfo.tamanhoNome }}{{ item.varianteInfo.corNome ? ' / ' + item.varianteInfo.corNome : '' }}</p>
-              }
-              <p class="item-preco">R$ {{ item.pijama.preco | number:'1.2-2' }}</p>
-            </div>
+            @if (item.varianteInfo) {
+              <p class="item-variante">
+                <span class="item-variante-badge">{{ item.varianteInfo.tamanhoNome }}</span>
+                @if (item.varianteInfo.corNome) {
+                  <span class="item-variante-badge">{{ item.varianteInfo.corNome }}</span>
+                }
+              </p>
+            }
 
-            <div class="item-controles">
-              <div class="quantidade-row">
-                <button mat-icon-button (click)="diminuir(item, item.quantidade)" class="qty-btn">
-                  <mat-icon>remove</mat-icon>
-                </button>
-                <span class="qty-value">{{ item.quantidade }}</span>
-                <button mat-icon-button (click)="aumentar(item, item.quantidade)" class="qty-btn">
-                  <mat-icon>add</mat-icon>
-                </button>
+            <div class="item-bottom">
+              <div class="qty-ctrl">
+                <button class="qty-btn" type="button" (click)="diminuir(item, item.quantidade)">−</button>
+                <span class="qty-val">{{ item.quantidade }}</span>
+                <button class="qty-btn" type="button" (click)="aumentar(item, item.quantidade)">+</button>
               </div>
-              <p class="item-subtotal">R$ {{ (item.pijama.preco * item.quantidade) | number:'1.2-2' }}</p>
-              <button mat-icon-button color="warn" (click)="remover(item)" matTooltip="Remover">
-                <mat-icon>delete_outline</mat-icon>
-              </button>
+              <span class="item-preco">R$ {{ (item.pijama.preco * item.quantidade) | number:'1.2-2' }}</span>
             </div>
-          </div>
-        }
 
-        <div class="acoes-lista">
-          <button mat-stroked-button color="warn" (click)="limpar()">
-            <mat-icon>delete_sweep</mat-icon> Limpar carrinho
-          </button>
-          <a mat-stroked-button routerLink="/">
-            <mat-icon>arrow_back</mat-icon> Continuar comprando
-          </a>
+            <button class="item-remover" type="button" (click)="remover(item)">Remover</button>
+          </div>
         </div>
+      }
+
+      <div class="acoes-lista">
+        <button class="btn-limpar" type="button" (click)="limpar()">Limpar carrinho</button>
+        <a routerLink="/" class="btn-continuar">← Continuar comprando</a>
+      </div>
+    </div>
+
+    <!-- Resumo lateral -->
+    <aside class="resumo-card">
+      <p class="resumo-title">Resumo do Pedido</p>
+
+      <div class="resumo-row">
+        <span>Subtotal ({{ quantidadeTotal() }} itens)</span>
+        <span>R$ {{ valorTotal() | number:'1.2-2' }}</span>
       </div>
 
-      <!-- Resumo do pedido -->
-      <aside class="resumo-card">
-        <h2 class="resumo-title">Resumo do Pedido</h2>
-        <mat-divider />
-
-        <div class="resumo-linha">
-          <span>Subtotal ({{ quantidadeTotal() }} itens)</span>
-          <span>R$ {{ valorTotal() | number:'1.2-2' }}</span>
+      @if (cupom()) {
+        <div class="resumo-row resumo-desconto">
+          <span>
+            Cupom "{{ cupom()!.codigo }}"
+            <button class="remove-cupom" type="button" (click)="removerCupom()">×</button>
+          </span>
+          <span>- R$ {{ desconto() | number:'1.2-2' }}</span>
         </div>
+      }
 
-        @if (cupom()) {
-          <div class="resumo-linha desconto">
-            <span>Cupom "{{ cupom()!.codigo }}"
-              <button mat-icon-button (click)="removerCupom()" class="remove-cupom-btn" matTooltip="Remover cupom">
-                <mat-icon>close</mat-icon>
-              </button>
-            </span>
-            <span>- R$ {{ desconto() | number:'1.2-2' }}</span>
-          </div>
-        }
+      <div class="resumo-total">
+        <span>Total</span>
+        <span>R$ {{ valorTotalFinal() | number:'1.2-2' }}</span>
+      </div>
 
-        <mat-divider />
-        <div class="resumo-linha total">
-          <span>Total</span>
-          <span>R$ {{ valorTotalFinal() | number:'1.2-2' }}</span>
+      @if (!cupom()) {
+        <div class="cupom-row">
+          <input class="cupom-input" [formControl]="cupomControl" placeholder="Código do cupom" />
+          <button class="cupom-btn" type="button" (click)="aplicarCupom()" [disabled]="carregandoCupom()">
+            {{ carregandoCupom() ? '...' : 'Aplicar' }}
+          </button>
         </div>
+      }
 
-        @if (!cupom()) {
-          <div class="cupom-area">
-            <mat-form-field appearance="outline" class="cupom-field">
-              <mat-label>Código do cupom</mat-label>
-              <input matInput [formControl]="cupomControl" placeholder="JULIE10" />
-            </mat-form-field>
-            <button mat-stroked-button color="primary" (click)="aplicarCupom()" [disabled]="carregandoCupom()">
-              {{ carregandoCupom() ? 'Verificando...' : 'Aplicar' }}
-            </button>
-          </div>
-        }
+      <button class="btn-checkout" type="button" (click)="finalizar()">
+        Finalizar Compra
+      </button>
+    </aside>
 
-        <button mat-flat-button color="primary" class="btn-finalizar" (click)="finalizar()">
-          <mat-icon>payment</mat-icon> Finalizar Compra
-        </button>
-      </aside>
-
-    </div>
-  }
-
-</div>
+  </div>
+}

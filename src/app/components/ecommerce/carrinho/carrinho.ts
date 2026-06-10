@@ -2,13 +2,8 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatDividerModule } from '@angular/material/divider';
 import { CarrinhoService } from '../../../services/carrinho.service';
 import { CupomService } from '../../../services/cupom.service';
 import { EcommerceAuthService } from '../../../services/ecommerce-auth.service';
@@ -16,9 +11,7 @@ import { CarrinhoItem, PijamaEcommerce } from '../ecommerce.types';
 
 @Component({
   selector: 'app-carrinho',
-  imports: [CommonModule, ReactiveFormsModule, RouterLink,
-            MatButtonModule, MatCardModule, MatIconModule,
-            MatInputModule, MatFormFieldModule, MatDividerModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, MatIconModule],
   templateUrl: './carrinho.html',
   styleUrl: './carrinho.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
