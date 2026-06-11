@@ -1,120 +1,107 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ChangeDetectorRef, Component, ElementRef, inject, ViewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { RecuperacaoSenhaService } from '../../../services/recuperacao-senha.service';
-
-type Etapa = 'email' | 'codigo' | 'nova-senha';
 
 @Component({
   selector: 'app-recuperar-senha',
-  imports: [
-    ReactiveFormsModule,
-    RouterLink,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatIconModule,
-    MatSnackBarModule,
-  ],
+  imports: [CommonModule, RouterLink, MatIconModule],
   templateUrl: './recuperar-senha.html',
   styleUrl: './recuperar-senha.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecuperarSenha {
-  private readonly fb = inject(FormBuilder);
   private readonly service = inject(RecuperacaoSenhaService);
-  private readonly snack = inject(MatSnackBar);
   private readonly router = inject(Router);
+  private readonly cdr = inject(ChangeDetectorRef);
 
-  readonly etapa = signal<Etapa>('email');
-  readonly carregando = signal(false);
+  @ViewChild('emailInput') emailInputRef!: ElementRef<HTMLInputElement>;
+  @ViewChild('codigoInput') codigoInputRef!: ElementRef<HTMLInputElement>;
+  @ViewChild('novaSenhaInput') novaSenhaInputRef!: ElementRef<HTMLInputElement>;
+  @ViewChild('confirmarSenhaInput') confirmarSenhaInputRef!: ElementRef<HTMLInputElement>;
 
-  private tokenTemporario = '';
+  passo = 1;
+  carregando = false;
+  erro = '';
 
-  hideSenha = true;
-  hideConfirmar = true;
+  private _email = '';
+  private _token = '';
 
-  readonly emailForm = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
-  });
+  get emailExibicao(): string { return this._email; }
 
-  readonly codigoForm = this.fb.group({
-    codigo: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]],
-  });
+  onEmailInput(e: Event): void {
+    this._email = (e.target as HTMLInputElement).value.trim();
+  }
 
-  readonly senhaForm = this.fb.group({
-    novaSenha: ['', [Validators.required, Validators.minLength(6)]],
-    confirmarSenha: ['', [Validators.required]],
-  });
+  solicitarCodigo(): void {
+    this.erro = '';
+    const email = this._email || this.emailInputRef?.nativeElement?.value?.trim() || '';
+    if (!email) { this.erro = 'Informe seu e-mail.'; return; }
+    this._email = email;
+    this.carregando = true;
+    this.cdr.detectChanges();
 
-  enviarEmail(): void {
-    if (this.emailForm.invalid) {
-      this.emailForm.markAllAsTouched();
-      return;
-    }
-    this.carregando.set(true);
-    this.service.solicitar(this.emailForm.value.email!).subscribe({
+    this.service.solicitar(email).subscribe({
       next: () => {
-        this.carregando.set(false);
-        this.etapa.set('codigo');
-        this.snack.open('Código enviado! Verifique seu e-mail.', 'Fechar', { duration: 4000 });
+        this.passo = 2;
+        this.carregando = false;
+        this.cdr.detectChanges();
       },
       error: (err: any) => {
-        this.carregando.set(false);
-        const msg = err.error?.message ?? 'Erro ao enviar código. Tente novamente.';
-        this.snack.open(msg, 'Fechar', { duration: 4000 });
+        let mensagem = 'Erro ao enviar código.';
+        try {
+          const body = typeof err.error === 'string' ? JSON.parse(err.error) : err.error;
+          mensagem = body?.message ?? mensagem;
+        } catch {}
+        this.erro = mensagem;
+        this.carregando = false;
+        this.cdr.detectChanges();
       },
     });
   }
 
   verificarCodigo(): void {
-    if (this.codigoForm.invalid) {
-      this.codigoForm.markAllAsTouched();
-      return;
-    }
-    this.carregando.set(true);
-    this.service.verificarCodigo(this.codigoForm.value.codigo!).subscribe({
+    this.erro = '';
+    const codigo = this.codigoInputRef?.nativeElement?.value?.trim() || '';
+    if (!codigo) { this.erro = 'Informe o código.'; return; }
+    this.carregando = true;
+    this.cdr.detectChanges();
+
+    this.service.verificarCodigo(codigo).subscribe({
       next: (res) => {
-        this.carregando.set(false);
-        this.tokenTemporario = res.tokenTemporario;
-        this.etapa.set('nova-senha');
+        this._token = res.tokenTemporario;
+        this.passo = 3;
+        this.carregando = false;
+        this.cdr.detectChanges();
       },
-      error: (e) => {
-        this.carregando.set(false);
-        const msg = e.error?.errors?.[0]?.message ?? 'Código inválido ou expirado.';
-        this.snack.open(msg, 'Fechar', { duration: 4000 });
+      error: (err: any) => {
+        this.erro = err?.error?.errors?.[0]?.message ?? err?.error?.message ?? 'Código inválido ou expirado.';
+        this.carregando = false;
+        this.cdr.detectChanges();
       },
     });
   }
 
   redefinirSenha(): void {
-    if (this.senhaForm.invalid) {
-      this.senhaForm.markAllAsTouched();
-      return;
-    }
-    const { novaSenha, confirmarSenha } = this.senhaForm.value;
-    if (novaSenha !== confirmarSenha) {
-      this.snack.open('As senhas não coincidem.', 'Fechar', { duration: 4000 });
-      return;
-    }
-    this.carregando.set(true);
-    this.service.redefinirSenha(this.tokenTemporario, novaSenha!).subscribe({
+    this.erro = '';
+    const novaSenha = this.novaSenhaInputRef?.nativeElement?.value || '';
+    const confirmar = this.confirmarSenhaInputRef?.nativeElement?.value || '';
+    if (!novaSenha) { this.erro = 'Informe a nova senha.'; return; }
+    if (novaSenha.length < 6) { this.erro = 'Mínimo 6 caracteres.'; return; }
+    if (novaSenha !== confirmar) { this.erro = 'As senhas não coincidem.'; return; }
+    this.carregando = true;
+    this.cdr.detectChanges();
+
+    this.service.redefinirSenha(this._token, novaSenha).subscribe({
       next: () => {
-        this.carregando.set(false);
-        this.snack.open('Senha redefinida com sucesso!', 'Fechar', { duration: 4000 });
+        this.carregando = false;
+        this.cdr.detectChanges();
         this.router.navigate(['/login']);
       },
-      error: (e) => {
-        this.carregando.set(false);
-        const msg = e.error?.errors?.[0]?.message ?? 'Erro ao redefinir senha. Tente novamente.';
-        this.snack.open(msg, 'Fechar', { duration: 5000 });
+      error: (err: any) => {
+        this.erro = err?.error?.errors?.[0]?.message ?? err?.error?.message ?? 'Erro ao redefinir senha.';
+        this.carregando = false;
+        this.cdr.detectChanges();
       },
     });
   }

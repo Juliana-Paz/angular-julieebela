@@ -6,88 +6,90 @@
     <p class="home-subtitle">Conforto e fofura para os pequenos dorminhocas ✨</p>
   </div>
 
-  <!-- Search -->
-  <div class="home-toolbar">
-    <div class="search-wrap">
-      <mat-icon class="search-icon">search</mat-icon>
-      <input class="search-input" [formControl]="searchControl" placeholder="Buscar pijamas por nome..." />
-    </div>
-  </div>
-
-  <!-- Filter chips -->
-  <div class="category-chips">
-    <button class="filtro-chip" [class.active]="categoriaAtiva() === null" (click)="filtrarCategoria(null)">
-      Todos
-    </button>
-    @for (cat of categorias(); track cat.id) {
-      <button class="filtro-chip" [class.active]="categoriaAtiva() === cat.id" (click)="filtrarCategoria(cat.id)">
-        {{ cat.nome }}
-      </button>
-    }
-  </div>
-
-  <!-- Estado -->
+  <!-- Estado: loading / erro (full-width, acima do layout) -->
   @if (loading()) {
     <div class="home-state">Carregando pijamas...</div>
   }
   @if (!loading() && errorMessage()) {
     <div class="home-state error">{{ errorMessage() }}</div>
   }
-  @if (!loading() && !errorMessage() && pijamasFiltrados().length === 0) {
-    <div class="home-state">Nenhum pijama encontrado para este filtro.</div>
-  }
 
-  <!-- Grid de cards -->
-  <div class="cards-grid">
-    @for (pijama of pijamasPagina(); track pijama.id) {
-      <mat-card class="pijama-card" (click)="verDetalhe(pijama.id)">
+  <!-- Layout: sidebar + grid -->
+  <div class="loja-layout">
 
-        <div class="card-img-wrap">
-          <img [src]="getImageUrl(pijama)" [alt]="pijama.nome" class="card-img" />
-          <button
-            class="desejos-btn"
-            [class.ativo]="noDesejo(pijama.id)"
-            (click)="toggleDesejos(pijama, $event)"
-            [matTooltip]="noDesejo(pijama.id) ? 'Remover dos desejos' : 'Adicionar aos desejos'"
-            aria-label="Lista de desejos">
-            <mat-icon>{{ noDesejo(pijama.id) ? 'favorite' : 'favorite_border' }}</mat-icon>
-          </button>
-          @if (!pijama.ativo) {
-            <span class="badge-inativo">Esgotado</span>
-          }
+    <!-- Sidebar de filtros -->
+    <aside class="filtros-sidebar">
+      <div class="filtro-titulo">Categorias</div>
+      <div class="filtro-opts">
+        <div class="filtro-opt"
+             [class.active]="categoriaAtiva() === null"
+             (click)="filtrarCategoria(null)">
+          Todos
         </div>
-
-        <mat-card-content class="card-content">
-          <span class="categoria-tag"
-                [ngClass]="{
-                  'cat-menina':   (pijama.categoria?.nome ?? '').toLowerCase().includes('menina'),
-                  'cat-menino':   (pijama.categoria?.nome ?? '').toLowerCase().includes('menino'),
-                  'cat-unissex':  (pijama.categoria?.nome ?? '').toLowerCase().includes('unissex'),
-                  'cat-bebe':     (pijama.categoria?.nome ?? '').toLowerCase().includes('beb'),
-                  'cat-especial': (pijama.categoria?.nome ?? '').toLowerCase().includes('adult')
-                }">
-            {{ pijama.categoria?.nome }}
-          </span>
-          <h3 class="card-nome">{{ pijama.nome }}</h3>
-          <div class="card-meta">
-            <span class="card-tamanho">{{ pijama.variantes?.length ?? 0 }} variante(s)</span>
+        @for (cat of categorias(); track cat.id) {
+          <div class="filtro-opt"
+               [class.active]="categoriaAtiva() === cat.id"
+               (click)="filtrarCategoria(cat.id)">
+            {{ cat.nome }}
           </div>
-          <p class="card-preco">R$ {{ pijama.preco | number:'1.2-2' }}</p>
-        </mat-card-content>
+        }
+      </div>
+    </aside>
 
-        <mat-card-actions class="card-actions">
-          <button class="btn-ver-detalhes" type="button"
-                  (click)="verDetalhe(pijama.id); $event.stopPropagation()">
-            Ver Detalhes
-          </button>
-          <button class="btn-carrinho" type="button"
-                  (click)="verDetalhe(pijama.id); $event.stopPropagation()">
-            <mat-icon>shopping_cart</mat-icon>
-          </button>
-        </mat-card-actions>
+    <!-- Grid de produtos -->
+    <div class="produtos-grid">
 
-      </mat-card>
-    }
+      @if (!loading() && !errorMessage() && pijamasFiltrados().length === 0) {
+        <div class="home-state">Nenhum pijama encontrado para este filtro.</div>
+      }
+
+      @for (pijama of pijamasPagina(); track pijama.id) {
+        <mat-card class="pijama-card" (click)="verDetalhe(pijama.id)">
+
+          <div class="card-img-wrap">
+            <img [src]="getImageUrl(pijama)" [alt]="pijama.nome" class="card-img" />
+            <button
+              class="desejos-btn"
+              [class.ativo]="noDesejo(pijama.id)"
+              (click)="toggleDesejos(pijama, $event)"
+              [matTooltip]="noDesejo(pijama.id) ? 'Remover dos desejos' : 'Adicionar aos desejos'"
+              aria-label="Lista de desejos">
+              <mat-icon>{{ noDesejo(pijama.id) ? 'favorite' : 'favorite_border' }}</mat-icon>
+            </button>
+            @if (!pijama.ativo) {
+              <span class="badge-inativo">Esgotado</span>
+            }
+          </div>
+
+          <mat-card-content class="card-content">
+            <span class="categoria-tag"
+                  [ngClass]="{
+                    'cat-menina':   (pijama.categoria?.nome ?? '').toLowerCase().includes('menina'),
+                    'cat-menino':   (pijama.categoria?.nome ?? '').toLowerCase().includes('menino'),
+                    'cat-unissex':  (pijama.categoria?.nome ?? '').toLowerCase().includes('unissex'),
+                    'cat-bebe':     (pijama.categoria?.nome ?? '').toLowerCase().includes('beb'),
+                    'cat-especial': (pijama.categoria?.nome ?? '').toLowerCase().includes('adult')
+                  }">
+              {{ pijama.categoria?.nome }}
+            </span>
+            <h3 class="card-nome">{{ pijama.nome }}</h3>
+            <div class="card-meta">
+              <span class="card-tamanho">{{ pijama.variantes?.length ?? 0 }} variante(s)</span>
+            </div>
+            <p class="card-preco">R$ {{ pijama.preco | number:'1.2-2' }}</p>
+          </mat-card-content>
+
+          <mat-card-actions class="card-actions">
+            <button class="btn-comprar" type="button"
+                    (click)="verDetalhe(pijama.id); $event.stopPropagation()">
+              Comprar
+            </button>
+          </mat-card-actions>
+
+        </mat-card>
+      }
+
+    </div>
   </div>
 
   <!-- Paginação -->

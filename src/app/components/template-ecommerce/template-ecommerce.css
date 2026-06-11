@@ -85,10 +85,47 @@
   flex-shrink: 0;
 }
 
-.action-search .mat-icon { color: var(--text-muted); }
 .action-heart  .mat-icon { color: var(--rosa); }
 .action-user   .mat-icon { color: var(--text-muted); }
 .action-cart   .mat-icon { color: var(--text); }
+
+/* ── HEADER SEARCH ──────────────────────────────────── */
+.header-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.search-toggle {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+}
+
+.search-input {
+  width: 0;
+  overflow: hidden;
+  border: none;
+  outline: none;
+  font-size: 13px;
+  color: var(--text);
+  background: transparent;
+  transition: width 0.3s ease;
+  font-family: var(--font-family);
+}
+
+.search-input.visible {
+  width: 200px;
+  border-bottom: 1px solid var(--outline);
+  padding: 4px 0;
+}
+
+/* ── NAV — links sem href ───────────────────────────── */
+.nav-novidades,
+.nav-sale { cursor: pointer; }
 
 .btn-carrinho { position: relative; }
 

@@ -12,7 +12,7 @@ export class RecuperacaoSenhaService {
   private readonly http = inject(HttpClient);
 
   solicitar(email: string): Observable<any> {
-    return this.http.post(`${this.api}/solicitar`, { email }, { observe: 'response' });
+    return this.http.post(`${this.api}/solicitar`, { email }, { responseType: 'text' as const });
   }
 
   verificarCodigo(codigo: string): Observable<TokenTemporarioResponse> {

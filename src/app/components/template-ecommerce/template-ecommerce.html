@@ -15,22 +15,31 @@
         Julie&nbsp;<span class="brand-e">&amp;</span>&nbsp;Bela
       </a>
 
+      <!-- Busca expansível -->
+      <div class="header-search" [class.open]="buscaAberta">
+        <button class="search-toggle" (click)="toggleBusca()" aria-label="Buscar">
+          <mat-icon>search</mat-icon>
+        </button>
+        <input #buscaInput
+               class="search-input"
+               [class.visible]="buscaAberta"
+               placeholder="Buscar pijamas..."
+               [(ngModel)]="termoBusca"
+               (keydown.enter)="buscar()">
+      </div>
+
       <!-- Navegação de categorias -->
       <nav class="cat-nav" aria-label="Categorias">
-        <a routerLink="/" class="nav-menina">Menina</a>
-        <a routerLink="/" class="nav-menino">Menino</a>
-        <a routerLink="/" class="nav-bebe">Bebê</a>
-        <a routerLink="/" class="nav-unissex">Unissex</a>
-        <a routerLink="/" class="nav-novidades">Novidades</a>
-        <a routerLink="/" class="nav-sale">Sale</a>
+        <a routerLink="/" [queryParams]="{categoria: 'menina'}" class="nav-menina">Menina</a>
+        <a routerLink="/" [queryParams]="{categoria: 'menino'}" class="nav-menino">Menino</a>
+        <a routerLink="/" [queryParams]="{categoria: 'bebê'}" class="nav-bebe">Bebê</a>
+        <a routerLink="/" [queryParams]="{categoria: 'unissex'}" class="nav-unissex">Unissex</a>
+        <a class="nav-novidades" (click)="emBreve()">Novidades</a>
+        <a class="nav-sale" (click)="emBreve()">Sale</a>
       </nav>
 
       <!-- Ações à direita -->
       <div class="header-actions">
-
-        <button mat-icon-button class="action-search" aria-label="Buscar">
-          <mat-icon>search</mat-icon>
-        </button>
 
         <a mat-icon-button routerLink="/lista-desejos" class="action-heart" aria-label="Lista de desejos">
           <mat-icon>favorite_border</mat-icon>

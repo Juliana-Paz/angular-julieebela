@@ -217,7 +217,7 @@ export class PijamaForm implements OnInit, AfterViewInit {
         ghostClass: 'sortable-ghost',
         chosenClass: 'sortable-chosen',
         dragClass: 'sortable-drag',
-        onEnd: (event) => {
+        onEnd: (event: { oldIndex?: number; newIndex?: number }) => {
           if (event.oldIndex === undefined || event.newIndex === undefined) return;
           const item = this.imagensSalvas.splice(event.oldIndex, 1)[0];
           this.imagensSalvas.splice(event.newIndex, 0, item);
@@ -233,7 +233,7 @@ export class PijamaForm implements OnInit, AfterViewInit {
         ghostClass: 'sortable-ghost',
         chosenClass: 'sortable-chosen',
         dragClass: 'sortable-drag',
-        onEnd: (event) => {
+        onEnd: (event: { oldIndex?: number; newIndex?: number }) => {
           if (event.oldIndex === undefined || event.newIndex === undefined) return;
           const item = this.novasImagens.splice(event.oldIndex, 1)[0];
           this.novasImagens.splice(event.newIndex, 0, item);
@@ -253,7 +253,7 @@ export class PijamaForm implements OnInit, AfterViewInit {
           ghostClass: 'sortable-ghost',
           chosenClass: 'sortable-chosen',
           dragClass: 'sortable-drag',
-          onEnd: (event) => {
+          onEnd: (event: { oldIndex?: number; newIndex?: number }) => {
             if (event.oldIndex === undefined || event.newIndex === undefined) return;
             const item = this.imagensSalvas.splice(event.oldIndex, 1)[0];
             this.imagensSalvas.splice(event.newIndex, 0, item);
@@ -274,7 +274,7 @@ export class PijamaForm implements OnInit, AfterViewInit {
           ghostClass: 'sortable-ghost',
           chosenClass: 'sortable-chosen',
           dragClass: 'sortable-drag',
-          onEnd: (event) => {
+          onEnd: (event: { oldIndex?: number; newIndex?: number }) => {
             if (event.oldIndex === undefined || event.newIndex === undefined) return;
             const item = this.novasImagens.splice(event.oldIndex, 1)[0];
             this.novasImagens.splice(event.newIndex, 0, item);

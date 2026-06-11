@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { debounceTime, distinctUntilChanged, forkJoin } from 'rxjs';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -13,14 +12,12 @@ import { PijamaEcommerce } from '../ecommerce.types';
 import { Categoria } from '../../../models/categoria.model';
 import { PijamaService } from '../../../services/pijama.service';
 import { CategoriaService } from '../../../services/categoria.service';
-import { CarrinhoService } from '../../../services/carrinho.service';
 import { ListaDesejosService } from '../../../services/lista-desejos.service';
 import { EcommerceAuthService } from '../../../services/ecommerce-auth.service';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, ReactiveFormsModule, MatCardModule,
-            MatIconModule, MatPaginatorModule, MatTooltipModule],
+  imports: [CommonModule, MatCardModule, MatIconModule, MatPaginatorModule, MatTooltipModule],
   templateUrl: './home.html',
   styleUrl: './home.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -28,10 +25,10 @@ import { EcommerceAuthService } from '../../../services/ecommerce-auth.service';
 export class Home implements OnInit {
   private readonly pijamaService = inject(PijamaService);
   private readonly categoriaService = inject(CategoriaService);
-  private readonly carrinhoService = inject(CarrinhoService);
   private readonly listaDesejosService = inject(ListaDesejosService);
   private readonly authService = inject(EcommerceAuthService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly snack = inject(MatSnackBar);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -47,7 +44,6 @@ export class Home implements OnInit {
 
   readonly logado = this.authService.logado;
   readonly imageBase = 'http://localhost:8080/pijamas/imagens/download/';
-  readonly searchControl = new FormControl('');
 
   readonly pijamasFiltrados = computed(() => {
     const search = this.searchTerm().toLowerCase();
@@ -65,12 +61,6 @@ export class Home implements OnInit {
   });
 
   ngOnInit(): void {
-    this.searchControl.valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      takeUntilDestroyed(this.destroyRef),
-    ).subscribe(v => { this.searchTerm.set(v ?? ''); this.pageIndex.set(0); });
-
     forkJoin({
       pijamas: this.pijamaService.findAll(),
       categorias: this.categoriaService.findAll(),
@@ -79,6 +69,7 @@ export class Home implements OnInit {
         this.pijamas.set(pijamas);
         this.categorias.set(categorias);
         this.loading.set(false);
+        this.aplicarQueryParams(this.route.snapshot.queryParams);
       },
       error: () => { this.loading.set(false); this.errorMessage.set('Não foi possível carregar os pijamas.'); },
     });
@@ -89,6 +80,28 @@ export class Home implements OnInit {
         error: () => {},
       });
     }
+
+    this.route.queryParams
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(params => {
+        if (this.categorias().length > 0) {
+          this.aplicarQueryParams(params);
+        }
+      });
+  }
+
+  private aplicarQueryParams(params: Params): void {
+    if (params['busca'] !== undefined) {
+      this.searchTerm.set(params['busca'] || '');
+      this.pageIndex.set(0);
+    }
+    if (params['categoria']) {
+      const cat = this.categorias().find(c =>
+        c.nome.toLowerCase().includes((params['categoria'] as string).toLowerCase()));
+      if (cat) this.filtrarCategoria(cat.id);
+    } else if (!params['busca']) {
+      this.filtrarCategoria(null);
+    }
   }
 
   filtrarCategoria(id: number | null): void { this.categoriaAtiva.set(id); this.pageIndex.set(0); }
@@ -98,12 +111,6 @@ export class Home implements OnInit {
   getImageUrl(pijama: PijamaEcommerce): string {
     const imagem = pijama.imagens?.[0];
     return imagem?.fid ? this.imageBase + encodeURIComponent(imagem.fid) : 'https://placehold.co/400x300?text=Pijama';
-  }
-
-  adicionarCarrinho(pijama: PijamaEcommerce): void {
-    this.carrinhoService.adicionar(pijama);
-    this.snack.open(`${pijama.nome} adicionado!`, 'Ver carrinho', { duration: 3000, verticalPosition: 'top' })
-      .onAction().subscribe(() => this.router.navigate(['/carrinho']));
   }
 
   verDetalhe(id: number): void { this.router.navigate(['/detalhe-pijama', id]); }

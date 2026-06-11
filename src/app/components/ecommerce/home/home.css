@@ -29,61 +29,51 @@
   font-size: 1rem;
 }
 
-/* ── SEARCH ─────────────────────────────────────────── */
-.home-toolbar { display: flex; gap: 12px; flex-wrap: wrap; }
+/* ── LOJA LAYOUT ────────────────────────────────────── */
+.loja-layout {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 24px;
+  align-items: start;
+}
 
-.search-wrap {
-  flex: 1;
-  min-width: 260px;
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-.search-icon {
-  position: absolute;
-  left: 14px;
-  color: var(--text-muted);
-  pointer-events: none;
-}
-.search-input {
-  width: 100%;
-  height: 44px;
-  padding: 0 16px 0 46px;
-  border: 1.5px solid var(--outline);
-  border-radius: var(--radius-full);
-  font-size: 14px;
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+/* ── FILTROS SIDEBAR ────────────────────────────────── */
+.filtros-sidebar {
   background: var(--surface);
-  color: var(--text);
-  font-family: var(--font-family);
-}
-.search-input:focus {
-  border-color: var(--text);
-  box-shadow: 0 0 0 3px rgba(44,42,38,0.08);
+  border-radius: var(--radius-lg);
+  border: 0.5px solid var(--outline);
+  padding: 16px;
+  position: sticky;
+  top: 80px;
 }
 
-/* ── FILTER CHIPS ───────────────────────────────────── */
-.category-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-
-.filtro-chip {
-  padding: 7px 16px;
-  border-radius: var(--radius-full);
-  border: 1.5px solid var(--outline);
-  background: var(--surface);
-  color: var(--text-muted);
-  font-size: 12px;
+.filtro-titulo {
+  font-size: 10px;
   font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.filtro-opt {
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--text-muted);
   cursor: pointer;
   transition: all 0.2s;
-  font-family: var(--font-family);
-  line-height: 1;
 }
-.filtro-chip:hover,
-.filtro-chip.active {
-  border-color: var(--text);
+
+.filtro-opt:hover {
+  background: var(--surface-low);
+  color: var(--text);
+}
+
+.filtro-opt.active {
   background: var(--text);
   color: var(--surface);
+  font-weight: 500;
 }
 
 /* ── ESTADO ─────────────────────────────────────────── */
@@ -98,10 +88,10 @@
 }
 .home-state.error { background: var(--rosa-light); color: var(--rosa-dark); }
 
-/* ── CARDS GRID ─────────────────────────────────────── */
-.cards-grid {
+/* ── PRODUTOS GRID ──────────────────────────────────── */
+.produtos-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 20px;
 }
 
@@ -220,57 +210,44 @@
 
 /* ── CARD ACTIONS ───────────────────────────────────── */
 .card-actions {
-  display: flex;
-  gap: 8px;
   padding: 8px 16px 16px !important;
-  align-items: center;
 }
 
-/* Botão Ver Detalhes */
-.btn-ver-detalhes {
-  flex: 1;
+/* Botão Comprar */
+.btn-comprar {
+  width: 100%;
   padding: 10px;
-  background: transparent;
-  color: var(--text);
-  border: 1.5px solid var(--outline);
+  background: var(--text);
+  color: var(--surface);
+  border: none;
   border-radius: var(--radius-sm);
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background 0.2s;
   font-family: var(--font-family);
 }
-.btn-ver-detalhes:hover {
-  border-color: var(--text);
-  background: var(--text);
-  color: var(--surface);
+.btn-comprar:hover {
+  background: var(--laranja);
 }
-
-/* Botão Carrinho */
-.btn-carrinho {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--text);
-  color: var(--surface);
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
-  flex-shrink: 0;
-}
-.btn-carrinho:hover { background: var(--laranja); }
-.btn-carrinho mat-icon { font-size: 18px; width: 18px; height: 18px; }
 
 /* ── PAGINATOR ──────────────────────────────────────── */
 mat-paginator { margin-top: 8px; }
 
 /* ── RESPONSIVE ─────────────────────────────────────── */
+@media (max-width: 900px) {
+  .loja-layout {
+    grid-template-columns: 160px 1fr;
+    gap: 16px;
+  }
+}
 @media (max-width: 640px) {
-  .cards-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .loja-layout {
+    grid-template-columns: 1fr;
+  }
+  .filtros-sidebar { position: static; }
+  .produtos-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
   .card-img { height: 160px; }
 }

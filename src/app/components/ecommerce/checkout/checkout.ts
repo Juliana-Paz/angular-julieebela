@@ -10,7 +10,6 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { ClienteService } from '../../../services/cliente.service';
 import { PedidoService } from '../../../services/pedido.service';
 import { CarrinhoService } from '../../../services/carrinho.service';
@@ -21,9 +20,7 @@ interface FormaPagamento { id: number; nome: string; }
 @Component({
   selector: 'app-checkout',
   imports: [CommonModule, ReactiveFormsModule, RouterLink, MatButtonModule, MatCardModule,
-            MatFormFieldModule, MatInputModule, MatRadioModule, MatDividerModule, MatIconModule,
-            NgxMaskDirective],
-  providers: [provideNgxMask()],
+            MatFormFieldModule, MatInputModule, MatRadioModule, MatDividerModule, MatIconModule],
   templateUrl: './checkout.html',
   styleUrl: './checkout.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
