@@ -1,96 +1,137 @@
 <div class="ecommerce-shell">
 
-  <!-- ANNOUNCEMENT BAR (não-sticky, rola com a página) -->
-  <div class="announcement-bar">
-    Frete grátis em pedidos acima de R$&nbsp;199&nbsp;&middot;&nbsp;Tecido ultrasuave&nbsp;&middot;&nbsp;Troca fácil em 30 dias
+  <!-- CAMADA 1 — Barra superior fina (sticky) -->
+  <div class="top-bar">
+    <div class="top-bar-social">
+      <a href="#" target="_blank" class="social-icon">
+        <mat-icon svgIcon="facebook"></mat-icon>
+        <i class="ti ti-brand-facebook"></i>
+      </a>
+      <a href="#" target="_blank" class="social-icon">
+        <i class="ti ti-brand-instagram"></i>
+      </a>
+      <a href="#" target="_blank" class="social-icon">
+        <i class="ti ti-brand-youtube"></i>
+      </a>
+      <a href="#" target="_blank" class="social-icon">
+        <i class="ti ti-brand-tiktok"></i>
+      </a>
+    </div>
+    <div class="top-bar-links">
+      <a class="top-bar-link" routerLink="/#" (click)="emBreve()">
+        <i class="ti ti-truck"></i> Rastrear pedido
+      </a>
+      <a class="top-bar-link" routerLink="/lista-desejos">
+        <i class="ti ti-heart"></i> Favoritos
+      </a>
+      <a class="top-bar-link" routerLink="/carrinho">
+        <i class="ti ti-shopping-bag"></i>
+        Meu carrinho ({{ totalItensCarrinho }})
+      </a>
+      @if (!logado) {
+        <a class="top-bar-link" routerLink="/login">
+          <i class="ti ti-user"></i> Entrar
+        </a>
+      } @else {
+        <a class="top-bar-link top-bar-user-btn" routerLink="/perfil">
+          <i class="ti ti-user"></i>
+          {{ nomeUsuario }}
+        </a>
+      }
+    </div>
   </div>
 
-  <!-- STICKY WRAPPER: header + rainbow bar abaixo -->
-  <div class="header-sticky">
-
-    <header class="site-header">
-
-      <!-- Logo -->
-      <a class="brand" routerLink="/">
-        Julie&nbsp;<span class="brand-e">&amp;</span>&nbsp;Bela
-      </a>
-
-      <!-- Busca expansível -->
-      <div class="header-search" [class.open]="buscaAberta">
-        <button class="search-toggle" (click)="toggleBusca()" aria-label="Buscar">
-          <mat-icon>search</mat-icon>
-        </button>
-        <input #buscaInput
-               class="search-input"
-               [class.visible]="buscaAberta"
-               placeholder="Buscar pijamas..."
-               [(ngModel)]="termoBusca"
-               (keydown.enter)="buscar()">
-      </div>
-
-      <!-- Navegação de categorias -->
-      <nav class="cat-nav" aria-label="Categorias">
-        <a routerLink="/" [queryParams]="{categoria: 'menina'}" class="nav-menina">Menina</a>
-        <a routerLink="/" [queryParams]="{categoria: 'menino'}" class="nav-menino">Menino</a>
-        <a routerLink="/" [queryParams]="{categoria: 'bebê'}" class="nav-bebe">Bebê</a>
-        <a routerLink="/" [queryParams]="{categoria: 'unissex'}" class="nav-unissex">Unissex</a>
-        <a class="nav-novidades" (click)="emBreve()">Novidades</a>
-        <a class="nav-sale" (click)="emBreve()">Sale</a>
-      </nav>
-
-      <!-- Ações à direita -->
-      <div class="header-actions">
-
-        <a mat-icon-button routerLink="/lista-desejos" class="action-heart" aria-label="Lista de desejos">
-          <mat-icon>favorite_border</mat-icon>
-        </a>
-
-        @if (!logado()) {
-          <a mat-icon-button routerLink="/login" class="action-user" aria-label="Entrar">
-            <mat-icon>person_outline</mat-icon>
-          </a>
-        }
-        @if (logado()) {
-          <button mat-icon-button [matMenuTriggerFor]="menuConta" class="action-user" aria-label="Minha conta">
-            <mat-icon>person</mat-icon>
-          </button>
-        }
-
-        <a mat-icon-button routerLink="/carrinho" class="action-cart btn-carrinho" aria-label="Carrinho"
-           [matBadge]="quantidadeCarrinho() > 0 ? quantidadeCarrinho() : null"
-           matBadgeSize="small">
-          <mat-icon>shopping_cart</mat-icon>
-        </a>
-
-      </div>
-    </header>
-
-    <!-- RAINBOW BAR abaixo do header -->
-    <div class="rainbow-bar"></div>
-
-  </div><!-- /header-sticky -->
-
-  <!-- Menu dropdown da conta (logado) -->
-  <mat-menu #menuConta="matMenu">
-    <button mat-menu-item type="button" disabled>
-      <mat-icon>badge</mat-icon>
-      <span>{{ nomeUsuario() }}</span>
-    </button>
-    <button mat-menu-item type="button" (click)="irPerfil()">
+  <!-- Menu dropdown do perfil -->
+  <mat-menu #menuPerfil="matMenu" panelClass="perfil-menu">
+    <button mat-menu-item routerLink="/perfil">
       <mat-icon>manage_accounts</mat-icon>
       <span>Meu Perfil</span>
     </button>
-    @if (perfil() === 'Adm') {
-      <button mat-menu-item type="button" routerLink="/adm">
-        <mat-icon>admin_panel_settings</mat-icon>
-        <span>Área Admin</span>
-      </button>
-    }
-    <button mat-menu-item type="button" (click)="logout()">
+    <button mat-menu-item routerLink="/perfil" [queryParams]="{aba:'pedidos'}">
+      <mat-icon>receipt_long</mat-icon>
+      <span>Meus Pedidos</span>
+    </button>
+    <button mat-menu-item (click)="logout()">
       <mat-icon>logout</mat-icon>
       <span>Sair</span>
     </button>
   </mat-menu>
+
+  <!-- STICKY WRAPPER: main-header + cat-nav + rainbow bar -->
+  <div class="header-sticky">
+
+    <!-- CAMADA 2 — Header principal -->
+    <div class="main-header">
+      <div class="main-search">
+        <i class="ti ti-search search-icon"></i>
+        <input type="text"
+               placeholder="Faça uma pesquisa..."
+               [(ngModel)]="termoBusca"
+               (keydown.enter)="buscar()"
+               class="main-search-input">
+      </div>
+
+      <a routerLink="/" class="main-logo">
+        Julie <span>&amp;</span> Bela
+      </a>
+
+      <div class="main-user">
+        @if (!logado) {
+          <a routerLink="/cadastro" class="cadastro-rapido">
+            <i class="ti ti-user-plus"></i>
+            <div class="cadastro-rapido-text">
+              <span>Cadastre-se para uma</span>
+              <strong>compra rápida!</strong>
+            </div>
+          </a>
+        } @else {
+          <button class="user-logado" [matMenuTriggerFor]="menuPerfil">
+            <div class="user-avatar-sm">{{ iniciais }}</div>
+            <span>{{ nomeUsuario }}</span>
+            <i class="ti ti-chevron-down" style="font-size:11px;color:var(--text-muted);"></i>
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- CAMADA 3 — Nav de categorias -->
+    <nav class="cat-nav">
+      <a class="cat-nav-item"
+         routerLink="/" [queryParams]="{}"
+         [class.active]="categoriaAtiva() === ''"
+         (click)="categoriaAtiva.set('')">
+        Todos
+      </a>
+      <a class="cat-nav-item rosa"
+         routerLink="/" [queryParams]="{categoria:'menina'}"
+         [class.active]="categoriaAtiva() === 'menina'"
+         (click)="categoriaAtiva.set('menina')">
+        Menina
+      </a>
+      <a class="cat-nav-item azul"
+         routerLink="/" [queryParams]="{categoria:'menino'}"
+         [class.active]="categoriaAtiva() === 'menino'"
+         (click)="categoriaAtiva.set('menino')">
+        Menino
+      </a>
+      <a class="cat-nav-item verde"
+         routerLink="/" [queryParams]="{categoria:'bebe'}"
+         [class.active]="categoriaAtiva() === 'bebe'"
+         (click)="categoriaAtiva.set('bebe')">
+        Bebê
+      </a>
+      <a class="cat-nav-item laranja"
+         routerLink="/" [queryParams]="{categoria:'unissex'}"
+         [class.active]="categoriaAtiva() === 'unissex'"
+         (click)="categoriaAtiva.set('unissex')">
+        Unissex
+      </a>
+      <a class="cat-nav-item" (click)="emBreve()">Novidades</a>
+      <a class="cat-nav-item lilas" (click)="emBreve()">Sale</a>
+    </nav>
+    <div class="rainbow-bar"></div>
+
+  </div><!-- /header-sticky -->
 
   <!-- CONTEÚDO -->
   <main class="content" role="main">

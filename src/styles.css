@@ -204,3 +204,19 @@ table[mat-table] td {
   align-items: center;
   gap: 10px;
 }
+
+/* ── SLIDER — track colors global ───────────────────── */
+.mdc-slider__track--active_fill {
+  background-color: #1a1814 !important;
+  border-color: #1a1814 !important;
+}
+
+.mdc-slider__track--inactive {
+  background-color: #ddd !important;
+}
+
+.mdc-slider__track { height: 1px !important; }
+.mdc-slider { --mdc-slider-handle-height: 10px; --mdc-slider-handle-width: 10px; }
+
+select option:checked { background: var(--surface-low); color: var(--text); }
+select:focus { outline: none; }
