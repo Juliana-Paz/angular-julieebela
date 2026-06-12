@@ -50,8 +50,6 @@ export const routes: Routes = [
             { path: 'detalhe-pijama/:id', component: DetalhePijama, title: 'Detalhe do Pijama',
               resolve: { pijama: pijamaResolver } },
             { path: 'carrinho', component: Carrinho, title: 'Carrinho' },
-            { path: 'checkout', component: Checkout, title: 'Checkout', canActivate: [authGuard] },
-            { path: 'pedido-confirmado/:id', component: PedidoConfirmado, title: 'Pedido Confirmado', canActivate: [authGuard] },
             { path: 'lista-desejos', component: ListaDesejos, title: 'Lista de Desejos', canActivate: [authGuard] },
         ]
     },
@@ -63,6 +61,8 @@ export const routes: Routes = [
             { path: 'cadastro', component: Cadastro, title: 'Cadastro' },
             { path: 'recuperar-senha', component: RecuperarSenha, title: 'Recuperar Senha' },
             { path: 'perfil', component: Perfil, title: 'Meu Perfil', canActivate: [authGuard] },
+            { path: 'checkout', component: Checkout, title: 'Checkout', canActivate: [authGuard] },
+            { path: 'pedido-confirmado/:id', component: PedidoConfirmado, title: 'Pedido Confirmado', canActivate: [authGuard] },
         ]
     },
     {

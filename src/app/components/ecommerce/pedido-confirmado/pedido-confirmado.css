@@ -1,27 +1,289 @@
-.confirmado-container { max-width: 720px; margin: 0 auto; padding: 48px 16px; }
+.confirmado-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 24px 64px;
+  width: 100%;
+}
 
-.state-msg { text-align: center; padding: 60px 0; color: #888; }
-.state-msg.error { color: #d32f2f; }
+/* Estados de loading/erro */
+.state-msg {
+  font-size: 0.875rem;
+  color: #41484d;
+  text-align: center;
+  padding: 48px 0;
+}
 
-.confirmado-content { display: flex; flex-direction: column; align-items: center; gap: 24px; }
+.state-msg-erro { color: #ba1a1a; }
 
-.success-icon mat-icon { font-size: 88px; width: 88px; height: 88px; color: #2e7d32; }
+/* Card central */
+.confirmado-card {
+  width: 100%;
+  max-width: 560px;
+  background: #fff;
+  border-radius: 1.5rem;
+  padding: 40px;
+  box-shadow: 0 12px 30px -8px rgba(44,42,38,0.1);
+  border: 1px solid rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
 
-.confirmado-titulo { margin: 0; font-size: 2rem; font-weight: 800; color: #1a1a1a; text-align: center; }
-.confirmado-sub { margin: 0; color: #555; text-align: center; font-size: 1rem; }
+/* Ícone de sucesso */
+.confirmado-icone-wrapper {
+  margin-bottom: 20px;
+}
 
-.pedido-card { width: 100%; border-radius: 16px !important; box-shadow: 0 4px 24px rgba(0,0,0,0.08) !important; }
+.confirmado-icone-circulo {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(43,91,117,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-.detalhes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
-.detalhe-item { display: flex; flex-direction: column; gap: 4px; }
-.label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #aaa; }
-.status-badge { background: #e8f5e9; color: #2e7d32; font-weight: 700; font-size: 12px; padding: 3px 10px; border-radius: 12px; display: inline-block; text-transform: uppercase; }
-.desconto { color: #388e3c; font-weight: 600; }
-.detalhe-item.total .label { color: #9e1b19; }
-.total-valor { font-size: 1.5rem; font-weight: 800; color: #9e1b19; }
+.confirmado-icone {
+  font-size: 2rem !important;
+  color: #2B5B75;
+  font-variation-settings: 'FILL' 1, 'wght' 600;
+}
 
-.itens-titulo { margin: 0 0 10px; font-size: 1rem; font-weight: 700; color: #1a1a1a; }
-.itens-list { display: flex; flex-direction: column; gap: 8px; }
-.item-row { display: flex; justify-content: space-between; font-size: 14px; color: #555; padding: 6px 0; border-bottom: 1px solid #f0f0f0; }
+/* Título */
+.confirmado-titulo {
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #2B5B75;
+  margin: 0 0 10px;
+  letter-spacing: -0.01em;
+}
 
-.confirmado-acoes { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+.confirmado-subtitulo {
+  font-size: 0.875rem;
+  color: #41484d;
+  line-height: 1.6;
+  margin: 0 0 28px;
+  max-width: 380px;
+}
+
+/* Meta do pedido */
+.pedido-meta {
+  width: 100%;
+  background: #F8F3EC;
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  text-align: left;
+  gap: 16px;
+}
+
+.pedido-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pedido-meta-direita { text-align: right; }
+
+.meta-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(65,72,77,0.6);
+}
+
+.meta-valor {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1d1b18;
+}
+
+.meta-numero {
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 1.1rem;
+  color: #2B5B75;
+}
+
+/* Resumo */
+.pedido-resumo {
+  width: 100%;
+  text-align: left;
+}
+
+.resumo-titulo {
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1d1b18;
+  margin: 0 0 16px;
+}
+
+/* Itens */
+.resumo-itens {
+  display: flex;
+  flex-direction: column;
+}
+
+.resumo-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(193,199,205,0.2);
+}
+
+.resumo-item:first-child { padding-top: 0; }
+.resumo-item:last-child  { border-bottom: none; }
+
+.item-imagem {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #F8F3EC;
+  flex-shrink: 0;
+}
+
+.item-imagem img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.item-nome {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1d1b18;
+  margin: 0 0 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-detalhe {
+  font-size: 0.75rem;
+  color: rgba(65,72,77,0.65);
+  margin: 0;
+}
+
+.item-valor {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #2B5B75;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Separador */
+.resumo-separador {
+  height: 1px;
+  background: rgba(193,199,205,0.3);
+  margin: 16px 0;
+}
+
+/* Desconto */
+.resumo-desconto {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.desconto-label {
+  font-size: 0.8rem;
+  color: #41484d;
+}
+
+.desconto-valor {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #3a8a52;
+}
+
+/* Total */
+.resumo-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.total-label {
+  font-size: 0.875rem;
+  color: #41484d;
+  font-weight: 500;
+}
+
+.total-valor {
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #2B5B75;
+}
+
+/* Botões */
+.confirmado-acoes {
+  display: flex;
+  gap: 12px;
+  margin-top: 32px;
+  width: 100%;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-meus-pedidos {
+  padding: 12px 28px;
+  background: #2B5B75;
+  color: #fff;
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 700;
+  font-family: inherit;
+  transition: background 0.2s;
+  box-shadow: 0 4px 12px rgba(43,91,117,0.2);
+}
+
+.btn-meus-pedidos:hover { background: #214863; }
+
+.btn-continuar {
+  padding: 12px 28px;
+  background: transparent;
+  color: #41484d;
+  border: 1px solid rgba(193,199,205,0.5);
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+
+.btn-continuar:hover {
+  border-color: #2B5B75;
+  color: #2B5B75;
+  background: rgba(43,91,117,0.04);
+}
+
+/* Responsivo */
+@media (max-width: 480px) {
+  .confirmado-card    { padding: 28px 20px; }
+  .confirmado-wrapper { padding: 32px 16px; }
+  .pedido-meta        { flex-direction: column; }
+  .pedido-meta-direita { text-align: left; }
+  .confirmado-acoes   { flex-direction: column; }
+  .btn-meus-pedidos,
+  .btn-continuar      { text-align: center; }
+}

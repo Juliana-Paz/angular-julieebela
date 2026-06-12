@@ -1,74 +1,91 @@
-<div class="confirmado-container">
+<div class="confirmado-wrapper">
 
   @if (loading()) {
     <div class="state-msg">Carregando pedido...</div>
   }
 
   @if (!loading() && error()) {
-    <div class="state-msg error">{{ error() }}</div>
+    <div class="state-msg state-msg-erro">{{ error() }}</div>
   }
 
   @if (!loading() && !error() && pedido(); as p) {
-    <div class="confirmado-content">
+    <div class="confirmado-card">
 
-      <div class="success-icon">
-        <mat-icon>check_circle</mat-icon>
+      <!-- Ícone de sucesso -->
+      <div class="confirmado-icone-wrapper">
+        <div class="confirmado-icone-circulo">
+          <mat-icon class="confirmado-icone">check</mat-icon>
+        </div>
       </div>
 
-      <h1 class="confirmado-titulo">Pedido Confirmado!</h1>
-      <p class="confirmado-sub">Seu pedido <strong>#{{ p.id }}</strong> foi recebido com sucesso. Obrigada pela compra!</p>
+      <!-- Título -->
+      <h2 class="confirmado-titulo">Pedido Realizado com Sucesso!</h2>
+      <p class="confirmado-subtitulo">
+        Seu pedido foi recebido com sucesso e está sendo processado
+        com todo o carinho e cuidado do nosso ateliê.
+      </p>
 
-      <mat-card class="pedido-card">
-        <mat-card-header>
-          <mat-card-title>Detalhes do Pedido</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="detalhes-grid">
-            <div class="detalhe-item">
-              <span class="label">Data</span>
-              <span>{{ p.data | date:'dd/MM/yyyy HH:mm' }}</span>
-            </div>
-            <div class="detalhe-item">
-              <span class="label">Status</span>
-              <span class="status-badge">{{ $any(p.status)?.nome ?? p.status }}</span>
-            </div>
-            <div class="detalhe-item">
-              <span class="label">Pagamento</span>
-              <span>{{ $any(p.formaPagamento)?.nome ?? p.formaPagamento }}</span>
-            </div>
-            @if (p.valorDesconto > 0) {
-              <div class="detalhe-item">
-                <span class="label">Desconto</span>
-                <span class="desconto">- R$ {{ p.valorDesconto | number:'1.2-2' }}</span>
+      <!-- Número do pedido + data -->
+      <div class="pedido-meta">
+        <div class="pedido-meta-item">
+          <span class="meta-label">Número do Pedido</span>
+          <span class="meta-valor meta-numero">#JB-{{ p.id }}</span>
+        </div>
+        <div class="pedido-meta-item pedido-meta-direita">
+          <span class="meta-label">Data do Pedido</span>
+          <span class="meta-valor">{{ p.data | date:'dd/MM/yyyy' }}</span>
+        </div>
+      </div>
+
+      <!-- Resumo do pedido -->
+      <div class="pedido-resumo">
+        <h3 class="resumo-titulo">Resumo do Pedido</h3>
+
+        <!-- Lista de itens -->
+        <div class="resumo-itens">
+          @for (item of p.itens; track item.id) {
+            <div class="resumo-item">
+              <div class="item-imagem">
+                <img [src]="getImageUrl(item.pijama)"
+                     [alt]="item.pijama.nome" />
               </div>
-            }
-            <div class="detalhe-item total">
-              <span class="label">Total do Pedido</span>
-              <span class="total-valor">R$ {{ p.total | number:'1.2-2' }}</span>
-            </div>
-          </div>
-
-          @if (p.itens.length) {
-            <mat-divider style="margin: 16px 0" />
-            <h3 class="itens-titulo">Itens do Pedido</h3>
-            <div class="itens-list">
-              @for (item of p.itens; track item.id) {
-                <div class="item-row">
-                  <span>{{ item.pijama.nome }} x{{ item.quantidade }}</span>
-                  <span>R$ {{ item.subtotal | number:'1.2-2' }}</span>
-                </div>
-              }
+              <div class="item-info">
+                <p class="item-nome">{{ item.pijama.nome }}</p>
+                <p class="item-detalhe">Qtd: {{ item.quantidade }}</p>
+              </div>
+              <span class="item-valor">
+                R$ {{ item.subtotal | number:'1.2-2' }}
+              </span>
             </div>
           }
-        </mat-card-content>
-      </mat-card>
+        </div>
 
+        <div class="resumo-separador"></div>
+
+        @if (p.valorDesconto > 0) {
+          <div class="resumo-desconto">
+            <span class="desconto-label">Desconto aplicado</span>
+            <span class="desconto-valor">- R$ {{ p.valorDesconto | number:'1.2-2' }}</span>
+          </div>
+        }
+
+        <!-- Total -->
+        <div class="resumo-total">
+          <span class="total-label">Total da Compra</span>
+          <span class="total-valor">R$ {{ p.total | number:'1.2-2' }}</span>
+        </div>
+      </div>
+
+      <!-- Botões -->
       <div class="confirmado-acoes">
-        <a mat-stroked-button color="primary" routerLink="/perfil" [queryParams]="{aba: 3}">
-          <mat-icon>receipt_long</mat-icon> Ver meus pedidos
+        <a class="btn-meus-pedidos"
+           routerLink="/perfil"
+           [queryParams]="{aba: 3}">
+          Ver meus pedidos
         </a>
-        <a mat-flat-button color="primary" routerLink="/">
-          <mat-icon>store</mat-icon> Continuar comprando
+        <a class="btn-continuar"
+           routerLink="/">
+          Continuar comprando
         </a>
       </div>
 

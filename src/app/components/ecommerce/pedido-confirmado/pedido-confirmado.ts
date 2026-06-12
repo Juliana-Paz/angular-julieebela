@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { PedidoService } from '../../../services/pedido.service';
 import { Pedido } from '../../../models/pedido.model';
+import { Pijama } from '../../../models/pijama.model';
 
 @Component({
   selector: 'app-pedido-confirmado',
@@ -22,6 +23,15 @@ export class PedidoConfirmado implements OnInit {
   readonly pedido = signal<Pedido | null>(null);
   readonly loading = signal(true);
   readonly error = signal('');
+
+  private readonly imageBase = 'http://localhost:8080/pijamas/imagens/download/';
+
+  getImageUrl(pijama: Pijama): string {
+    const arq = pijama.imagens?.[0];
+    return arq?.fid
+      ? this.imageBase + encodeURIComponent(arq.fid)
+      : 'https://placehold.co/56x56?text=JB';
+  }
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));

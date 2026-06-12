@@ -1,178 +1,198 @@
-<div class="checkout-container">
+<div class="checkout-page">
 
-  <div class="checkout-header">
-    <a mat-stroked-button routerLink="/carrinho" class="btn-voltar">
-      <mat-icon>arrow_back</mat-icon> Voltar ao Carrinho
-    </a>
-    <h1 class="page-title">Finalizar Compra</h1>
-  </div>
+  <!-- Voltar -->
+  <a class="checkout-voltar" routerLink="/carrinho">
+    <mat-icon>arrow_back</mat-icon>
+    Voltar ao Carrinho
+  </a>
+
+  <h2 class="checkout-titulo">Finalizar Compra</h2>
 
   @if (loading()) {
-    <div class="checkout-state">Carregando dados...</div>
+    <div class="checkout-loading">Carregando dados...</div>
   }
 
   @if (!loading()) {
     <div class="checkout-layout">
 
-      <!-- Coluna esquerda: endereço + pagamento -->
-      <div class="checkout-forms">
+      <!-- COLUNA ESQUERDA -->
+      <div class="checkout-formulario">
 
-        <!-- Endereço de entrega -->
-        <mat-card class="checkout-card">
-          <mat-card-header>
-            <mat-icon mat-card-avatar>local_shipping</mat-icon>
-            <mat-card-title>Endereço de Entrega</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
+        <!-- Seção: Endereço -->
+        <div class="checkout-secao">
+          <div class="checkout-secao-header">
+            <mat-icon class="secao-icone">local_shipping</mat-icon>
+            <h3 class="secao-titulo">Endereço de Entrega</h3>
+          </div>
 
-            @if (enderecos().length > 0 && !mostrarNovoEndereco()) {
-              <div class="enderecos-list">
-                @for (end of enderecos(); track $index) {
-                  <div class="endereco-option" [class.selecionado]="enderecoSelecionado() === $index"
-                    (click)="selecionarEndereco($index)">
-                    <mat-icon>{{ enderecoSelecionado() === $index ? 'radio_button_checked' : 'radio_button_unchecked' }}</mat-icon>
-                    <div class="end-texto">
-                      <p class="end-principal">{{ end.logradouro }}, {{ end.numero }}
-                        @if (end.complemento) { - {{ end.complemento }} }
-                      </p>
-                      <p class="end-secundario">{{ end.bairro }} • {{ end.municipio }}/{{ end.estado }} • CEP {{ end.cep }}</p>
-                    </div>
+          @if (enderecos().length > 0) {
+            <div class="enderecos-lista">
+              @for (end of enderecos(); track $index) {
+                <label class="endereco-opcao"
+                       [class.selecionado]="enderecoSelecionado() === $index"
+                       (click)="selecionarEndereco($index)">
+                  <div class="radio-custom"></div>
+                  <div class="endereco-info">
+                    <p class="endereco-detalhe endereco-principal">
+                      {{ end.logradouro }}, {{ end.numero }}
+                      @if (end.complemento) {<span> — {{ end.complemento }}</span>}
+                    </p>
+                    <p class="endereco-detalhe">
+                      {{ end.bairro }} • {{ end.municipio }}/{{ end.estado }}
+                      • CEP {{ end.cep }}
+                    </p>
                   </div>
-                }
+                </label>
+              }
+            </div>
+          }
+
+          <!-- Formulário novo endereço -->
+          @if (mostrarNovoEndereco()) {
+            <form [formGroup]="novoEnderecoForm"
+                  (ngSubmit)="salvarNovoEndereco()"
+                  class="novo-end-form">
+              <div class="end-form-row">
+                <div class="campo-wrapper">
+                  <label class="campo-label">CEP</label>
+                  <input class="campo-input-sm" formControlName="cep"
+                         placeholder="00000-000" maxlength="9" />
+                </div>
+                <div class="campo-wrapper">
+                  <label class="campo-label">UF</label>
+                  <input class="campo-input-sm" formControlName="estado"
+                         placeholder="UF" maxlength="2" />
+                </div>
               </div>
-            }
-
-            <button mat-stroked-button color="primary" type="button" (click)="toggleNovoEndereco()" class="btn-novo-end">
-              <mat-icon>{{ mostrarNovoEndereco() ? 'close' : 'add' }}</mat-icon>
-              {{ mostrarNovoEndereco() ? 'Cancelar' : (enderecos().length ? 'Outro endereço' : 'Adicionar endereço') }}
-            </button>
-
-            @if (mostrarNovoEndereco()) {
-              <form [formGroup]="novoEnderecoForm" class="end-form">
-                <div class="form-row">
-                  <mat-form-field appearance="outline">
-                    <mat-label>CEP</mat-label>
-                    <input matInput formControlName="cep" placeholder="00000-000" maxlength="9" />
-                    @if (novoEnderecoForm.get('cep')?.touched && novoEnderecoForm.get('cep')?.invalid) {
-                      <mat-error>CEP inválido.</mat-error>
-                    }
-                  </mat-form-field>
-                  <mat-form-field appearance="outline">
-                    <mat-label>Estado (UF)</mat-label>
-                    <input matInput formControlName="estado" maxlength="2" />
-                    @if (novoEnderecoForm.get('estado')?.touched && novoEnderecoForm.get('estado')?.invalid) {
-                      <mat-error>Obrigatório (2 letras).</mat-error>
-                    }
-                  </mat-form-field>
+              <div class="campo-wrapper">
+                <label class="campo-label">Logradouro</label>
+                <input class="campo-input-full" formControlName="logradouro"
+                       placeholder="Rua, Av..." />
+              </div>
+              <div class="end-form-row">
+                <div class="campo-wrapper">
+                  <label class="campo-label">Número</label>
+                  <input class="campo-input-sm" formControlName="numero"
+                         placeholder="Nº" />
                 </div>
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Logradouro</mat-label>
-                  <input matInput formControlName="logradouro" />
-                  @if (novoEnderecoForm.get('logradouro')?.touched && novoEnderecoForm.get('logradouro')?.invalid) {
-                    <mat-error>Obrigatório.</mat-error>
-                  }
-                </mat-form-field>
-                <div class="form-row">
-                  <mat-form-field appearance="outline">
-                    <mat-label>Número</mat-label>
-                    <input matInput formControlName="numero" />
-                    @if (novoEnderecoForm.get('numero')?.touched && novoEnderecoForm.get('numero')?.invalid) {
-                      <mat-error>Obrigatório.</mat-error>
-                    }
-                  </mat-form-field>
-                  <mat-form-field appearance="outline">
-                    <mat-label>Complemento</mat-label>
-                    <input matInput formControlName="complemento" />
-                  </mat-form-field>
+                <div class="campo-wrapper">
+                  <label class="campo-label">Complemento</label>
+                  <input class="campo-input-sm" formControlName="complemento"
+                         placeholder="Opcional" />
                 </div>
-                <div class="form-row">
-                  <mat-form-field appearance="outline">
-                    <mat-label>Bairro</mat-label>
-                    <input matInput formControlName="bairro" />
-                    @if (novoEnderecoForm.get('bairro')?.touched && novoEnderecoForm.get('bairro')?.invalid) {
-                      <mat-error>Obrigatório.</mat-error>
-                    }
-                  </mat-form-field>
-                  <mat-form-field appearance="outline">
-                    <mat-label>Município</mat-label>
-                    <input matInput formControlName="municipio" />
-                    @if (novoEnderecoForm.get('municipio')?.touched && novoEnderecoForm.get('municipio')?.invalid) {
-                      <mat-error>Obrigatório.</mat-error>
-                    }
-                  </mat-form-field>
+              </div>
+              <div class="end-form-row">
+                <div class="campo-wrapper">
+                  <label class="campo-label">Bairro</label>
+                  <input class="campo-input-sm" formControlName="bairro"
+                         placeholder="Bairro" />
                 </div>
-
-                <button mat-flat-button color="accent" type="button"
-                  (click)="salvarNovoEndereco()" [disabled]="salvandoEndereco()" class="btn-salvar-end">
-                  <mat-icon>save</mat-icon>
-                  {{ salvandoEndereco() ? 'Salvando...' : 'Salvar Endereço' }}
-                </button>
-              </form>
-            }
-
-          </mat-card-content>
-        </mat-card>
-
-        <!-- Forma de pagamento -->
-        <mat-card class="checkout-card">
-          <mat-card-header>
-            <mat-icon mat-card-avatar>payment</mat-icon>
-            <mat-card-title>Forma de Pagamento</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <form [formGroup]="form">
-              <mat-radio-group formControlName="idFormaPagamento" class="pagamento-radio">
-                @for (forma of formasPagamento; track forma.id) {
-                  <mat-radio-button [value]="forma.id" class="radio-option">
-                    {{ forma.nome }}
-                  </mat-radio-button>
-                }
-              </mat-radio-group>
+                <div class="campo-wrapper">
+                  <label class="campo-label">Município</label>
+                  <input class="campo-input-sm" formControlName="municipio"
+                         placeholder="Cidade" />
+                </div>
+              </div>
+              <button type="submit" class="btn-salvar-end"
+                      [disabled]="salvandoEndereco()">
+                <mat-icon>save</mat-icon>
+                {{ salvandoEndereco() ? 'Salvando...' : 'Salvar Endereço' }}
+              </button>
             </form>
-          </mat-card-content>
-        </mat-card>
+          }
+
+          <button class="btn-adicionar-end" type="button"
+                  (click)="toggleNovoEndereco()">
+            <mat-icon>{{ mostrarNovoEndereco() ? 'close' : 'add' }}</mat-icon>
+            {{ mostrarNovoEndereco() ? 'Cancelar' : (enderecos().length > 0 ? 'Outro endereço' : 'Adicionar endereço') }}
+          </button>
+        </div>
+
+        <!-- Seção: Forma de Pagamento -->
+        <div class="checkout-secao">
+          <div class="checkout-secao-header">
+            <mat-icon class="secao-icone">credit_card</mat-icon>
+            <h3 class="secao-titulo">Forma de Pagamento</h3>
+          </div>
+
+          <div class="pagamento-grid">
+            @for (forma of formasPagamento; track forma.id) {
+              <label class="pagamento-opcao"
+                     [class.selecionado]="form.value.idFormaPagamento === forma.id"
+                     (click)="form.get('idFormaPagamento')?.setValue(forma.id)">
+                <div class="radio-custom"></div>
+                <span class="pagamento-label">{{ forma.nome }}</span>
+              </label>
+            }
+          </div>
+        </div>
 
       </div>
 
-      <!-- Coluna direita: resumo do pedido -->
-      <aside class="resumo-card">
-        <h2 class="resumo-title">Resumo do Pedido</h2>
-        <mat-divider />
+      <!-- COLUNA DIREITA: Resumo -->
+      <aside class="checkout-resumo">
+        <h3 class="resumo-titulo">Resumo do Pedido</h3>
 
         <div class="resumo-itens">
           @for (item of itens(); track item.pijama.id) {
             <div class="resumo-item">
-              <span>{{ item.pijama.nome }} x{{ item.quantidade }}</span>
-              <span>R$ {{ (item.pijama.preco * item.quantidade) | number:'1.2-2' }}</span>
+              <span class="resumo-item-nome">
+                {{ item.pijama.nome }}
+                <span class="resumo-item-qtd">x{{ item.quantidade }}</span>
+              </span>
+              <span class="resumo-item-valor">
+                R$ {{ item.pijama.preco * item.quantidade | number:'1.2-2':'pt-BR' }}
+              </span>
             </div>
           }
         </div>
 
-        <mat-divider />
+        <div class="resumo-separador"></div>
 
         <div class="resumo-linha">
           <span>Subtotal</span>
-          <span>R$ {{ valorTotal() | number:'1.2-2' }}</span>
+          <span>R$ {{ valorTotal() | number:'1.2-2':'pt-BR' }}</span>
         </div>
 
-        @if (cupom()) {
-          <div class="resumo-linha desconto">
-            <span>Desconto ({{ cupom()!.codigo }})</span>
-            <span>- R$ {{ desconto() | number:'1.2-2' }}</span>
+        @if (desconto() > 0) {
+          <div class="resumo-desconto">
+            <span class="desconto-label">
+              <mat-icon>sell</mat-icon>
+              Desconto ({{ cupom()?.codigo }})
+            </span>
+            <span>- R$ {{ desconto() | number:'1.2-2':'pt-BR' }}</span>
           </div>
         }
 
-        <mat-divider />
-        <div class="resumo-linha total">
-          <span>Total</span>
-          <span>R$ {{ valorTotalFinal() | number:'1.2-2' }}</span>
+        <div class="resumo-separador"></div>
+
+        <div class="resumo-total">
+          <span class="total-label">Total</span>
+          <span class="total-valor">
+            R$ {{ valorTotalFinal() | number:'1.2-2':'pt-BR' }}
+          </span>
         </div>
 
-        <button mat-flat-button color="primary" class="btn-finalizar"
-          (click)="finalizar()" [disabled]="salvando()">
-          <mat-icon>check_circle</mat-icon>
-          {{ salvando() ? 'Processando...' : 'Confirmar Pedido' }}
+        <button class="btn-confirmar"
+                type="button"
+                (click)="finalizar()"
+                [disabled]="salvando() || itens().length === 0">
+          @if (!salvando()) {
+            <mat-icon>shopping_bag</mat-icon>
+            <span>CONFIRMAR PEDIDO</span>
+          }
+          @if (salvando()) {
+            <span class="btn-loading">
+              <mat-icon class="icone-girando">refresh</mat-icon>
+              Processando...
+            </span>
+          }
         </button>
+
+        <p class="resumo-seguranca">
+          <mat-icon>lock</mat-icon>
+          Pagamento 100% seguro com criptografia SSL
+        </p>
       </aside>
 
     </div>

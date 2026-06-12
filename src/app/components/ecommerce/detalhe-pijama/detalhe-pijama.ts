@@ -151,10 +151,10 @@ export class DetalhePijama implements OnInit {
     }
     this.carrinhoService.adicionar(p as PijamaEcommerce, 1, this.varianteSelecionada() ?? undefined);
     if (!this.authService.logado()) {
-      this.router.navigate(['/login'], { queryParams: { returnUrl: '/checkout' } });
+      this.router.navigate(['/login'], { queryParams: { returnUrl: '/carrinho' } });
       return;
     }
-    this.router.navigate(['/checkout']);
+    this.router.navigate(['/carrinho']);
   }
 
   toggleDesejos(): void {
