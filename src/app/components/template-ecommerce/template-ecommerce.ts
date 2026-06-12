@@ -1,15 +1,15 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { EcommerceAuthService } from '../../services/ecommerce-auth.service';
 import { CarrinhoService } from '../../services/carrinho.service';
 
 @Component({
   selector: 'app-template-ecommerce',
-  imports: [RouterOutlet, RouterLink, FormsModule, MatIconModule, MatMenuModule],
+  imports: [RouterOutlet, RouterLink, FormsModule, MatIconModule, MatTooltipModule],
   templateUrl: './template-ecommerce.html',
   styleUrl: './template-ecommerce.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -22,9 +22,12 @@ export class TemplateEcommerce implements OnInit {
   private readonly carrinhoService = inject(CarrinhoService);
 
   termoBusca = '';
+  newsletterEmail = '';
   readonly categoriaAtiva = signal('');
+  readonly scrolled = signal(false);
+  perfilAberto = false;
 
-  get logado(): boolean {
+  get usuarioLogado(): boolean {
     return this.authService.logado();
   }
 
@@ -32,13 +35,30 @@ export class TemplateEcommerce implements OnInit {
     return this.authService.nomeUsuario() ?? '';
   }
 
-  get iniciais(): string {
+  get inicialUsuario(): string {
     const nome = this.authService.nomeUsuario() ?? '';
-    return nome.split(' ').slice(0, 2).map((n: string) => n[0]).join('').toUpperCase();
+    return nome.split(' ')[0]?.[0]?.toUpperCase() ?? '?';
   }
 
   get totalItensCarrinho(): number {
     return this.carrinhoService.quantidadeTotal();
+  }
+
+  @HostListener('window:scroll')
+  onScroll(): void {
+    this.scrolled.set(window.scrollY > 10);
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(e: MouseEvent): void {
+    if (!(e.target as HTMLElement).closest('.perfil-dropdown')) {
+      this.perfilAberto = false;
+    }
+  }
+
+  irPara(rota: string): void {
+    this.perfilAberto = false;
+    this.router.navigate([rota]);
   }
 
   ngOnInit(): void {
@@ -60,5 +80,11 @@ export class TemplateEcommerce implements OnInit {
 
   emBreve(): void {
     this.snack.open('Em breve!', '', { duration: 2500, verticalPosition: 'top' });
+  }
+
+  inscreverNewsletter(): void {
+    if (!this.newsletterEmail) return;
+    console.log('Newsletter:', this.newsletterEmail);
+    this.newsletterEmail = '';
   }
 }

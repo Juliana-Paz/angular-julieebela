@@ -1,286 +1,279 @@
-<div class="home-container">
+<!-- Estado: loading / erro -->
+@if (loading) {
+  <div class="home-state">Carregando pijamas...</div>
+}
+@if (!loading && errorMessage) {
+  <div class="home-state error">{{ errorMessage }}</div>
+}
 
-  <!-- Estado: loading / erro -->
-  @if (loading) {
-    <div class="home-state">Carregando pijamas...</div>
-  }
-  @if (!loading && errorMessage) {
-    <div class="home-state error">{{ errorMessage }}</div>
-  }
+<!-- Layout principal -->
+<div class="loja-layout">
 
-  <!-- Layout: sidebar + grid -->
-  <div class="loja-layout">
+  <!-- Sidebar filtros -->
+  <aside class="filtros-sidebar">
+    <div class="filtro-header">
+      <span class="filtro-titulo">
+        <svg class="filtro-icone" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0
+            1-.45 1-1v-6s3.72-4.8 5.74-7.39A.998.998 0 0 0 18.95 4H5.04
+            a1 1 0 0 0-.79 1.61z"/>
+        </svg>
+        Filtros
+      </span>
+      <button class="btn-limpar-tudo" (click)="limparFiltros()">LIMPAR TUDO</button>
+    </div>
 
-    <aside class="filtros-sidebar">
-
-      <!-- Categorias -->
-      <div class="filtro-section">
-        <div class="filtro-header" (click)="toggleFiltro('categorias')">
-          <span>Categorias</span>
-          <mat-icon class="chevron-icon">{{ filtroAberto['categorias'] ? 'expand_less' : 'expand_more' }}</mat-icon>
+    <!-- Faixa de preço -->
+    <div class="filtro-grupo">
+      <button class="filtro-grupo-header"
+              (click)="toggleFiltro('preco')">
+        Faixa de preço
+        <mat-icon>{{ filtrosAbertos['preco'] ? 'expand_less' : 'expand_more' }}</mat-icon>
+      </button>
+      @if (filtrosAbertos['preco']) {
+        <div class="filtro-grupo-body">
+          <div class="faixa-preco-inputs">
+            <input type="number" [(ngModel)]="precoMinTemp" placeholder="0" min="0">
+            <span>—</span>
+            <input type="number" [(ngModel)]="precoMaxTemp" placeholder="9999" [attr.max]="precoMaximo">
+          </div>
+          <button class="btn-aplicar-preco" (click)="aplicarFiltroPreco()">Aplicar</button>
         </div>
-        @if (filtroAberto['categorias']) {
-          <div class="filtro-body">
+      }
+    </div>
+
+    <!-- Tamanho -->
+    <div class="filtro-grupo">
+      <button class="filtro-grupo-header"
+              (click)="toggleFiltro('tamanho')">
+        Tamanho
+        <mat-icon>{{ filtrosAbertos['tamanho'] ? 'expand_less' : 'expand_more' }}</mat-icon>
+      </button>
+      @if (filtrosAbertos['tamanho']) {
+        <div class="filtro-grupo-body">
+          <div class="tamanho-grid">
+            @for (t of tamanhos; track t) {
+              <button class="tam-btn"
+                      [class.active]="tamanhosSelecionados.includes(t)"
+                      (click)="toggleTamanho(t)">{{ t }}</button>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Categoria/Gênero -->
+    <div class="filtro-grupo">
+      <button class="filtro-grupo-header"
+              (click)="toggleFiltro('categoria')">
+        Categoria
+        <mat-icon>{{ filtrosAbertos['categoria'] ? 'expand_less' : 'expand_more' }}</mat-icon>
+      </button>
+      @if (filtrosAbertos['categoria']) {
+        <div class="filtro-grupo-body">
+          @for (cat of categorias; track cat.id) {
             <label class="filtro-check">
-              <input type="radio" name="cat"
-                     [checked]="categoriaSelecionada === null"
-                     (change)="filtrarCategoria(null)">
-              Todos
+              <input type="checkbox"
+                     [checked]="categoriaSelecionada === cat.id"
+                     (change)="filtrarCategoria(cat.id)">
+              <span>{{ cat.nome }}</span>
             </label>
-            @for (cat of categorias; track cat.id) {
-              <label class="filtro-check">
-                <input type="radio" name="cat"
-                       [checked]="categoriaSelecionada === cat.id"
-                       (change)="filtrarCategoria(cat.id)">
-                {{ cat.nome }}
-              </label>
-            }
-          </div>
-        }
-      </div>
-
-      <!-- Faixa de preço -->
-      <div class="filtro-section">
-        <div class="filtro-header" (click)="toggleFiltro('preco')">
-          <span>Faixa de preço</span>
-          <mat-icon class="chevron-icon">{{ filtroAberto['preco'] ? 'expand_less' : 'expand_more' }}</mat-icon>
-        </div>
-        @if (filtroAberto['preco']) {
-          <div class="filtro-body">
-            <div class="preco-inputs">
-              <input type="number" [(ngModel)]="precoMin"
-                     placeholder="R$ Min" min="0"
-                     (change)="aplicarFiltroPreco()"
-                     class="preco-input">
-              <span>—</span>
-              <input type="number" [(ngModel)]="precoMax"
-                     placeholder="R$ Max" min="0"
-                     (change)="aplicarFiltroPreco()"
-                     class="preco-input">
-            </div>
-          </div>
-        }
-      </div>
-
-      <!-- Tamanho -->
-      <div class="filtro-section">
-        <div class="filtro-header" (click)="toggleFiltro('tamanho')">
-          <span>Tamanho</span>
-          <mat-icon class="chevron-icon">{{ filtroAberto['tamanho'] ? 'expand_less' : 'expand_more' }}</mat-icon>
-        </div>
-        @if (filtroAberto['tamanho']) {
-          <div class="filtro-body">
-            <div class="tamanho-grid">
-              @for (tam of tamanhos; track tam) {
-                <button class="tam-btn"
-                        [class.active]="tamanhoSelecionado === tam"
-                        (click)="filtrarTamanho(tam)">
-                  {{ tam }}
-                </button>
-              }
-            </div>
-          </div>
-        }
-      </div>
-
-      <!-- Cor -->
-      <div class="filtro-section">
-        <div class="filtro-header" (click)="toggleFiltro('cor')">
-          <span>Cor</span>
-          <mat-icon class="chevron-icon">{{ filtroAberto['cor'] ? 'expand_less' : 'expand_more' }}</mat-icon>
-        </div>
-        @if (filtroAberto['cor']) {
-          <div class="filtro-body">
-            @for (cor of cores; track cor.id) {
-              <label class="filtro-check">
-                <input type="checkbox"
-                       [checked]="coresSelecionadas.includes(cor.id)"
-                       (change)="toggleCor(cor.id)">
-                <span class="cor-bolinha"
-                      [style.background]="cor.hexadecimal"></span>
-                {{ cor.nome }}
-              </label>
-            }
-          </div>
-        }
-      </div>
-
-      <!-- Modelo -->
-      <div class="filtro-section">
-        <div class="filtro-header" (click)="toggleFiltro('modelo')">
-          <span>Modelo</span>
-          <mat-icon class="chevron-icon">{{ filtroAberto['modelo'] ? 'expand_less' : 'expand_more' }}</mat-icon>
-        </div>
-        @if (filtroAberto['modelo']) {
-          <div class="filtro-body">
-            @for (m of modelos; track m) {
-              <label class="filtro-check">
-                <input type="checkbox"
-                       [checked]="modelosSelecionados.includes(m)"
-                       (change)="toggleModelo(m)">
-                {{ m }}
-              </label>
-            }
-          </div>
-        }
-      </div>
-
-      <!-- Gênero -->
-      <div class="filtro-section">
-        <div class="filtro-header" (click)="toggleFiltro('genero')">
-          <span>Gênero</span>
-          <mat-icon class="chevron-icon">{{ filtroAberto['genero'] ? 'expand_less' : 'expand_more' }}</mat-icon>
-        </div>
-        @if (filtroAberto['genero']) {
-          <div class="filtro-body">
-            @for (g of generos; track g) {
-              <label class="filtro-check">
-                <input type="checkbox"
-                       [checked]="generosSelecionados.includes(g)"
-                       (change)="toggleGenero(g)">
-                {{ g }}
-              </label>
-            }
-          </div>
-        }
-      </div>
-
-      <!-- Marca -->
-      <div class="filtro-section">
-        <div class="filtro-header" (click)="toggleFiltro('marca')">
-          <span>Marca</span>
-          <mat-icon class="chevron-icon">{{ filtroAberto['marca'] ? 'expand_less' : 'expand_more' }}</mat-icon>
-        </div>
-        @if (filtroAberto['marca']) {
-          <div class="filtro-body">
-            @for (m of marcas; track m.id) {
-              <label class="filtro-check">
-                <input type="checkbox"
-                       [checked]="marcasSelecionadas.includes(m.id)"
-                       (change)="toggleMarca(m.id)">
-                {{ m.nome }}
-              </label>
-            }
-          </div>
-        }
-      </div>
-
-      <!-- Composição / Material -->
-      <div class="filtro-section">
-        <div class="filtro-header" (click)="toggleFiltro('material')">
-          <span>Composição</span>
-          <mat-icon class="chevron-icon">{{ filtroAberto['material'] ? 'expand_less' : 'expand_more' }}</mat-icon>
-        </div>
-        @if (filtroAberto['material']) {
-          <div class="filtro-body">
-            @for (m of materiais; track m.id) {
-              <label class="filtro-check">
-                <input type="checkbox"
-                       [checked]="materiaisSelecionados.includes(m.id)"
-                       (change)="toggleMaterial(m.id)">
-                {{ m.nome }}
-              </label>
-            }
-          </div>
-        }
-      </div>
-
-    </aside>
-
-    <!-- Grid -->
-    <div class="produtos-area">
-      <div class="produtos-toolbar">
-        <span class="produtos-count">
-          {{ pjamasFiltrados.length }} produto(s) encontrado(s)
-        </span>
-
-        <div class="ordenacao-wrapper">
-          <button class="ordenacao-btn" (click)="ordenacaoAberta=!ordenacaoAberta">
-            {{ ordenacaoLabel }}
-            <mat-icon>{{ ordenacaoAberta ? 'expand_less' : 'expand_more' }}</mat-icon>
-          </button>
-          @if (ordenacaoAberta) {
-            <div class="ordenacao-dropdown">
-              @for (op of ordenacaoOpcoes; track op.value) {
-                <div class="ordenacao-option"
-                     [class.active]="ordenacao === op.value"
-                     (click)="selecionarOrdenacao(op.value)">
-                  {{ op.label }}
-                </div>
-              }
-            </div>
           }
         </div>
-      </div>
-
-      @if (!loading && !errorMessage && pjamasFiltrados.length === 0) {
-        <div class="home-state">Nenhum pijama encontrado para este filtro.</div>
       }
+    </div>
 
-      <div class="produtos-grid">
-        @for (obj of pjamasFiltrados; track obj.id) {
-          <div class="produto-card" (click)="verDetalhes(obj.id)">
-            <div class="produto-img" [ngClass]="{
-              'bg-menina':  obj.categoria?.nome?.toLowerCase()?.includes('menina') ?? false,
-              'bg-menino':  obj.categoria?.nome?.toLowerCase()?.includes('menino') ?? false,
-              'bg-unissex': obj.categoria?.nome?.toLowerCase()?.includes('unissex') ?? false,
-              'bg-bebe':    obj.categoria?.nome?.toLowerCase()?.includes('beb') ?? false
-            }">
-              <button class="btn-favorito"
-                      [class.favoritado]="ehFavorito(obj.id)"
-                      (click)="toggleFavorito(obj.id); $event.stopPropagation()">
-                <mat-icon>{{ ehFavorito(obj.id) ? 'favorite' : 'favorite_border' }}</mat-icon>
-              </button>
-              @if (obj.imagens?.length) {
-                <img [src]="getImageUrl(obj.imagens![0].fid!)"
-                     [alt]="obj.nome">
-              } @else {
-                <div class="produto-img-placeholder">
-                  <mat-icon>checkroom</mat-icon>
-                </div>
-              }
-            </div>
-            <div class="produto-body">
-              <span class="produto-tag" [ngClass]="{
-                'cat-menina':  obj.categoria?.nome?.toLowerCase()?.includes('menina') ?? false,
-                'cat-menino':  obj.categoria?.nome?.toLowerCase()?.includes('menino') ?? false,
-                'cat-unissex': obj.categoria?.nome?.toLowerCase()?.includes('unissex') ?? false,
-                'cat-bebe':    obj.categoria?.nome?.toLowerCase()?.includes('beb') ?? false
-              }">{{ obj.categoria?.nome }}</span>
-              <div class="produto-nome">{{ obj.nome }}</div>
-              <div class="produto-preco">{{ obj.preco | currency:'BRL' }}</div>
+    <!-- Modelo -->
+    <div class="filtro-grupo">
+      <button class="filtro-grupo-header"
+              (click)="toggleFiltro('modelo')">
+        Modelo
+        <mat-icon>{{ filtrosAbertos['modelo'] ? 'expand_less' : 'expand_more' }}</mat-icon>
+      </button>
+      @if (filtrosAbertos['modelo']) {
+        <div class="filtro-grupo-body">
+          @for (m of modelos; track m) {
+            <label class="filtro-check">
+              <input type="checkbox"
+                     [checked]="modelosSelecionados.includes(m)"
+                     (change)="toggleModelo(m)">
+              <span>{{ m }}</span>
+            </label>
+          }
+        </div>
+      }
+    </div>
 
-              @if (getVariantTamanhos(obj).length) {
-                <div class="card-tamanhos">
-                  @for (tam of getVariantTamanhos(obj).slice(0, 4); track tam) {
-                    <span class="chip-tam">{{ tam }}</span>
-                  }
-                  @if (getVariantTamanhos(obj).length > 4) {
-                    <span class="chip-tam chip-mais">+{{ getVariantTamanhos(obj).length - 4 }}</span>
-                  }
-                </div>
-              }
+    <!-- Marca -->
+    <div class="filtro-grupo">
+      <button class="filtro-grupo-header"
+              (click)="toggleFiltro('marca')">
+        Marca
+        <mat-icon>{{ filtrosAbertos['marca'] ? 'expand_less' : 'expand_more' }}</mat-icon>
+      </button>
+      @if (filtrosAbertos['marca']) {
+        <div class="filtro-grupo-body">
+          @for (m of marcas; track m.id) {
+            <label class="filtro-check">
+              <input type="checkbox"
+                     [checked]="marcasSelecionadas.includes(m.id)"
+                     (change)="toggleMarca(m.id)">
+              <span>{{ m.nome }}</span>
+            </label>
+          }
+        </div>
+      }
+    </div>
 
-              @if (getVariantCores(obj).length) {
-                <div class="card-cores">
-                  @for (cor of getVariantCores(obj); track cor.id) {
-                    <span class="card-cor-dot"
-                          [style.background]="cor.hexadecimal"
-                          [title]="cor.nome"></span>
-                  }
-                </div>
-              }
+    <!-- Cor -->
+    <div class="filtro-grupo">
+      <button class="filtro-grupo-header"
+              (click)="toggleFiltro('cor')">
+        Cor
+        <mat-icon>{{ filtrosAbertos['cor'] ? 'expand_less' : 'expand_more' }}</mat-icon>
+      </button>
+      @if (filtrosAbertos['cor']) {
+        <div class="filtro-grupo-body">
+          @for (c of cores; track c.id) {
+            <label class="filtro-check cor-check">
+              <input type="checkbox"
+                     [checked]="coresSelecionadas.includes(c.id)"
+                     (change)="toggleCor(c.id)">
+              <span class="cor-dot"
+                    [style.background]="c.hexadecimal"></span>
+              <span>{{ c.nome }}</span>
+            </label>
+          }
+        </div>
+      }
+    </div>
 
-              <button class="btn-comprar"
-                      (click)="verDetalhes(obj.id); $event.stopPropagation()">
-                Comprar
-              </button>
-            </div>
+  </aside>
+
+  <!-- Área de produtos -->
+  <section class="produtos-area">
+
+    <!-- Barra: breadcrumb/contador à esquerda, ordenar à direita -->
+    <div class="produtos-barra">
+      <div class="breadcrumb-area">
+        <nav class="breadcrumb">
+          <a routerLink="/">Home</a>
+          @if (categoriaSelecionada) {
+            <span class="breadcrumb-sep">/</span>
+            <span>{{ nomeCategoriaSelecionada }}</span>
+          }
+          <span class="breadcrumb-sep">/</span>
+          <strong>Pijamas</strong>
+        </nav>
+        <span class="contador-produtos">{{ pjamasFiltrados.length }} produto(s) encontrados</span>
+      </div>
+      <div class="ordenar-wrapper">
+        <span class="ordenar-label">Ordenar por:</span>
+        <div class="ordenar-dropdown" [class.aberto]="ordenarAberto">
+          <button class="ordenar-trigger" (click)="ordenarAberto = !ordenarAberto">
+            <span>{{ ordenacaoLabel }}</span>
+            <span class="ordenar-chevron" [class.virado]="ordenarAberto">▾</span>
+          </button>
+          <div class="ordenar-painel" *ngIf="ordenarAberto">
+            <button
+              *ngFor="let op of ordenacaoOpcoes"
+              class="ordenar-opcao"
+              [class.selecionada]="ordenacao === op.value"
+              (click)="selecionarOrdenacao(op.value)">
+              {{ op.label }}
+            </button>
           </div>
-        }
+        </div>
       </div>
     </div>
 
-  </div>
+    <!-- Grid -->
+    <div class="produtos-grid">
+      @for (obj of pjamasPagina; track obj.id) {
+        <div class="produto-card" (click)="verDetalhe(obj.id)">
+          <div class="produto-img-wrap">
+            @if (obj.imagens?.[0]?.fid) {
+              <img [src]="getImagemUrl(obj.imagens![0])"
+                   [alt]="obj.nome">
+            } @else {
+              <div class="produto-img-placeholder">
+                <mat-icon>checkroom</mat-icon>
+              </div>
+            }
+            <button class="produto-wish"
+                    (click)="toggleDesejo($event, obj)"
+                    [class.ativo]="estaNoDesejo(obj.id)">
+              <mat-icon>{{ estaNoDesejo(obj.id) ? 'favorite' : 'favorite_border' }}</mat-icon>
+            </button>
+          </div>
+          <div class="produto-info">
+            <span class="categoria-tag" [ngClass]="getCategoriaClass(obj)">
+              {{ obj.categoria?.nome }}
+            </span>
+            <h3 class="produto-nome">{{ obj.nome }}</h3>
+            <p class="produto-preco">{{ obj.preco | currency:'BRL' }}</p>
+            <button class="btn-comprar"
+                    (click)="verDetalhe(obj.id); $event.stopPropagation()">
+              Comprar
+            </button>
+          </div>
+        </div>
+      }
+    </div>
 
+    @if (!loading && pjamasFiltrados.length === 0) {
+      <div class="sem-produtos">
+        <mat-icon>search_off</mat-icon>
+        <p>Nenhum pijama encontrado com esses filtros.</p>
+        <button (click)="limparFiltros()">Limpar filtros</button>
+      </div>
+    }
+
+    <!-- Paginação customizada -->
+    <div class="paginacao-wrapper" *ngIf="pjamasFiltrados.length > 0">
+      <div class="paginacao-custom">
+
+        <span class="pag-label">Items per page:</span>
+        <select class="pag-select" [(ngModel)]="itensPorPagina" (change)="onItensPorPaginaMudou()">
+          <option [value]="10">10</option>
+          <option [value]="20">20</option>
+          <option [value]="30">30</option>
+          <option [value]="40">40</option>
+        </select>
+
+        <span class="pag-range">{{ rangeLabel }}</span>
+
+        <button class="pag-btn-seta" (click)="irParaPagina(0)"
+                [disabled]="paginaAtual === 0"
+                title="Primeira página">
+          &#171;
+        </button>
+
+        <button class="pag-btn-seta" (click)="irParaPagina(paginaAtual - 1)"
+                [disabled]="paginaAtual === 0">
+          &#8249;
+        </button>
+
+        <button
+          *ngFor="let p of paginas"
+          class="pag-btn-num"
+          [class.ativo]="p === paginaAtual"
+          (click)="irParaPagina(p)">
+          {{ p + 1 }}
+        </button>
+
+        <button class="pag-btn-seta" (click)="irParaPagina(paginaAtual + 1)"
+                [disabled]="paginaAtual >= totalPaginas - 1">
+          &#8250;
+        </button>
+
+        <button class="pag-btn-seta" (click)="irParaPagina(totalPaginas - 1)"
+                [disabled]="paginaAtual >= totalPaginas - 1"
+                title="Última página">
+          &#187;
+        </button>
+
+      </div>
+    </div>
+  </section>
 </div>
