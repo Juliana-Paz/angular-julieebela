@@ -1,4 +1,12 @@
 :root {
+  /* ── PALETA LOGO JULIE & BELA ───────────────────── */
+  --azul-petroleo:       #2B5B75;
+  --azul-petroleo-hover: #214863;
+  --rosa-antigo:         #E39B84;
+  --marrom-chocolate:    #613824;
+  --tag-bg:              #F6E2DC;
+  --tag-text:            #613824;
+
   /* ── BRAND COLORS ─────────────────────────────── */
   --rosa:        #F472A0;
   --rosa-light:  #FEE8F0;
@@ -75,8 +83,12 @@
   /* ── RAINBOW BAR ─────────────────────────────────── */
   --rainbow: linear-gradient(
     90deg,
-    #F472A0, #FF8C42, #F5C842,
-    #5BAD6F, #4A90D9, #A07CC8, #F472A0
+    #2B5B75 0%,
+    #E39B84 25%,
+    #F6E2DC 45%,
+    #E39B84 65%,
+    #613824 85%,
+    #2B5B75 100%
   );
 
   /* ── RADIUS ──────────────────────────────────────── */
