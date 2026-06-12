@@ -1,54 +1,153 @@
-<div class="desejos-container">
+<div class="desejos-page">
 
+  <!-- Cabeçalho -->
   <div class="desejos-header">
-    <h1 class="page-title">Lista de Desejos</h1>
-    <a mat-stroked-button routerLink="/">
-      <mat-icon>store</mat-icon> Continuar Comprando
-    </a>
+    <div class="desejos-titulo-wrapper">
+      <mat-icon class="desejos-icone">favorite</mat-icon>
+      <h2 class="desejos-titulo">Lista de Desejos</h2>
+      <span class="desejos-contador">
+        {{ pijamas().length }} {{ pijamas().length === 1 ? 'item' : 'itens' }}
+      </span>
+    </div>
+    <div class="desejos-header-acoes">
+      @if (pijamas().length > 0) {
+        <button class="btn-limpar-lista" type="button" (click)="limparLista()">
+          <mat-icon>delete_sweep</mat-icon>
+          Limpar Lista
+        </button>
+      }
+      <a class="btn-continuar" routerLink="/">
+        <mat-icon>arrow_back</mat-icon>
+        Continuar Comprando
+      </a>
+    </div>
   </div>
 
+  <!-- Estado carregando -->
   @if (loading()) {
     <div class="desejos-state">Carregando...</div>
   }
 
+  <!-- Estado vazio -->
   @if (!loading() && pijamas().length === 0) {
     <div class="desejos-vazio">
-      <mat-icon>favorite_border</mat-icon>
-      <h2>Sua lista de desejos está vazia</h2>
-      <p>Explore a loja e adicione pijamas que você amou!</p>
-      <a mat-flat-button color="primary" routerLink="/">Ver Pijamas</a>
+      <mat-icon class="vazio-icone">favorite_border</mat-icon>
+      <h3 class="vazio-titulo">Sua lista de desejos está vazia</h3>
+      <p class="vazio-desc">Explore nossos pijamas e salve seus favoritos aqui!</p>
+      <a class="btn-explorar" routerLink="/">
+        <mat-icon>shopping_bag</mat-icon>
+        Explorar Produtos
+      </a>
     </div>
   }
 
-  <div class="cards-grid">
-    @for (pijama of pijamas(); track pijama.id) {
-      <mat-card class="pijama-card" (click)="verDetalhe(pijama.id)">
-        <div class="card-img-wrap">
-          <img [src]="getImageUrl(pijama)" [alt]="pijama.nome" class="card-img" />
-          <button class="remove-btn" (click)="remover(pijama); $event.stopPropagation()"
-            matTooltip="Remover dos desejos" aria-label="Remover">
-            <mat-icon>favorite</mat-icon>
-          </button>
+  <!-- Grid de produtos -->
+  @if (!loading() && pijamas().length > 0) {
+    <div class="desejos-grid">
+      @for (pijama of pijamas(); track pijama.id) {
+        <div class="desejo-card">
+
+          <div class="desejo-imagem-wrapper">
+            <img [src]="getImageUrl(pijama)"
+                 [alt]="pijama.nome"
+                 class="desejo-imagem"
+                 [routerLink]="['/detalhe-pijama', pijama.id]" />
+            <button class="desejo-favorito"
+                    type="button"
+                    (click)="remover(pijama)"
+                    title="Remover dos desejos">
+              <mat-icon>favorite</mat-icon>
+            </button>
+          </div>
+
+          <div class="desejo-corpo">
+            <div class="desejo-estrelas">
+              @for (s of [1,2,3,4,5]; track s) {
+                <mat-icon class="estrela">star</mat-icon>
+              }
+              <span class="desejo-avaliacao">4.9 (675)</span>
+            </div>
+            <a class="desejo-nome" [routerLink]="['/detalhe-pijama', pijama.id]">
+              {{ pijama.nome }}
+            </a>
+            <p class="desejo-categoria">{{ pijama.categoria?.nome }}</p>
+            <div class="desejo-preco-wrapper">
+              <p class="desejo-preco">R$ {{ pijama.preco | number:'1.2-2':'pt-BR' }}</p>
+              <p class="desejo-parcelas">
+                ou 2x de R$ {{ pijama.preco / 2 | number:'1.2-2':'pt-BR' }} sem juros
+              </p>
+            </div>
+            <div class="desejo-acoes">
+              <a class="btn-ver-detalhes" [routerLink]="['/detalhe-pijama', pijama.id]">
+                Ver Detalhes
+              </a>
+              <button class="btn-add-carrinho"
+                      type="button"
+                      (click)="adicionarCarrinho(pijama)"
+                      title="Adicionar ao carrinho">
+                <mat-icon>shopping_cart</mat-icon>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Carrossel "Você pode gostar" -->
+  @if (produtosSugeridos().length > 0) {
+    <section class="sugestoes">
+      <h2 class="sugestoes-titulo">Você pode gostar</h2>
+
+      <div class="vva-carrossel-wrapper">
+        <button class="vva-seta" type="button"
+                (click)="scrollCarrossel(-1)"
+                [disabled]="carrosselInicio()">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+
+        <div class="vva-carrossel" #carrosselDesejos (scroll)="onCarrosselScroll()">
+          @for (p of produtosSugeridos(); track p.id) {
+            <a class="vva-card"
+               [routerLink]="['/detalhe-pijama', p.id]"
+               (click)="$event.stopPropagation()">
+              <div class="vva-card-imagem">
+                <img [src]="getImageUrl(p)" [alt]="p.nome" />
+                <button class="vva-favorito" type="button"
+                        [title]="isDesejo(p) ? 'Remover dos desejos' : 'Adicionar aos desejos'"
+                        (click)="toggleDesejo(p); $event.preventDefault(); $event.stopPropagation()">
+                  <mat-icon>{{ isDesejo(p) ? 'favorite' : 'favorite_border' }}</mat-icon>
+                </button>
+              </div>
+              <div class="vva-card-corpo">
+                <div class="vva-estrelas">
+                  @for (s of [1,2,3,4,5]; track s) {
+                    <mat-icon class="vva-estrela">star</mat-icon>
+                  }
+                </div>
+                <h4 class="vva-nome">{{ p.nome }}</h4>
+                <p class="vva-categoria">{{ p.categoria?.nome }}</p>
+                <div class="vva-preco-row">
+                  <span class="vva-preco">R$ {{ p.preco | number:'1.2-2':'pt-BR' }}</span>
+                  <button class="vva-btn-add" type="button"
+                          (click)="adicionarCarrinho(p); $event.preventDefault(); $event.stopPropagation()"
+                          title="Adicionar ao carrinho">
+                    <mat-icon>add_shopping_cart</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </a>
+          }
         </div>
 
-        <mat-card-content class="card-content">
-          <p class="card-categoria">{{ pijama.categoria?.nome }}</p>
-          <h3 class="card-nome">{{ pijama.nome }}</h3>
-          <p class="card-meta">{{ pijama.variantes?.length ?? 0 }} variante(s)</p>
-          <p class="card-preco">R$ {{ pijama.preco | number:'1.2-2' }}</p>
-        </mat-card-content>
-
-        <mat-card-actions class="card-actions">
-          <button mat-stroked-button color="primary" type="button" (click)="verDetalhe(pijama.id); $event.stopPropagation()">
-            Ver Detalhes
-          </button>
-          <button mat-flat-button color="accent" type="button"
-            (click)="verDetalhe(pijama.id); $event.stopPropagation()">
-            <mat-icon>shopping_cart</mat-icon>
-          </button>
-        </mat-card-actions>
-      </mat-card>
-    }
-  </div>
+        <button class="vva-seta" type="button"
+                (click)="scrollCarrossel(1)"
+                [disabled]="carrosselFim()">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+    </section>
+  }
 
 </div>

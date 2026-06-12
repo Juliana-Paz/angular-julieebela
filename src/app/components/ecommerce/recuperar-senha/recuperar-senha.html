@@ -1,86 +1,201 @@
-<div class="auth-card">
-  <div class="auth-logo">Julie <span>&</span> Bela</div>
-  <div class="auth-tag">Loja Online</div>
-  <div class="rainbow-divider"></div>
+<div class="recuperar-wrapper">
+  <div class="recuperar-card">
 
-  <div class="step-indicator">
-    <div class="step-dot" [class.active]="passo === 1"></div>
-    <div class="step-dot" [class.active]="passo === 2"></div>
-    <div class="step-dot" [class.active]="passo === 3"></div>
-  </div>
+    <!-- Step indicator -->
+    <div class="step-indicator">
+      <div class="step-dot" [class.active]="passo >= 1"></div>
+      <div class="step-dot" [class.active]="passo >= 2"></div>
+      <div class="step-dot" [class.active]="passo >= 3"></div>
+    </div>
 
-  @if (erro) {
-    <div class="error-msg">
-      <mat-icon style="font-size:14px;width:14px;height:14px;">error</mat-icon>
+    <!-- Erro geral -->
+    <div class="erro-geral" *ngIf="erro">
+      <mat-icon>error_outline</mat-icon>
       {{ erro }}
     </div>
-  }
 
-  <!-- Passo 1: sempre no DOM, visível apenas quando passo===1 -->
-  <div [hidden]="passo !== 1">
-    <div class="auth-title">Recuperar senha</div>
-    <div class="auth-sub">Informe seu e-mail. Enviaremos um código de verificação.</div>
-    <div class="field">
-      <label>E-mail</label>
-      <input #emailInput
-             type="email"
-             placeholder="seu@email.com"
-             autocomplete="email"
-             (input)="onEmailInput($event)">
+    <!-- PASSO 1: E-mail -->
+    <div [hidden]="passo !== 1">
+
+      <div class="recuperar-icone-wrapper">
+        <div class="recuperar-icone-circulo">
+          <mat-icon class="recuperar-icone">lock_reset</mat-icon>
+        </div>
+      </div>
+
+      <div class="recuperar-topo">
+        <h2 class="recuperar-titulo">Esqueceu sua senha?</h2>
+        <p class="recuperar-subtitulo">
+          Sem problema! Digite seu e-mail abaixo e enviaremos
+          um código para você criar uma nova senha.
+        </p>
+      </div>
+
+      <div class="recuperar-form">
+        <div class="campo-wrapper">
+          <label class="campo-label" for="emailInput">E-mail cadastrado</label>
+          <div class="campo-input-wrapper">
+            <mat-icon class="campo-icone">mail</mat-icon>
+            <input
+              #emailInput
+              id="emailInput"
+              type="email"
+              class="campo-input"
+              placeholder="Ex: maria.silva@email.com"
+              autocomplete="email"
+              (input)="onEmailInput($event)" />
+          </div>
+        </div>
+
+        <button class="btn-enviar"
+                (click)="solicitarCodigo()"
+                [disabled]="carregando">
+          <span *ngIf="!carregando">
+            Enviar código
+            <mat-icon>send</mat-icon>
+          </span>
+          <span *ngIf="carregando" class="btn-loading">
+            <mat-icon class="icone-girando">refresh</mat-icon>
+            Enviando...
+          </span>
+        </button>
+      </div>
+
+      <div class="recuperar-footer-link">
+        <a routerLink="/login" class="link-voltar">
+          <mat-icon>arrow_back</mat-icon>
+          Voltar ao login
+        </a>
+      </div>
+
     </div>
-    <button class="btn-auth-primary"
-            (click)="solicitarCodigo()"
-            [disabled]="carregando">
-      {{ carregando ? 'Enviando...' : 'Enviar código' }}
-    </button>
-    <div class="auth-link">
-      <a routerLink="/login">← Voltar ao login</a>
+
+    <!-- PASSO 2: Código de verificação -->
+    <div [hidden]="passo !== 2">
+
+      <div class="sucesso-icone-circulo">
+        <mat-icon class="sucesso-icone">mark_email_read</mat-icon>
+      </div>
+
+      <div class="recuperar-topo">
+        <h2 class="recuperar-titulo">Código enviado!</h2>
+        <p class="recuperar-subtitulo">
+          Enviamos um código para
+          <strong class="sucesso-email">{{ emailExibicao }}</strong>.
+          Digite-o abaixo para continuar.
+        </p>
+      </div>
+
+      <div class="sucesso-dica">
+        <mat-icon>info</mat-icon>
+        O código expira em 30 minutos.
+      </div>
+
+      <div class="recuperar-form">
+        <div class="campo-wrapper">
+          <label class="campo-label" for="codigoInput">Código de verificação</label>
+          <div class="campo-input-wrapper">
+            <mat-icon class="campo-icone">pin</mat-icon>
+            <input
+              #codigoInput
+              id="codigoInput"
+              type="text"
+              class="campo-input campo-input-codigo"
+              placeholder="000000"
+              maxlength="6"
+              autocomplete="off" />
+          </div>
+        </div>
+
+        <button class="btn-enviar"
+                (click)="verificarCodigo()"
+                [disabled]="carregando">
+          <span *ngIf="!carregando">
+            Verificar código
+            <mat-icon>verified</mat-icon>
+          </span>
+          <span *ngIf="carregando" class="btn-loading">
+            <mat-icon class="icone-girando">refresh</mat-icon>
+            Verificando...
+          </span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- PASSO 3: Nova senha -->
+    <div [hidden]="passo !== 3">
+
+      <div class="recuperar-icone-wrapper">
+        <div class="recuperar-icone-circulo">
+          <mat-icon class="recuperar-icone">lock_open</mat-icon>
+        </div>
+      </div>
+
+      <div class="recuperar-topo">
+        <h2 class="recuperar-titulo">Nova senha</h2>
+        <p class="recuperar-subtitulo">
+          Escolha uma senha segura para a sua conta.
+        </p>
+      </div>
+
+      <div class="recuperar-form">
+        <div class="campo-wrapper">
+          <label class="campo-label" for="novaSenhaInput">Nova senha</label>
+          <div class="campo-input-wrapper">
+            <mat-icon class="campo-icone">lock</mat-icon>
+            <input
+              #novaSenhaInput
+              id="novaSenhaInput"
+              type="password"
+              class="campo-input"
+              placeholder="Mínimo 6 caracteres"
+              autocomplete="new-password" />
+          </div>
+        </div>
+
+        <div class="campo-wrapper">
+          <label class="campo-label" for="confirmarSenhaInput">Confirmar senha</label>
+          <div class="campo-input-wrapper">
+            <mat-icon class="campo-icone">lock_outline</mat-icon>
+            <input
+              #confirmarSenhaInput
+              id="confirmarSenhaInput"
+              type="password"
+              class="campo-input"
+              placeholder="Repita a senha"
+              autocomplete="new-password" />
+          </div>
+        </div>
+
+        <button class="btn-enviar"
+                (click)="redefinirSenha()"
+                [disabled]="carregando">
+          <span *ngIf="!carregando">
+            Salvar nova senha
+            <mat-icon>check_circle</mat-icon>
+          </span>
+          <span *ngIf="carregando" class="btn-loading">
+            <mat-icon class="icone-girando">refresh</mat-icon>
+            Salvando...
+          </span>
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Trust badges -->
+  <div class="trust-badges">
+    <div class="badge">
+      <mat-icon>verified_user</mat-icon>
+      <span>Compra Segura</span>
+    </div>
+    <div class="badge">
+      <mat-icon>lock_clock</mat-icon>
+      <span>Dados Criptografados</span>
     </div>
   </div>
 
-  <!-- Passo 2: sempre no DOM, visível apenas quando passo===2 -->
-  <div [hidden]="passo !== 2">
-    <div class="auth-title">Verificar código</div>
-    <div class="auth-sub">
-      Digite o código enviado para <strong>{{ emailExibicao }}</strong>
-    </div>
-    <div class="field">
-      <label>Código</label>
-      <input #codigoInput
-             type="text"
-             placeholder="000000"
-             maxlength="6"
-             autocomplete="off">
-    </div>
-    <button class="btn-auth-primary"
-            (click)="verificarCodigo()"
-            [disabled]="carregando">
-      {{ carregando ? 'Verificando...' : 'Verificar' }}
-    </button>
-  </div>
-
-  <!-- Passo 3: sempre no DOM, visível apenas quando passo===3 -->
-  <div [hidden]="passo !== 3">
-    <div class="auth-title">Nova senha</div>
-    <div class="auth-sub">Escolha uma senha segura para sua conta.</div>
-    <div class="field">
-      <label>Nova senha</label>
-      <input #novaSenhaInput
-             type="password"
-             placeholder="Mínimo 6 caracteres"
-             autocomplete="new-password">
-    </div>
-    <div class="field">
-      <label>Confirmar senha</label>
-      <input #confirmarSenhaInput
-             type="password"
-             placeholder="Repita a senha"
-             autocomplete="new-password">
-    </div>
-    <button class="btn-auth-primary"
-            (click)="redefinirSenha()"
-            [disabled]="carregando">
-      {{ carregando ? 'Salvando...' : 'Salvar nova senha' }}
-    </button>
-  </div>
 </div>

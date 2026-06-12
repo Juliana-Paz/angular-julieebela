@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,6 +9,7 @@ import { Pijama, PijamaVariante } from '../../../models/pijama.model';
 import { CarrinhoService } from '../../../services/carrinho.service';
 import { ListaDesejosService } from '../../../services/lista-desejos.service';
 import { EcommerceAuthService } from '../../../services/ecommerce-auth.service';
+import { PijamaService } from '../../../services/pijama.service';
 import { PijamaEcommerce } from '../ecommerce.types';
 
 @Component({
@@ -24,6 +25,7 @@ export class DetalhePijama implements OnInit {
   private readonly carrinhoService = inject(CarrinhoService);
   private readonly listaDesejosService = inject(ListaDesejosService);
   private readonly authService = inject(EcommerceAuthService);
+  private readonly pijamaService = inject(PijamaService);
   private readonly snack = inject(MatSnackBar);
 
   readonly pijama = signal<Pijama | null>(null);
@@ -38,6 +40,13 @@ export class DetalhePijama implements OnInit {
   readonly corSelecionada = signal<{ id: number; nome: string; hexadecimal: string } | null>(null);
   readonly semCor = signal(false);
 
+  readonly descricaoAberta = signal(false);
+  readonly produtosRelacionados = signal<Pijama[]>([]);
+  readonly carrosselInicio = signal(true);
+  readonly carrosselFim = signal(false);
+
+  @ViewChild('carrossel') carrosselRef?: ElementRef;
+
   readonly podePedir = computed(() => {
     const v = this.varianteSelecionada();
     return v !== null && v.estoque > 0;
@@ -47,6 +56,19 @@ export class DetalhePijama implements OnInit {
     const p: Pijama = this.route.snapshot.data['pijama'];
     this.pijama.set(p);
     this.inicializarVariantes(p);
+    this.carregarRelacionados(p);
+  }
+
+  private carregarRelacionados(p: Pijama): void {
+    const categoriaId = p.categoria?.id;
+    this.pijamaService.findAll(0, 20).subscribe({
+      next: lista => {
+        const filtrados = lista
+          .filter(r => r.id !== p.id && (!categoriaId || r.categoria?.id === categoriaId))
+          .slice(0, 6);
+        this.produtosRelacionados.set(filtrados);
+      },
+    });
   }
 
   private inicializarVariantes(p: Pijama): void {
@@ -86,6 +108,11 @@ export class DetalhePijama implements OnInit {
     const arqs = p.imagens ?? [];
     const arq = arqs[index];
     return arq?.fid ? this.imageBase + encodeURIComponent(arq.fid) : 'https://placehold.co/600x500?text=Pijama';
+  }
+
+  getRelatedImageUrl(p: Pijama): string {
+    const arq = p.imagens?.[0];
+    return arq?.fid ? this.imageBase + encodeURIComponent(arq.fid) : 'https://placehold.co/400x500?text=Pijama';
   }
 
   get thumbs(): number[] {
@@ -139,5 +166,32 @@ export class DetalhePijama implements OnInit {
     } else {
       this.listaDesejosService.adicionar(p.id).subscribe({ next: () => this.noDesejo.set(true) });
     }
+  }
+
+  scrollCarrossel(direcao: number): void {
+    const el = this.carrosselRef?.nativeElement;
+    if (!el) return;
+    el.scrollBy({ left: direcao * 280, behavior: 'smooth' });
+    setTimeout(() => this.atualizarEstadoSetas(), 400);
+  }
+
+  onCarrosselScroll(): void {
+    this.atualizarEstadoSetas();
+  }
+
+  private atualizarEstadoSetas(): void {
+    const el = this.carrosselRef?.nativeElement;
+    if (!el) return;
+    this.carrosselInicio.set(el.scrollLeft <= 0);
+    this.carrosselFim.set(el.scrollLeft + el.clientWidth >= el.scrollWidth - 4);
+  }
+
+  verProduto(p: Pijama): void {
+    this.router.navigate(['/detalhe-pijama', p.id]);
+  }
+
+  adicionarRelacionado(p: Pijama): void {
+    this.carrinhoService.adicionar(p as PijamaEcommerce, 1);
+    this.snack.open(`${p.nome} adicionado ao carrinho!`, 'OK', { duration: 3000, verticalPosition: 'top' });
   }
 }

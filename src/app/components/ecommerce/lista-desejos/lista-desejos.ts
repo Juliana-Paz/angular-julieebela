@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,6 +8,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ListaDesejosService } from '../../../services/lista-desejos.service';
 import { FavoritosService } from '../../../services/favoritos.service';
 import { CarrinhoService } from '../../../services/carrinho.service';
+import { PijamaService } from '../../../services/pijama.service';
 import { Pijama } from '../../../models/pijama.model';
 import { PijamaEcommerce } from '../ecommerce.types';
 
@@ -22,12 +23,18 @@ export class ListaDesejos implements OnInit {
   private readonly listaDesejosService = inject(ListaDesejosService);
   private readonly favoritosService = inject(FavoritosService);
   private readonly carrinhoService = inject(CarrinhoService);
+  private readonly pijamaService = inject(PijamaService);
   private readonly router = inject(Router);
   private readonly snack = inject(MatSnackBar);
 
   readonly pijamas = signal<Pijama[]>([]);
   readonly loading = signal(true);
+  readonly produtosSugeridos = signal<Pijama[]>([]);
+  readonly carrosselInicio = signal(true);
+  readonly carrosselFim = signal(false);
   readonly imageBase = 'http://localhost:8080/pijamas/imagens/download/';
+
+  @ViewChild('carrosselDesejos') carrosselRef?: ElementRef;
 
   get favoritosIds() { return this.favoritosService.ids; }
 
@@ -36,6 +43,9 @@ export class ListaDesejos implements OnInit {
     this.listaDesejosService.listar().subscribe({
       next: lista => { this.pijamas.set(lista); this.loading.set(false); },
       error: () => { this.loading.set(false); },
+    });
+    this.pijamaService.findAll(0, 20).subscribe({
+      next: lista => this.produtosSugeridos.set(lista),
     });
   }
 
@@ -50,11 +60,38 @@ export class ListaDesejos implements OnInit {
     this.snack.open(`"${pijama.nome}" removido dos desejos.`, 'OK', { duration: 2500 });
   }
 
+  limparLista(): void {
+    const lista = [...this.pijamas()];
+    lista.forEach(p => this.favoritosService.toggle(p.id));
+    this.pijamas.set([]);
+    this.snack.open('Lista de desejos limpa.', 'OK', { duration: 2500 });
+  }
+
   adicionarCarrinho(pijama: Pijama): void {
     this.carrinhoService.adicionar(pijama as PijamaEcommerce);
     this.snack.open(`${pijama.nome} adicionado ao carrinho!`, 'Ver carrinho', { duration: 3000, verticalPosition: 'top' })
       .onAction().subscribe(() => this.router.navigate(['/carrinho']));
   }
 
+  isDesejo(p: Pijama): boolean { return this.favoritosService.ehFavorito(p.id); }
+
+  toggleDesejo(p: Pijama): void { this.favoritosService.toggle(p.id); }
+
   verDetalhe(id: number): void { this.router.navigate(['/detalhe-pijama', id]); }
+
+  scrollCarrossel(direcao: number): void {
+    const el = this.carrosselRef?.nativeElement;
+    if (!el) return;
+    el.scrollBy({ left: direcao * 280, behavior: 'smooth' });
+    setTimeout(() => this.atualizarSetas(), 400);
+  }
+
+  onCarrosselScroll(): void { this.atualizarSetas(); }
+
+  private atualizarSetas(): void {
+    const el = this.carrosselRef?.nativeElement;
+    if (!el) return;
+    this.carrosselInicio.set(el.scrollLeft <= 0);
+    this.carrosselFim.set(el.scrollLeft + el.clientWidth >= el.scrollWidth - 4);
+  }
 }

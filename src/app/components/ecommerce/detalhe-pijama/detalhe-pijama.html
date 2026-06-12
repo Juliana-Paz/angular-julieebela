@@ -1,7 +1,8 @@
 <div class="detalhe-container">
 
   <a routerLink="/" class="back-link">
-    <mat-icon>arrow_back</mat-icon> Voltar à loja
+    <mat-icon>arrow_back</mat-icon>
+    Voltar à loja
   </a>
 
   @if (!pijama()) {
@@ -9,78 +10,83 @@
   }
 
   @if (pijama(); as p) {
-    <div class="detalhe-grid">
 
-      <!-- Galeria de imagens -->
-      <div class="galeria">
-        <div class="main-img-wrap">
-          <button class="arrow-btn prev" (click)="prevImage()" [disabled]="(p.imagens?.length ?? 0) <= 1">
-            <mat-icon>chevron_left</mat-icon>
-          </button>
-          <img [src]="getImageUrl(activeIndex())" [alt]="p.nome" class="main-img" />
-          <button class="arrow-btn next" (click)="nextImage()" [disabled]="(p.imagens?.length ?? 0) <= 1">
-            <mat-icon>chevron_right</mat-icon>
+    <div class="detalhe-layout">
+
+      <!-- ── GALERIA ─────────────────────────────────── -->
+      <div class="detalhe-galeria">
+
+        <div class="galeria-principal">
+          <img [src]="getImageUrl(activeIndex())" [alt]="p.nome" class="galeria-img-principal" />
+          <button class="galeria-favorito" type="button"
+                  (click)="toggleDesejos()"
+                  [matTooltip]="noDesejo() ? 'Remover dos desejos' : 'Adicionar aos desejos'">
+            <mat-icon>{{ noDesejo() ? 'favorite' : 'favorite_border' }}</mat-icon>
           </button>
         </div>
+
         @if ((p.imagens?.length ?? 0) > 1) {
-          <div class="thumbnails">
+          <div class="galeria-miniaturas">
             @for (idx of thumbs; track idx) {
-              <img [src]="getImageUrl(idx)" [alt]="'Imagem ' + (idx + 1)" class="thumb"
-                [class.active]="activeIndex() === idx" (click)="activeIndex.set(idx)" />
+              <button class="miniatura-btn"
+                      type="button"
+                      [class.ativa]="activeIndex() === idx"
+                      (click)="activeIndex.set(idx)">
+                <img [src]="getImageUrl(idx)" [alt]="p.nome + ' foto ' + (idx + 1)" />
+              </button>
             }
           </div>
         }
+
       </div>
 
-      <!-- Detalhes do produto -->
-      <div class="produto-info">
+      <!-- ── INFO ───────────────────────────────────── -->
+      <div class="detalhe-info">
+
         @if (p.categoria) {
-          <p class="categoria-badge"
-             [ngClass]="{
-               'cat-menina':   p.categoria.nome.toLowerCase().includes('menina'),
-               'cat-menino':   p.categoria.nome.toLowerCase().includes('menino'),
-               'cat-unissex':  p.categoria.nome.toLowerCase().includes('unissex'),
-               'cat-bebe':     p.categoria.nome.toLowerCase().includes('beb'),
-               'cat-especial': p.categoria.nome.toLowerCase().includes('adult')
-             }">{{ p.categoria.nome }}</p>
+          <span class="detalhe-tag">{{ p.categoria.nome }}</span>
         }
-        <h1 class="produto-nome">{{ p.nome }}</h1>
-        @if (p.marca) {
-          <p class="produto-marca">{{ p.marca.nome }}</p>
-        }
-        <p class="produto-preco">R$ {{ p.preco | number:'1.2-2' }}</p>
 
-        <mat-divider />
+        <h1 class="detalhe-nome">{{ p.nome }}</h1>
 
-        <div class="meta-grid">
-          <div class="meta-item">
-            <span class="meta-label">Sexo</span>
-            <span class="meta-value">{{ $any(p.sexo)?.nome ?? p.sexo }}</span>
+        <div class="detalhe-avaliacao">
+          <div class="estrelas">
+            @for (s of [1,2,3,4,5]; track s) {
+              <mat-icon class="estrela">star</mat-icon>
+            }
           </div>
-          <div class="meta-item">
-            <span class="meta-label">Modelo</span>
-            <span class="meta-value">{{ p.modelo }}</span>
+          <span class="avaliacao-nota">(4.8)</span>
+          <span class="avaliacao-total">12 avaliações</span>
+        </div>
+
+        <div class="detalhe-preco-wrapper">
+          <div class="preco-linha">
+            <span class="preco-atual">R$ {{ p.preco | number:'1.2-2':'pt-BR' }}</span>
           </div>
-          @if (p.estampa) {
-            <div class="meta-item">
-              <span class="meta-label">Estampa</span>
-              <span class="meta-value">{{ p.estampa.nome }}</span>
-            </div>
-          }
+          <p class="preco-parcelas">
+            ou em até 3x de R$ {{ p.preco / 3 | number:'1.2-2':'pt-BR' }} sem juros
+          </p>
         </div>
 
         <!-- Seleção de cor -->
         @if (coresDisponiveis().length > 0) {
-          <div class="selecao-section">
-            <span class="selecao-label">Cor:</span>
-            <div class="chips-row">
+          <div class="detalhe-cores">
+            <div class="tamanhos-header">
+              <span class="tamanhos-label">
+                COR:
+                @if (corSelecionada()) {
+                  <strong>{{ corSelecionada()!.nome }}</strong>
+                }
+              </span>
+            </div>
+            <div class="cores-grid">
               @for (cor of coresDisponiveis(); track cor.id) {
-                <button class="chip-cor"
-                        [class.chip-ativo]="corSelecionada()?.id === cor.id"
-                        (click)="selecionarCor(cor)"
-                        type="button">
-                  <span class="bolinha-cor" [style.background]="cor.hexadecimal"></span>
-                  {{ cor.nome }}
+                <button class="cor-btn"
+                        type="button"
+                        [class.selecionada]="corSelecionada()?.id === cor.id"
+                        [style.background]="cor.hexadecimal"
+                        [title]="cor.nome"
+                        (click)="selecionarCor(cor)">
                 </button>
               }
             </div>
@@ -89,27 +95,31 @@
 
         <!-- Seleção de tamanho -->
         @if (tamanhosDaCorSelecionada().length > 0) {
-          <div class="selecao-section">
-            <span class="selecao-label">Tamanho:</span>
-            <div class="chips-row">
+          <div class="detalhe-tamanhos">
+            <div class="tamanhos-header">
+              <span class="tamanhos-label">
+                TAMANHO:
+                @if (varianteSelecionada()) {
+                  <strong>{{ varianteSelecionada()!.tamanhoNome }}</strong>
+                }
+              </span>
+              <button class="guia-tamanhos-btn" type="button">GUIA DE TAMANHOS</button>
+            </div>
+            <div class="tamanhos-grid">
               @for (v of tamanhosDaCorSelecionada(); track v.id) {
-                <button class="chip-tamanho"
-                        [class.chip-ativo]="varianteSelecionada()?.id === v.id"
-                        [class.chip-esgotado]="v.estoque === 0"
+                <button class="tamanho-btn"
+                        type="button"
+                        [class.selecionado]="varianteSelecionada()?.id === v.id"
+                        [class.indisponivel]="v.estoque === 0"
                         [disabled]="v.estoque === 0"
-                        (click)="selecionarVariante(v)"
-                        type="button">
+                        (click)="selecionarVariante(v)">
                   {{ v.tamanhoNome }}
-                  @if (v.estoque === 0) {
-                    <span class="tag-esgotado">Esgotado</span>
-                  }
                 </button>
               }
             </div>
           </div>
         }
 
-        <!-- Estoque da variante selecionada -->
         @if (varianteSelecionada()) {
           <p class="estoque-info">
             <mat-icon>inventory</mat-icon>
@@ -121,42 +131,45 @@
           <p class="sem-variantes">Sem variantes cadastradas.</p>
         }
 
+        <!-- Botões de ação -->
+        <div class="detalhe-acoes">
+          <button class="btn-adicionar" type="button" (click)="adicionarCarrinho()">
+            <mat-icon>shopping_cart</mat-icon>
+            ADICIONAR AO CARRINHO
+          </button>
+          <button class="btn-comprar-agora" type="button" (click)="comprarAgora()">
+            COMPRAR AGORA
+          </button>
+        </div>
+
+        <!-- Materiais -->
         @if (p.materiais?.length) {
           <div class="materiais-wrap">
-            <span class="meta-label">Materiais</span>
-            <div class="chips-row">
-              @for (mat of p.materiais; track mat.id) {
+            <span class="tamanhos-label">MATERIAIS</span>
+            <div class="tamanhos-grid" style="margin-top:8px">
+              @for (mat of p.materiais!; track mat.id) {
                 <span class="mat-chip">{{ mat.nome }}</span>
               }
             </div>
           </div>
         }
 
+        <!-- Descrição accordion -->
         @if (p.descricao) {
-          <div class="descricao-wrap">
-            <span class="meta-label">Descrição</span>
-            <p class="descricao-texto">{{ p.descricao }}</p>
+          <div class="detalhe-descricao">
+            <div class="descricao-header" (click)="descricaoAberta.set(!descricaoAberta())">
+              <h3>Descrição</h3>
+              <mat-icon [class.virado]="descricaoAberta()">keyboard_arrow_down</mat-icon>
+            </div>
+            @if (descricaoAberta()) {
+              <div class="descricao-corpo">
+                <p>{{ p.descricao }}</p>
+              </div>
+            }
           </div>
         }
 
-        <mat-divider />
-
-        <div class="acoes-row">
-          <button class="btn-carrinho-principal" type="button" (click)="adicionarCarrinho()">
-            <mat-icon>shopping_cart</mat-icon>
-            Adicionar ao Carrinho
-          </button>
-          <button class="btn-comprar-agora" type="button" (click)="comprarAgora()">
-            <mat-icon>flash_on</mat-icon>
-            Comprar Agora
-          </button>
-          <button class="btn-desejo" [class.ativo]="noDesejo()"
-            (click)="toggleDesejos()" [matTooltip]="noDesejo() ? 'Remover dos desejos' : 'Adicionar aos desejos'">
-            <mat-icon>{{ noDesejo() ? 'favorite' : 'favorite_border' }}</mat-icon>
-          </button>
-        </div>
-
-        <!-- Features -->
+        <!-- Garantias -->
         <div class="features-row">
           <div class="feature-item">
             <mat-icon>eco</mat-icon>
@@ -171,9 +184,67 @@
             <span>Troca em até 30 dias</span>
           </div>
         </div>
-      </div>
 
+      </div>
     </div>
+
+    <!-- ── VOCÊ TAMBÉM VAI AMAR ──────────────────────── -->
+    @if (produtosRelacionados().length > 0) {
+      <section class="voce-vai-amar">
+        <h2 class="vva-titulo">Você também vai amar</h2>
+
+        <div class="vva-carrossel-wrapper">
+          <button class="vva-seta vva-seta-esq"
+                  type="button"
+                  (click)="scrollCarrossel(-1)"
+                  [disabled]="carrosselInicio()">
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+
+          <div class="vva-carrossel" #carrossel (scroll)="onCarrosselScroll()">
+            @for (rel of produtosRelacionados(); track rel.id) {
+              <a class="vva-card"
+                 [routerLink]="['/detalhe-pijama', rel.id]"
+                 (click)="$event.stopPropagation()">
+                <div class="vva-card-imagem">
+                  <img [src]="getRelatedImageUrl(rel)" [alt]="rel.nome" />
+                  <button class="vva-favorito" type="button"
+                          (click)="$event.preventDefault(); $event.stopPropagation()">
+                    <mat-icon>favorite_border</mat-icon>
+                  </button>
+                </div>
+                <div class="vva-card-corpo">
+                  <div class="vva-estrelas">
+                    @for (s of [1,2,3,4,5]; track s) {
+                      <mat-icon class="vva-estrela">star</mat-icon>
+                    }
+                  </div>
+                  <h4 class="vva-nome">{{ rel.nome }}</h4>
+                  @if (rel.categoria) {
+                    <p class="vva-categoria">{{ rel.categoria.nome }}</p>
+                  }
+                  <div class="vva-preco-row">
+                    <span class="vva-preco">R$ {{ rel.preco | number:'1.2-2':'pt-BR' }}</span>
+                    <button class="vva-btn-add" type="button"
+                            (click)="adicionarRelacionado(rel); $event.preventDefault(); $event.stopPropagation()">
+                      <mat-icon>add_shopping_cart</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </a>
+            }
+          </div>
+
+          <button class="vva-seta vva-seta-dir"
+                  type="button"
+                  (click)="scrollCarrossel(1)"
+                  [disabled]="carrosselFim()">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+      </section>
+    }
+
   }
 
 </div>

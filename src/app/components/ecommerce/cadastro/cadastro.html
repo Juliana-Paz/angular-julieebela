@@ -1,82 +1,164 @@
-<div class="auth-card">
-  <p class="auth-logo">Julie <span>&amp;</span> Bela</p>
-  <p class="auth-tag">Loja Online</p>
-  <p class="auth-title">Criar Conta</p>
-  <p class="auth-sub">Preencha os dados abaixo para se cadastrar.</p>
-  <div class="rainbow-divider"></div>
+<div class="cadastro-wrapper">
+  <div class="cadastro-card">
 
-  <form [formGroup]="form" (ngSubmit)="salvar()" autocomplete="off">
-
-    <div class="field">
-      <label>Nome completo</label>
-      <input formControlName="nome" placeholder="Seu nome completo" autocomplete="new-password" />
-      @if (erro('nome')) { <span class="field-error">{{ erro('nome') }}</span> }
+    <div class="cadastro-topo">
+      <h2 class="cadastro-titulo">Criar sua conta</h2>
+      <p class="cadastro-subtitulo">
+        Junte-se à família Julie &amp; Bela e aproveite benefícios exclusivos.
+      </p>
     </div>
 
-    <div class="field">
-      <label>CPF</label>
-      <input formControlName="cpf" placeholder="000.000.000-00"
-        (input)="onCpfInput($event)" maxlength="14" autocomplete="new-password" inputmode="numeric" />
-      @if (erro('cpf')) { <span class="field-error">{{ erro('cpf') }}</span> }
-    </div>
+    <form [formGroup]="form" (ngSubmit)="salvar()" class="cadastro-form">
 
-    <div class="field">
-      <label>E-mail</label>
-      <input formControlName="email" type="email" placeholder="seu@email.com" autocomplete="new-password" />
-      @if (erro('email')) { <span class="field-error">{{ erro('email') }}</span> }
-    </div>
-
-    <div class="field">
-      <label>Data de Nascimento</label>
-      <div class="date-wrap">
-        <input [matDatepicker]="pickerNasc" formControlName="dataNascimento"
-          placeholder="DD/MM/AAAA" autocomplete="new-password" dateMask />
-        <mat-datepicker-toggle [for]="pickerNasc" />
-        <mat-datepicker #pickerNasc startView="multi-year" />
+      <!-- Nome completo -->
+      <div class="campo-wrapper">
+        <label class="campo-label" for="nome">Nome completo</label>
+        <div class="campo-input-wrapper">
+          <mat-icon class="campo-icone">person</mat-icon>
+          <input id="nome" type="text" class="campo-input"
+                 placeholder="Seu nome completo"
+                 autocomplete="new-password"
+                 formControlName="nome" />
+        </div>
+        @if (erro('nome')) { <span class="campo-erro">{{ erro('nome') }}</span> }
       </div>
-      @if (erro('dataNascimento')) { <span class="field-error">{{ erro('dataNascimento') }}</span> }
-    </div>
 
-    <div class="field">
-      <label>Nome de usuário</label>
-      <input formControlName="username" placeholder="Seu nome de usuário" autocomplete="new-password" />
-      @if (erro('username')) { <span class="field-error">{{ erro('username') }}</span> }
-    </div>
-
-    <div class="field">
-      <label>Senha</label>
-      <div class="pw-wrap">
-        <input formControlName="senha" [type]="mostrarSenha() ? 'text' : 'password'"
-          autocomplete="new-password" placeholder="Mínimo 6 caracteres" />
-        <button type="button" class="toggle-pw" (click)="mostrarSenha.set(!mostrarSenha())">
-          <mat-icon>{{ mostrarSenha() ? 'visibility_off' : 'visibility' }}</mat-icon>
-        </button>
+      <!-- CPF -->
+      <div class="campo-wrapper">
+        <label class="campo-label" for="cpf">CPF</label>
+        <div class="campo-input-wrapper">
+          <mat-icon class="campo-icone">badge</mat-icon>
+          <input id="cpf" type="text" class="campo-input"
+                 placeholder="000.000.000-00"
+                 maxlength="14"
+                 inputmode="numeric"
+                 autocomplete="new-password"
+                 formControlName="cpf"
+                 (input)="onCpfInput($event)" />
+        </div>
+        @if (erro('cpf')) { <span class="campo-erro">{{ erro('cpf') }}</span> }
       </div>
-      @if (erro('senha')) { <span class="field-error">{{ erro('senha') }}</span> }
-    </div>
 
-    <div class="field">
-      <label>Confirmar senha</label>
-      <div class="pw-wrap">
-        <input formControlName="confirmarSenha" [type]="mostrarConfirmar() ? 'text' : 'password'"
-          autocomplete="new-password" placeholder="Repita a senha" />
-        <button type="button" class="toggle-pw" (click)="mostrarConfirmar.set(!mostrarConfirmar())">
-          <mat-icon>{{ mostrarConfirmar() ? 'visibility_off' : 'visibility' }}</mat-icon>
-        </button>
+      <!-- E-mail -->
+      <div class="campo-wrapper">
+        <label class="campo-label" for="email">E-mail</label>
+        <div class="campo-input-wrapper">
+          <mat-icon class="campo-icone">mail</mat-icon>
+          <input id="email" type="email" class="campo-input"
+                 placeholder="Ex: maria.silva@email.com"
+                 autocomplete="new-password"
+                 formControlName="email" />
+        </div>
+        @if (erro('email')) { <span class="campo-erro">{{ erro('email') }}</span> }
       </div>
-      @if (form.get('confirmarSenha')?.hasError('required') && form.get('confirmarSenha')?.touched) {
-        <span class="field-error">Campo obrigatório.</span>
-      }
-      @if (form.get('confirmarSenha')?.hasError('passwordMismatch') && form.get('confirmarSenha')?.touched) {
-        <span class="field-error">As senhas não coincidem.</span>
-      }
+
+      <!-- Data de Nascimento -->
+      <div class="campo-wrapper">
+        <label class="campo-label">Data de Nascimento</label>
+        <div class="campo-input-wrapper">
+          <mat-icon class="campo-icone">cake</mat-icon>
+          <input class="campo-input campo-input-date"
+                 [matDatepicker]="pickerNasc"
+                 formControlName="dataNascimento"
+                 placeholder="DD/MM/AAAA"
+                 autocomplete="new-password"
+                 dateMask />
+          <mat-datepicker-toggle [for]="pickerNasc" class="date-toggle" />
+          <mat-datepicker #pickerNasc startView="multi-year" />
+        </div>
+        @if (erro('dataNascimento')) { <span class="campo-erro">{{ erro('dataNascimento') }}</span> }
+      </div>
+
+      <!-- Nome de usuário -->
+      <div class="campo-wrapper">
+        <label class="campo-label" for="username">Nome de usuário</label>
+        <div class="campo-input-wrapper">
+          <mat-icon class="campo-icone">alternate_email</mat-icon>
+          <input id="username" type="text" class="campo-input"
+                 placeholder="Seu nome de usuário"
+                 autocomplete="new-password"
+                 formControlName="username" />
+        </div>
+        @if (erro('username')) { <span class="campo-erro">{{ erro('username') }}</span> }
+      </div>
+
+      <!-- Senha -->
+      <div class="campo-wrapper">
+        <label class="campo-label" for="senha">Senha</label>
+        <div class="campo-input-wrapper">
+          <mat-icon class="campo-icone">lock</mat-icon>
+          <input id="senha"
+                 [type]="mostrarSenha() ? 'text' : 'password'"
+                 class="campo-input"
+                 placeholder="Mínimo 6 caracteres"
+                 autocomplete="new-password"
+                 formControlName="senha" />
+          <button type="button" class="campo-toggle-senha"
+                  (click)="mostrarSenha.set(!mostrarSenha())">
+            <mat-icon>{{ mostrarSenha() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </div>
+        @if (erro('senha')) { <span class="campo-erro">{{ erro('senha') }}</span> }
+      </div>
+
+      <!-- Confirmar senha -->
+      <div class="campo-wrapper">
+        <label class="campo-label" for="confirmarSenha">Confirmar senha</label>
+        <div class="campo-input-wrapper">
+          <mat-icon class="campo-icone">lock_reset</mat-icon>
+          <input id="confirmarSenha"
+                 [type]="mostrarConfirmar() ? 'text' : 'password'"
+                 class="campo-input"
+                 placeholder="Repita a senha"
+                 autocomplete="new-password"
+                 formControlName="confirmarSenha" />
+          <button type="button" class="campo-toggle-senha"
+                  (click)="mostrarConfirmar.set(!mostrarConfirmar())">
+            <mat-icon>{{ mostrarConfirmar() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </div>
+        @if (form.get('confirmarSenha')?.hasError('required') && form.get('confirmarSenha')?.touched) {
+          <span class="campo-erro">Campo obrigatório.</span>
+        }
+        @if (form.get('confirmarSenha')?.hasError('passwordMismatch') && form.get('confirmarSenha')?.touched) {
+          <span class="campo-erro">As senhas não coincidem.</span>
+        }
+      </div>
+
+      <!-- Botão cadastrar -->
+      <button type="submit" class="btn-cadastrar" [disabled]="salvando()">
+        @if (!salvando()) {
+          <span>Criar minha conta</span>
+          <mat-icon>person_add</mat-icon>
+        }
+        @if (salvando()) {
+          <span class="btn-loading">
+            <mat-icon class="icone-girando">refresh</mat-icon>
+            Criando conta...
+          </span>
+        }
+      </button>
+
+    </form>
+
+    <div class="cadastro-footer-link">
+      <p>
+        Já tem uma conta?
+        <a routerLink="/login" class="link-login">Entrar agora</a>
+      </p>
     </div>
 
-    <button class="btn-auth-primary" type="submit" [disabled]="salvando()">
-      {{ salvando() ? 'Criando conta...' : 'Criar Conta' }}
-    </button>
+  </div>
 
-  </form>
-
-  <p class="auth-link">Já tem uma conta? <a routerLink="/login">Entrar</a></p>
+  <!-- Trust badges -->
+  <div class="trust-badges">
+    <div class="badge">
+      <mat-icon>verified_user</mat-icon>
+      <span>Compra Segura</span>
+    </div>
+    <div class="badge">
+      <mat-icon>lock_clock</mat-icon>
+      <span>Dados Criptografados</span>
+    </div>
+  </div>
 </div>

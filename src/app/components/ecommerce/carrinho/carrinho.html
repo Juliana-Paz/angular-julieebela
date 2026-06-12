@@ -8,88 +8,129 @@
 }
 
 @if (itens().length > 0) {
-  <div class="carrinho-layout">
+  <div class="carrinho-page">
 
-    <!-- Coluna de itens -->
-    <div>
-      <h2 class="carrinho-title">
-        <mat-icon>shopping_bag</mat-icon>
-        Meu Carrinho
-      </h2>
-
-      @for (item of itens(); track item.pijama.id) {
-        <div class="carrinho-item">
-          <img [src]="getImageUrl(item.pijama)" [alt]="item.pijama.nome" class="item-img" />
-
-          <div class="item-info">
-            <p class="item-nome">{{ item.pijama.nome }}</p>
-
-            @if (item.varianteInfo) {
-              <p class="item-variante">
-                <span class="item-variante-badge">{{ item.varianteInfo.tamanhoNome }}</span>
-                @if (item.varianteInfo.corNome) {
-                  <span class="item-variante-badge">{{ item.varianteInfo.corNome }}</span>
-                }
-              </p>
-            }
-
-            <div class="item-bottom">
-              <div class="qty-ctrl">
-                <button class="qty-btn" type="button" (click)="diminuir(item, item.quantidade)">−</button>
-                <span class="qty-val">{{ item.quantidade }}</span>
-                <button class="qty-btn" type="button" (click)="aumentar(item, item.quantidade)">+</button>
-              </div>
-              <span class="item-preco">R$ {{ (item.pijama.preco * item.quantidade) | number:'1.2-2' }}</span>
-            </div>
-
-            <button class="item-remover" type="button" (click)="remover(item)">Remover</button>
-          </div>
-        </div>
-      }
-
-      <div class="acoes-lista">
-        <button class="btn-limpar" type="button" (click)="limpar()">Limpar carrinho</button>
-        <a routerLink="/" class="btn-continuar">← Continuar comprando</a>
-      </div>
+    <div class="carrinho-titulo">
+      <mat-icon>shopping_cart</mat-icon>
+      <h2>Meu Carrinho</h2>
     </div>
 
-    <!-- Resumo lateral -->
-    <aside class="resumo-card">
-      <p class="resumo-title">Resumo do Pedido</p>
+    <div class="carrinho-layout">
 
-      <div class="resumo-row">
-        <span>Subtotal ({{ quantidadeTotal() }} itens)</span>
-        <span>R$ {{ valorTotal() | number:'1.2-2' }}</span>
-      </div>
+      <!-- Lista de itens -->
+      <div class="carrinho-itens">
 
-      @if (cupom()) {
-        <div class="resumo-row resumo-desconto">
-          <span>
-            Cupom "{{ cupom()!.codigo }}"
-            <button class="remove-cupom" type="button" (click)="removerCupom()">×</button>
-          </span>
-          <span>- R$ {{ desconto() | number:'1.2-2' }}</span>
-        </div>
-      }
+        @for (item of itens(); track item.pijama.id) {
+          <div class="item-card">
+            <a class="item-imagem" [routerLink]="['/detalhe-pijama', item.pijama.id]">
+              <img [src]="getImageUrl(item.pijama)" [alt]="item.pijama.nome" />
+            </a>
+            <div class="item-info">
+              <div class="item-detalhes">
+                <a class="item-nome-link" [routerLink]="['/detalhe-pijama', item.pijama.id]">{{ item.pijama.nome }}</a>
+                @if (item.varianteInfo) {
+                  <p class="item-variacao">
+                    Tamanho: {{ item.varianteInfo.tamanhoNome }}
+                    @if (item.varianteInfo.corNome) {
+                      | Cor: {{ item.varianteInfo.corNome }}
+                    }
+                  </p>
+                }
+                <button class="item-remover" type="button" (click)="remover(item)">
+                  <mat-icon>delete</mat-icon>
+                  REMOVER
+                </button>
+              </div>
+              <div class="item-acoes">
+                <div class="item-quantidade">
+                  <button type="button" (click)="diminuir(item, item.quantidade)">
+                    <mat-icon>remove</mat-icon>
+                  </button>
+                  <span>{{ item.quantidade }}</span>
+                  <button type="button" (click)="aumentar(item, item.quantidade)">
+                    <mat-icon>add</mat-icon>
+                  </button>
+                </div>
+                <p class="item-preco">
+                  R$ {{ (item.pijama.preco * item.quantidade) | number:'1.2-2':'pt-BR' }}
+                </p>
+              </div>
+            </div>
+          </div>
+        }
 
-      <div class="resumo-total">
-        <span>Total</span>
-        <span>R$ {{ valorTotalFinal() | number:'1.2-2' }}</span>
-      </div>
-
-      @if (!cupom()) {
-        <div class="cupom-row">
-          <input class="cupom-input" [formControl]="cupomControl" placeholder="Código do cupom" />
-          <button class="cupom-btn" type="button" (click)="aplicarCupom()" [disabled]="carregandoCupom()">
-            {{ carregandoCupom() ? '...' : 'Aplicar' }}
+        <div class="carrinho-rodape">
+          <a class="link-continuar" routerLink="/">
+            <mat-icon>arrow_back</mat-icon>
+            Continuar comprando
+          </a>
+          <button class="btn-limpar" type="button" (click)="limpar()">
+            LIMPAR CARRINHO
           </button>
         </div>
-      }
 
-      <button class="btn-checkout" type="button" (click)="finalizar()">
-        Finalizar Compra
-      </button>
-    </aside>
+      </div>
 
+      <!-- Resumo lateral -->
+      <aside class="carrinho-resumo">
+        <h3 class="resumo-titulo">Resumo do Pedido</h3>
+
+        <div class="resumo-linha">
+          <span>Subtotal ({{ quantidadeTotal() }} itens)</span>
+          <span class="resumo-valor">R$ {{ valorTotal() | number:'1.2-2':'pt-BR' }}</span>
+        </div>
+
+        @if (!cupom()) {
+          <div class="cupom-wrapper">
+            <label class="cupom-label">Cupom de Desconto</label>
+            <div class="cupom-input-row">
+              <input type="text" class="cupom-input"
+                     placeholder="Código"
+                     [formControl]="cupomControl" />
+              <button class="cupom-btn" type="button"
+                      (click)="aplicarCupom()"
+                      [disabled]="carregandoCupom()">
+                {{ carregandoCupom() ? '...' : 'Aplicar' }}
+              </button>
+            </div>
+          </div>
+        }
+
+        @if (cupom()) {
+          <div class="resumo-desconto">
+            <div class="desconto-label">
+              <mat-icon>sell</mat-icon>
+              Desconto "{{ cupom()!.codigo }}"
+              <button class="remove-cupom" type="button" (click)="removerCupom()">×</button>
+            </div>
+            <span>- R$ {{ desconto() | number:'1.2-2':'pt-BR' }}</span>
+          </div>
+        }
+
+        <div class="resumo-total">
+          <span class="total-label">Total</span>
+          <div class="total-valores">
+            <p class="total-valor">R$ {{ valorTotalFinal() | number:'1.2-2':'pt-BR' }}</p>
+            <p class="total-parcelas">ou 6x de R$ {{ valorTotalFinal() / 6 | number:'1.2-2':'pt-BR' }} sem juros</p>
+          </div>
+        </div>
+
+        <button class="btn-finalizar" type="button" (click)="finalizar()">
+          FINALIZAR COMPRA
+        </button>
+
+        <div class="resumo-garantias">
+          <div class="garantia-item">
+            <mat-icon>lock</mat-icon>
+            Pagamento 100% Seguro
+          </div>
+          <div class="garantia-item">
+            <mat-icon>local_shipping</mat-icon>
+            Frete Grátis acima de R$ 199
+          </div>
+        </div>
+
+      </aside>
+    </div>
   </div>
 }

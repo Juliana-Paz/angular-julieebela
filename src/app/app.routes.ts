@@ -6,6 +6,7 @@ import { MunicipioList } from './components/adm/municipio/municipio-list/municip
 import { MunicipioForm } from './components/adm/municipio/municipio-form/municipio-form';
 import { municipioResolver } from './resolvers/municipio-resolver';
 import { TemplateAdm } from './components/template-adm/template-adm';
+import { TemplateAuth } from './components/template-auth/template-auth';
 import { Dashboard } from './components/adm/dashboard/dashboard';
 import { Home } from './components/ecommerce/home/home';
 import { Carrinho } from './components/ecommerce/carrinho/carrinho';
@@ -51,11 +52,17 @@ export const routes: Routes = [
             { path: 'carrinho', component: Carrinho, title: 'Carrinho' },
             { path: 'checkout', component: Checkout, title: 'Checkout', canActivate: [authGuard] },
             { path: 'pedido-confirmado/:id', component: PedidoConfirmado, title: 'Pedido Confirmado', canActivate: [authGuard] },
-            { path: 'perfil', component: Perfil, title: 'Meu Perfil', canActivate: [authGuard] },
             { path: 'lista-desejos', component: ListaDesejos, title: 'Lista de Desejos', canActivate: [authGuard] },
-            { path: 'cadastro', component: Cadastro, title: 'Cadastro' },
+        ]
+    },
+    {
+        path: '',
+        component: TemplateAuth,
+        children: [
             { path: 'login', component: Login, title: 'Login' },
+            { path: 'cadastro', component: Cadastro, title: 'Cadastro' },
             { path: 'recuperar-senha', component: RecuperarSenha, title: 'Recuperar Senha' },
+            { path: 'perfil', component: Perfil, title: 'Meu Perfil', canActivate: [authGuard] },
         ]
     },
     {
