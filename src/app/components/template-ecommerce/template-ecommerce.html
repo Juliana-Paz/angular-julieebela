@@ -1,139 +1,159 @@
 <div class="ecommerce-shell">
 
-  <!-- CAMADA 1 — Top bar informativa -->
-  <div class="topbar-info">
-    <div class="topbar-info-left">
-      <span class="topbar-item">
-        <mat-icon>local_shipping</mat-icon>
-        Frete grátis acima de R$ 199
-      </span>
-      <span class="topbar-item">
-        <mat-icon>sync</mat-icon>
-        Troca fácil em 30 dias
-      </span>
-      <span class="topbar-item">
-        <mat-icon>verified_user</mat-icon>
-        Compra segura
-      </span>
-    </div>
-    <div class="topbar-info-right">
-      <a routerLink="/trocas">Trocas e Devoluções</a>
-      <a routerLink="/seguranca">Segurança</a>
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="topbar-grupo">
+        <span class="topbar-item">
+          <mat-icon class="topbar-icon">local_shipping</mat-icon>
+          Frete grátis acima de R$ 199
+        </span>
+        <span class="topbar-item">
+          <mat-icon class="topbar-icon">sync</mat-icon>
+          Troca fácil e rápida
+        </span>
+      </div>
+      <div class="topbar-grupo">
+        <span class="topbar-item">
+          <mat-icon class="topbar-icon">lock</mat-icon>
+          Compra segura
+        </span>
+        <span class="topbar-item">
+          <mat-icon class="topbar-icon">credit_card</mat-icon>
+          Até 6x sem juros
+        </span>
+      </div>
     </div>
   </div>
 
-  <!-- CAMADA 2 — Header principal -->
-  <header class="site-header" [class.scrolled]="scrolled()">
-    <a routerLink="/" class="logo-link">
-      <img
-        src="assets/images/logo-julie-bela.jpg"
-        alt="Julie e Bela"
-        class="logo-ilustracao"
-      />
-      <div class="logo-texto">
-        <span class="logo-title">Julie &amp; Bela</span>
-        <span class="logo-subtitle">Ateliê de Pijamas Infantis</span>
+  <!-- HEADER PRINCIPAL -->
+  <header class="header-principal">
+    <div class="header-inner">
+
+      <!-- Logo -->
+      <a routerLink="/" class="logo-link">
+        <img src="assets/images/logo-julie-bela.png"
+             alt="Julie e Bela" class="logo-ilustracao" />
+        <div class="logo-texto">
+          <span class="logo-title">Julie &amp; Bela</span>
+          <span class="logo-subtitle">Ateliê de Pijamas Infantis</span>
+        </div>
+      </a>
+
+      <!-- Busca -->
+      <div class="header-busca">
+        <mat-icon class="busca-icon">search</mat-icon>
+        <input type="text" class="busca-input"
+               placeholder="O que seu pequeno precisa hoje?"
+               [(ngModel)]="termoBusca"
+               (keydown.enter)="buscar()" />
       </div>
-    </a>
 
-    <div class="header-search-bar">
-      <mat-icon>search</mat-icon>
-      <input type="text"
-             placeholder="O que você procura hoje?"
-             [(ngModel)]="termoBusca"
-             (keydown.enter)="buscar()">
-    </div>
+      <!-- Ações -->
+      <div class="header-acoes">
+        <button class="acao-btn" routerLink="/lista-desejos">
+          <mat-icon>favorite_border</mat-icon>
+        </button>
 
-    <div class="header-actions">
-      <button class="action-btn" routerLink="/lista-desejos"
-              matTooltip="Favoritos">
-        <mat-icon>favorite_border</mat-icon>
-      </button>
-
-      <button class="action-btn cart-btn" routerLink="/carrinho"
-              matTooltip="Carrinho">
-        <mat-icon>shopping_cart</mat-icon>
-        @if (totalItensCarrinho > 0) {
-          <span class="cart-badge">{{ totalItensCarrinho }}</span>
-        }
-      </button>
-
-      @if (usuarioLogado) {
-        <div class="perfil-dropdown" [class.aberto]="perfilAberto">
-          <button class="perfil-trigger" (click)="perfilAberto = !perfilAberto">
-            <div class="user-avatar">{{ inicialUsuario }}</div>
-            <div class="user-info">
-              <span class="user-name">{{ nomeUsuario }}</span>
-              <span class="user-sub">Minha Conta</span>
-            </div>
-          </button>
-          @if (perfilAberto) {
-            <div class="perfil-painel">
-              <button class="perfil-opcao" (click)="irPara('/perfil')">Meu Perfil</button>
-              <button class="perfil-opcao" (click)="irPara('/meus-pedidos')">Meus Pedidos</button>
-              <div class="perfil-divider"></div>
-              <button class="perfil-opcao sair" (click)="logout()">Sair</button>
-            </div>
+        <button class="acao-btn carrinho-btn" routerLink="/carrinho">
+          <mat-icon>shopping_cart</mat-icon>
+          @if (totalItensCarrinho > 0) {
+            <span class="carrinho-badge">{{ totalItensCarrinho }}</span>
           }
-        </div>
-      }
+        </button>
 
-      @if (!usuarioLogado) {
-        <div class="user-guest" routerLink="/login">
-          <div class="user-avatar-empty">
-            <mat-icon>person</mat-icon>
+        @if (usuarioLogado) {
+          <div class="perfil-area" [class.aberto]="perfilAberto">
+            <div class="perfil-trigger-wrapper" (click)="togglePerfil($event)">
+              <div class="perfil-avatar">{{ inicialUsuario }}</div>
+              <div class="perfil-info">
+                <span class="perfil-nome">{{ nomeUsuario }}</span>
+                <span class="perfil-sub">Minha Conta</span>
+              </div>
+            </div>
+            @if (perfilAberto) {
+              <div class="perfil-painel">
+                <button class="perfil-opcao" (click)="irPara('/perfil')">Meu Perfil</button>
+                <button class="perfil-opcao" (click)="irPara('/meus-pedidos')">Meus Pedidos</button>
+                <div class="perfil-divider"></div>
+                <button class="perfil-opcao sair" (click)="logout()">Sair</button>
+              </div>
+            }
           </div>
-          <div class="user-info">
-            <span class="user-name">Entre ou Cadastre-se</span>
-            <span class="user-sub">Minha Conta</span>
-          </div>
-        </div>
-      }
-    </div>
-  </header>
+        }
 
-  <!-- CAMADA 3 — Nav de categorias com ícones -->
-  <nav class="cat-nav">
-    <div class="cat-nav-inner">
-      <a class="cat-item" routerLink="/"
-         [queryParams]="{categoria: 'menina'}"
-         [class.active]="categoriaAtiva() === 'menina'"
-         (click)="categoriaAtiva.set('menina')">
-        <mat-icon>girl</mat-icon>
-        <span>Menina</span>
-      </a>
-      <a class="cat-item" routerLink="/"
-         [queryParams]="{categoria: 'menino'}"
-         [class.active]="categoriaAtiva() === 'menino'"
-         (click)="categoriaAtiva.set('menino')">
-        <mat-icon>boy</mat-icon>
-        <span>Menino</span>
-      </a>
-      <a class="cat-item" routerLink="/"
-         [queryParams]="{categoria: 'bebe'}"
-         [class.active]="categoriaAtiva() === 'bebe'"
-         (click)="categoriaAtiva.set('bebe')">
-        <mat-icon>child_care</mat-icon>
-        <span>Bebê</span>
-      </a>
-      <a class="cat-item" routerLink="/"
-         [queryParams]="{categoria: 'unissex'}"
-         [class.active]="categoriaAtiva() === 'unissex'"
-         (click)="categoriaAtiva.set('unissex')">
-        <mat-icon>people</mat-icon>
-        <span>Unissex</span>
-      </a>
-      <a class="cat-item" (click)="emBreve()">
-        <mat-icon>new_releases</mat-icon>
-        <span>Novidades</span>
-      </a>
-      <a class="cat-item" (click)="emBreve()">
-        <mat-icon>sell</mat-icon>
-        <span>Promoções</span>
-      </a>
+        @if (!usuarioLogado) {
+          <div class="perfil-area" routerLink="/login" style="cursor:pointer">
+            <div class="perfil-trigger-wrapper">
+              <div class="perfil-avatar">
+                <mat-icon style="font-size:1.1rem;width:1.1rem;height:1.1rem">person</mat-icon>
+              </div>
+              <div class="perfil-info">
+                <span class="perfil-nome">Entre ou Cadastre-se</span>
+                <span class="perfil-sub">Minha Conta</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
     </div>
+
+    <!-- Nav categorias -->
+    <div class="nav-wrapper">
+      <nav class="header-nav">
+        <a class="nav-item" routerLink="/"
+           [queryParams]="{categoria: 'menina'}"
+           [class.ativo]="categoriaAtiva() === 'menina'"
+           (click)="categoriaAtiva.set('menina')">
+          <mat-icon class="nav-icon">girl</mat-icon>
+          <span class="nav-label">Menina</span>
+          @if (categoriaAtiva() === 'menina') {
+            <div class="nav-indicator"></div>
+          }
+        </a>
+        <a class="nav-item" routerLink="/"
+           [queryParams]="{categoria: 'menino'}"
+           [class.ativo]="categoriaAtiva() === 'menino'"
+           (click)="categoriaAtiva.set('menino')">
+          <mat-icon class="nav-icon">boy</mat-icon>
+          <span class="nav-label">Menino</span>
+          @if (categoriaAtiva() === 'menino') {
+            <div class="nav-indicator"></div>
+          }
+        </a>
+        <a class="nav-item" routerLink="/"
+           [queryParams]="{categoria: 'bebe'}"
+           [class.ativo]="categoriaAtiva() === 'bebe'"
+           (click)="categoriaAtiva.set('bebe')">
+          <mat-icon class="nav-icon">child_care</mat-icon>
+          <span class="nav-label">Bebê</span>
+          @if (categoriaAtiva() === 'bebe') {
+            <div class="nav-indicator"></div>
+          }
+        </a>
+        <a class="nav-item" routerLink="/"
+           [queryParams]="{categoria: 'unissex'}"
+           [class.ativo]="categoriaAtiva() === 'unissex'"
+           (click)="categoriaAtiva.set('unissex')">
+          <mat-icon class="nav-icon">people</mat-icon>
+          <span class="nav-label">Unissex</span>
+          @if (categoriaAtiva() === 'unissex') {
+            <div class="nav-indicator"></div>
+          }
+        </a>
+        <a class="nav-item" (click)="emBreve()">
+          <mat-icon class="nav-icon">new_releases</mat-icon>
+          <span class="nav-label">Novidades</span>
+        </a>
+        <a class="nav-item" (click)="emBreve()">
+          <mat-icon class="nav-icon">sell</mat-icon>
+          <span class="nav-label">Promoções</span>
+        </a>
+      </nav>
+    </div>
+
     <div class="rainbow-bar"></div>
-  </nav>
+  </header>
 
   <!-- CONTEÚDO -->
   <main class="content" role="main">
@@ -143,94 +163,6 @@
   </main>
 
   <!-- FOOTER -->
-  <footer class="footer">
-
-    <div class="footer-rainbow-bar"></div>
-
-    <div class="footer-body">
-
-      <!-- Coluna 1: Logo + descrição + redes sociais -->
-      <div class="footer-col footer-brand-col">
-        <div class="footer-logo">Julie <span>&amp;</span> Bela</div>
-        <p class="footer-desc">
-          Oferecendo o melhor em conforto e estilo para as noites mágicas
-          dos seus pequenos desde 2018.
-        </p>
-        <div class="footer-social">
-          <a href="#" class="social-btn instagram" aria-label="Instagram" target="_blank">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-              <circle cx="12" cy="12" r="4"/>
-              <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/>
-            </svg>
-          </a>
-          <a href="#" class="social-btn facebook" aria-label="Facebook" target="_blank">
-            <svg viewBox="0 0 24 24" fill="currentColor">
-              <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
-            </svg>
-          </a>
-          <a href="#" class="social-btn whatsapp" aria-label="WhatsApp" target="_blank">
-            <svg viewBox="0 0 24 24" fill="currentColor">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
-              <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.522 5.853L0 24l6.266-1.5A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 0 1-5.006-1.371l-.36-.214-3.72.891.936-3.618-.235-.372A9.818 9.818 0 1 1 12 21.818z"/>
-            </svg>
-          </a>
-        </div>
-      </div>
-
-      <!-- Coluna 2: Institucional -->
-      <div class="footer-col">
-        <h4 class="footer-col-title">Institucional</h4>
-        <ul class="footer-nav-links">
-          <li><a routerLink="/sobre">Sobre Nós</a></li>
-          <li><a routerLink="/lojas">Nossas Lojas</a></li>
-          <li><a routerLink="/blog">Blog</a></li>
-          <li><a routerLink="/trabalhe-conosco">Trabalhe Conosco</a></li>
-        </ul>
-      </div>
-
-      <!-- Coluna 3: Ajuda & Suporte -->
-      <div class="footer-col">
-        <h4 class="footer-col-title">Ajuda &amp; Suporte</h4>
-        <ul class="footer-nav-links">
-          <li><a routerLink="/trocas">Políticas de Troca</a></li>
-          <li><a routerLink="/entrega">Prazos de Entrega</a></li>
-          <li><a routerLink="/tamanhos">Guia de Tamanhos</a></li>
-          <li><a routerLink="/contato">Fale Conosco</a></li>
-        </ul>
-      </div>
-
-      <!-- Coluna 4: Newsletter -->
-      <div class="footer-col footer-newsletter">
-        <h4 class="footer-col-title">Newsletter</h4>
-        <p class="footer-newsletter-desc">
-          Receba novidades e promoções exclusivas.
-        </p>
-        <div class="newsletter-form">
-          <input
-            type="email"
-            class="newsletter-input"
-            placeholder="Seu e-mail"
-            [(ngModel)]="newsletterEmail"
-          />
-          <button class="newsletter-btn" (click)="inscreverNewsletter()">
-            Inscrever
-          </button>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Barra inferior -->
-    <div class="footer-bottom">
-      <span class="footer-copy">© 2025 Julie &amp; Bela. Todos os direitos reservados.</span>
-      <div class="footer-legal">
-        <a routerLink="/privacidade">Privacidade</a>
-        <a routerLink="/termos">Termos de Uso</a>
-      </div>
-    </div>
-
-  </footer>
+  <app-ecommerce-footer />
 
 </div>

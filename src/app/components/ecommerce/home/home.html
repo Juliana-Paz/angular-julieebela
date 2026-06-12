@@ -165,10 +165,10 @@
           <span class="breadcrumb-sep">/</span>
           <strong>Pijamas</strong>
         </nav>
-        <span class="contador-produtos">{{ pjamasFiltrados.length }} produto(s) encontrados</span>
+        <span class="contador-produtos"><strong class="contador-numero">{{ pjamasFiltrados.length }}</strong> produto(s) encontrados</span>
       </div>
-      <div class="ordenar-wrapper">
-        <span class="ordenar-label">Ordenar por:</span>
+      <div class="ordenar-area">
+        <span class="ordenar-label">Ordenar:</span>
         <div class="ordenar-dropdown" [class.aberto]="ordenarAberto">
           <button class="ordenar-trigger" (click)="ordenarAberto = !ordenarAberto">
             <span>{{ ordenacaoLabel }}</span>
@@ -191,31 +191,55 @@
     <div class="produtos-grid">
       @for (obj of pjamasPagina; track obj.id) {
         <div class="produto-card" (click)="verDetalhe(obj.id)">
-          <div class="produto-img-wrap">
+
+          <!-- Imagem -->
+          <div class="card-imagem-wrapper">
             @if (obj.imagens?.[0]?.fid) {
-              <img [src]="getImagemUrl(obj.imagens![0])"
+              <img class="card-imagem"
+                   [src]="getImagemUrl(obj.imagens![0])"
                    [alt]="obj.nome">
             } @else {
-              <div class="produto-img-placeholder">
+              <div class="card-imagem card-imagem-placeholder">
                 <mat-icon>checkroom</mat-icon>
               </div>
             }
-            <button class="produto-wish"
-                    (click)="toggleDesejo($event, obj)"
-                    [class.ativo]="estaNoDesejo(obj.id)">
+            <button class="card-favorito"
+                    [class.favoritado]="estaNoDesejo(obj.id)"
+                    (click)="toggleDesejo($event, obj)">
               <mat-icon>{{ estaNoDesejo(obj.id) ? 'favorite' : 'favorite_border' }}</mat-icon>
             </button>
           </div>
-          <div class="produto-info">
-            <span class="categoria-tag" [ngClass]="getCategoriaClass(obj)">
-              {{ obj.categoria?.nome }}
-            </span>
-            <h3 class="produto-nome">{{ obj.nome }}</h3>
-            <p class="produto-preco">{{ obj.preco | currency:'BRL' }}</p>
-            <button class="btn-comprar"
+
+          <!-- Corpo -->
+          <div class="card-corpo">
+
+            <!-- Grupo 1: estrelas + nome + categoria -->
+            <div class="card-grupo-info">
+              <div class="card-estrelas">
+                <mat-icon class="estrela">star</mat-icon>
+                <mat-icon class="estrela">star</mat-icon>
+                <mat-icon class="estrela">star</mat-icon>
+                <mat-icon class="estrela">star</mat-icon>
+                <mat-icon class="estrela">star_border</mat-icon>
+                <span class="card-avaliacao">(4.0)</span>
+              </div>
+              <h3 class="card-nome">{{ obj.nome }}</h3>
+              <p class="card-categoria">{{ obj.categoria?.nome }}</p>
+            </div>
+
+            <!-- Grupo 2: preço + parcelamento -->
+            <div class="card-grupo-preco">
+              <p class="card-preco">{{ obj.preco | currency:'BRL' }}</p>
+              <p class="card-parcelamento">em até 3x sem juros</p>
+            </div>
+
+            <!-- Botão -->
+            <button class="card-btn-comprar"
                     (click)="verDetalhe(obj.id); $event.stopPropagation()">
+              <mat-icon>shopping_cart</mat-icon>
               Comprar
             </button>
+
           </div>
         </div>
       }
@@ -254,13 +278,15 @@
           &#8249;
         </button>
 
-        <button
-          *ngFor="let p of paginas"
-          class="pag-btn-num"
-          [class.ativo]="p === paginaAtual"
-          (click)="irParaPagina(p)">
-          {{ p + 1 }}
-        </button>
+        <ng-container *ngFor="let p of paginasVisiveis">
+          <span *ngIf="p === -1" class="pag-reticencias">...</span>
+          <button *ngIf="p !== -1"
+                  class="pag-btn-num"
+                  [class.ativo]="p === paginaAtual"
+                  (click)="irParaPagina(p)">
+            {{ p + 1 }}
+          </button>
+        </ng-container>
 
         <button class="pag-btn-seta" (click)="irParaPagina(paginaAtual + 1)"
                 [disabled]="paginaAtual >= totalPaginas - 1">

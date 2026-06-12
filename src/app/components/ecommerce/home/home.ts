@@ -315,8 +315,28 @@ export class Home implements OnInit {
     return Math.ceil(this.pjamasFiltrados.length / this.itensPorPagina);
   }
 
-  get paginas(): number[] {
-    return Array.from({ length: this.totalPaginas }, (_, i) => i);
+  get paginasVisiveis(): number[] {
+    const total = this.totalPaginas;
+    const atual = this.paginaAtual;
+    const paginas: number[] = [];
+
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, i) => i);
+    }
+
+    paginas.push(0);
+
+    if (atual > 2) paginas.push(-1);
+
+    const inicio = Math.max(1, atual - 1);
+    const fim = Math.min(total - 2, atual + 1);
+    for (let i = inicio; i <= fim; i++) paginas.push(i);
+
+    if (atual < total - 3) paginas.push(-1);
+
+    paginas.push(total - 1);
+
+    return paginas;
   }
 
   get rangeLabel(): string {

@@ -6,10 +6,11 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { EcommerceAuthService } from '../../services/ecommerce-auth.service';
 import { CarrinhoService } from '../../services/carrinho.service';
+import { EcommerceFooter } from './footer/footer';
 
 @Component({
   selector: 'app-template-ecommerce',
-  imports: [RouterOutlet, RouterLink, FormsModule, MatIconModule, MatTooltipModule],
+  imports: [RouterOutlet, RouterLink, FormsModule, MatIconModule, MatTooltipModule, EcommerceFooter],
   templateUrl: './template-ecommerce.html',
   styleUrl: './template-ecommerce.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -22,7 +23,6 @@ export class TemplateEcommerce implements OnInit {
   private readonly carrinhoService = inject(CarrinhoService);
 
   termoBusca = '';
-  newsletterEmail = '';
   readonly categoriaAtiva = signal('');
   readonly scrolled = signal(false);
   perfilAberto = false;
@@ -51,9 +51,14 @@ export class TemplateEcommerce implements OnInit {
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(e: MouseEvent): void {
-    if (!(e.target as HTMLElement).closest('.perfil-dropdown')) {
+    if (!(e.target as HTMLElement).closest('.perfil-area')) {
       this.perfilAberto = false;
     }
+  }
+
+  togglePerfil(event: MouseEvent): void {
+    event.stopPropagation();
+    this.perfilAberto = !this.perfilAberto;
   }
 
   irPara(rota: string): void {
@@ -82,9 +87,5 @@ export class TemplateEcommerce implements OnInit {
     this.snack.open('Em breve!', '', { duration: 2500, verticalPosition: 'top' });
   }
 
-  inscreverNewsletter(): void {
-    if (!this.newsletterEmail) return;
-    console.log('Newsletter:', this.newsletterEmail);
-    this.newsletterEmail = '';
-  }
+
 }
