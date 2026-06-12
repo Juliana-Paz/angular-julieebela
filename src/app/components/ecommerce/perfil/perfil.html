@@ -1,237 +1,438 @@
-<div class="perfil-container">
+<div class="perfil-page">
 
-  <div class="perfil-header">
-    <div class="perfil-avatar">
-      <mat-icon>account_circle</mat-icon>
-    </div>
-    <div>
-      <h1 class="perfil-nome">{{ cliente()?.nome ?? usuario()?.nome ?? 'Meu Perfil' }}</h1>
-      <p class="perfil-email">{{ cliente()?.email ?? '' }}</p>
-    </div>
-    <button mat-stroked-button color="warn" (click)="sairConta()" class="sair-btn" routerLink="/login">
-      <mat-icon>logout</mat-icon> Sair
-    </button>
-  </div>
+  <a class="perfil-voltar" routerLink="/">
+    <mat-icon>arrow_back</mat-icon>
+    Voltar à loja
+  </a>
 
-  @if (loading()) {
-    <div class="perfil-state">Carregando dados...</div>
-  }
+  <div class="perfil-layout">
 
-  @if (!loading()) {
-    <mat-tab-group class="perfil-tabs" animationDuration="200ms" [selectedIndex]="tabIndex()">
-
-      <!-- TAB 1: DADOS PESSOAIS -->
-      <mat-tab label="Dados Pessoais">
-        <div class="tab-content">
-          <form [formGroup]="dadosForm" (ngSubmit)="salvarDados()">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Nome completo</mat-label>
-              <input matInput formControlName="nome" />
-              @if (erroDados('nome')) { <mat-error>{{ erroDados('nome') }}</mat-error> }
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>CPF</mat-label>
-              <input matInput formControlName="cpf" mask="000.000.000-00" [dropSpecialCharacters]="false"
-                placeholder="000.000.000-00" maxlength="14" inputmode="numeric" />
-              @if (erroDados('cpf')) { <mat-error>{{ erroDados('cpf') }}</mat-error> }
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>E-mail</mat-label>
-              <input matInput formControlName="email" type="email" />
-              @if (erroDados('email')) { <mat-error>{{ erroDados('email') }}</mat-error> }
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Data de Nascimento</mat-label>
-              <input matInput [matDatepicker]="pickerNasc" formControlName="dataNascimento"
-                placeholder="DD/MM/AAAA" dateMask />
-              <mat-datepicker-toggle matIconSuffix [for]="pickerNasc" />
-              <mat-datepicker #pickerNasc startView="multi-year" />
-              @if (erroDados('dataNascimento')) { <mat-error>{{ erroDados('dataNascimento') }}</mat-error> }
-            </mat-form-field>
-
-            <button mat-flat-button color="primary" type="submit" [disabled]="salvandoDados()">
-              {{ salvandoDados() ? 'Salvando...' : 'Salvar Dados' }}
-            </button>
-          </form>
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="perfil-sidebar">
+      <div class="sidebar-usuario">
+        <div class="sidebar-avatar">
+          {{ (cliente()?.nome ?? usuario()?.nome ?? '?').charAt(0).toUpperCase() }}
         </div>
-      </mat-tab>
-
-      <!-- TAB 2: ALTERAR SENHA -->
-      <mat-tab label="Alterar Senha">
-        <div class="tab-content">
-          <form [formGroup]="senhaForm" (ngSubmit)="alterarSenha()">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Senha atual</mat-label>
-              <input matInput formControlName="senhaAtual" [type]="hideSenhaAtual ? 'password' : 'text'" />
-              <button mat-icon-button matSuffix type="button" (click)="hideSenhaAtual = !hideSenhaAtual">
-                <mat-icon>{{ hideSenhaAtual ? 'visibility_off' : 'visibility' }}</mat-icon>
-              </button>
-              @if (erroSenha('senhaAtual')) { <mat-error>{{ erroSenha('senhaAtual') }}</mat-error> }
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Nova senha</mat-label>
-              <input matInput formControlName="novaSenha" [type]="hideNovaSenha ? 'password' : 'text'" />
-              <button mat-icon-button matSuffix type="button" (click)="hideNovaSenha = !hideNovaSenha">
-                <mat-icon>{{ hideNovaSenha ? 'visibility_off' : 'visibility' }}</mat-icon>
-              </button>
-              @if (erroSenha('novaSenha')) { <mat-error>{{ erroSenha('novaSenha') }}</mat-error> }
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Confirmar nova senha</mat-label>
-              <input matInput formControlName="confirmarSenha" [type]="hideConfirmarSenha ? 'password' : 'text'" />
-              <button mat-icon-button matSuffix type="button" (click)="hideConfirmarSenha = !hideConfirmarSenha">
-                <mat-icon>{{ hideConfirmarSenha ? 'visibility_off' : 'visibility' }}</mat-icon>
-              </button>
-              @if (senhaForm.get('confirmarSenha')?.hasError('required')) {
-                <mat-error>Campo obrigatório.</mat-error>
-              }
-              @if (senhaForm.get('confirmarSenha')?.hasError('passwordMismatch')) {
-                <mat-error>As senhas não coincidem.</mat-error>
-              }
-            </mat-form-field>
-
-            <button mat-flat-button color="primary" type="submit" [disabled]="salvandoSenha()">
-              {{ salvandoSenha() ? 'Alterando...' : 'Alterar Senha' }}
-            </button>
-          </form>
+        <div class="sidebar-info">
+          <p class="sidebar-nome">{{ cliente()?.nome ?? usuario()?.nome ?? 'Minha Conta' }}</p>
+          <p class="sidebar-sub">Minha Conta</p>
         </div>
-      </mat-tab>
+      </div>
 
-      <!-- TAB 3: ENDEREÇOS -->
-      <mat-tab label="Endereços">
-        <div class="tab-content">
-          @if (enderecos.length === 0 && !mostrarFormEndereco()) {
-            <p class="empty-msg">Nenhum endereço cadastrado.</p>
-          }
+      <div class="sidebar-separador"></div>
 
-          @for (end of enderecos; track $index) {
-            <div class="endereco-card">
-              <mat-icon>location_on</mat-icon>
-              <div class="end-info">
-                <p>{{ end.logradouro }}, {{ end.numero }}
-                  @if (end.complemento) { — {{ end.complemento }} }
-                </p>
-                <p class="end-sec">{{ end.bairro }} • {{ end.municipio }}/{{ end.estado }} • CEP {{ end.cep }}</p>
+      <nav class="sidebar-nav">
+        <button class="sidebar-item" [class.ativo]="tabIndex() === 0" (click)="tabIndex.set(0)">
+          <mat-icon>person</mat-icon>
+          Dados Pessoais
+        </button>
+        <button class="sidebar-item" [class.ativo]="tabIndex() === 3" (click)="tabIndex.set(3)">
+          <mat-icon>receipt_long</mat-icon>
+          Meus Pedidos
+        </button>
+        <button class="sidebar-item" [class.ativo]="tabIndex() === 2" (click)="tabIndex.set(2)">
+          <mat-icon>location_on</mat-icon>
+          Endereços
+        </button>
+        <button class="sidebar-item" [class.ativo]="tabIndex() === 1" (click)="tabIndex.set(1)">
+          <mat-icon>lock_reset</mat-icon>
+          Alterar Senha
+        </button>
+
+        <div class="sidebar-separador"></div>
+
+        <button class="sidebar-item sidebar-sair" type="button"
+                (click)="sairConta()" routerLink="/login">
+          <mat-icon>logout</mat-icon>
+          Sair da Conta
+        </button>
+      </nav>
+    </aside>
+
+    <!-- ===== CONTEÚDO ===== -->
+    <div class="perfil-conteudo">
+
+      @if (loading()) {
+        <div class="perfil-loading">
+          <mat-icon class="icone-girando">refresh</mat-icon>
+          Carregando dados...
+        </div>
+      }
+
+      @if (!loading()) {
+
+        <!-- ===== DADOS PESSOAIS (tab 0) ===== -->
+        @if (tabIndex() === 0) {
+          <div class="perfil-secao">
+            <div class="secao-header">
+              <div class="secao-header-icone">
+                <mat-icon>person</mat-icon>
               </div>
-              <button mat-icon-button color="primary" (click)="editarEndereco($index, end)" matTooltip="Editar endereço">
-                <mat-icon>edit</mat-icon>
-              </button>
-              <button mat-icon-button color="warn" (click)="removerEndereco($index)" matTooltip="Remover">
-                <mat-icon>delete_outline</mat-icon>
-              </button>
+              <div>
+                <h3 class="secao-titulo">Dados Pessoais</h3>
+                <p class="secao-subtitulo">Atualize suas informações cadastrais.</p>
+              </div>
             </div>
-          }
 
-          <button mat-stroked-button color="primary" (click)="toggleFormEndereco()" class="btn-add-end">
-            <mat-icon>{{ mostrarFormEndereco() ? 'close' : 'add' }}</mat-icon>
-            {{ mostrarFormEndereco() ? 'Cancelar' : 'Adicionar Endereço' }}
-          </button>
+            <form [formGroup]="dadosForm" (ngSubmit)="salvarDados()" class="dados-form">
 
-          @if (mostrarFormEndereco()) {
-            <form [formGroup]="enderecoForm" (ngSubmit)="salvarEndereco()" class="end-form">
-              <div class="form-row">
-                <mat-form-field appearance="outline">
-                  <mat-label>CEP</mat-label>
-                  <input matInput formControlName="cep" mask="00000-000" placeholder="00000-000" maxlength="9" />
-                  @if (erroEndereco('cep')) { <mat-error>{{ erroEndereco('cep') }}</mat-error> }
-                </mat-form-field>
-                <mat-form-field appearance="outline">
-                  <mat-label>UF</mat-label>
-                  <input matInput formControlName="estado" maxlength="2" />
-                  @if (erroEndereco('estado')) { <mat-error>{{ erroEndereco('estado') }}</mat-error> }
-                </mat-form-field>
+              <div class="form-grid-2">
+                <div class="campo-wrapper">
+                  <label class="campo-label">Nome completo</label>
+                  <div class="campo-input-wrapper">
+                    <mat-icon class="campo-icone">badge</mat-icon>
+                    <input type="text" class="campo-input"
+                           placeholder="Seu nome completo"
+                           formControlName="nome" />
+                  </div>
+                  @if (erroDados('nome')) {
+                    <span class="campo-erro">{{ erroDados('nome') }}</span>
+                  }
+                </div>
+
+                <div class="campo-wrapper">
+                  <label class="campo-label">E-mail</label>
+                  <div class="campo-input-wrapper">
+                    <mat-icon class="campo-icone">alternate_email</mat-icon>
+                    <input type="email" class="campo-input"
+                           placeholder="seu@email.com"
+                           formControlName="email" />
+                  </div>
+                  @if (erroDados('email')) {
+                    <span class="campo-erro">{{ erroDados('email') }}</span>
+                  }
+                </div>
+
+                <div class="campo-wrapper">
+                  <label class="campo-label">CPF</label>
+                  <div class="campo-input-wrapper">
+                    <mat-icon class="campo-icone">credit_card</mat-icon>
+                    <input type="text" class="campo-input"
+                           placeholder="000.000.000-00"
+                           formControlName="cpf"
+                           mask="000.000.000-00"
+                           [dropSpecialCharacters]="false" />
+                  </div>
+                  @if (erroDados('cpf')) {
+                    <span class="campo-erro">{{ erroDados('cpf') }}</span>
+                  }
+                </div>
+
+                <div class="campo-wrapper">
+                  <label class="campo-label">Data de Nascimento</label>
+                  <div class="campo-input-wrapper">
+                    <mat-icon class="campo-icone">cake</mat-icon>
+                    <input class="campo-input campo-input-date"
+                           [matDatepicker]="pickerNasc"
+                           formControlName="dataNascimento"
+                           placeholder="DD/MM/AAAA"
+                           dateMask />
+                    <mat-datepicker-toggle [for]="pickerNasc" class="date-toggle" />
+                    <mat-datepicker #pickerNasc startView="multi-year" />
+                  </div>
+                  @if (erroDados('dataNascimento')) {
+                    <span class="campo-erro">{{ erroDados('dataNascimento') }}</span>
+                  }
+                </div>
               </div>
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Logradouro</mat-label>
-                <input matInput formControlName="logradouro" />
-                @if (erroEndereco('logradouro')) { <mat-error>{{ erroEndereco('logradouro') }}</mat-error> }
-              </mat-form-field>
-              <div class="form-row">
-                <mat-form-field appearance="outline">
-                  <mat-label>Número</mat-label>
-                  <input matInput formControlName="numero" />
-                  @if (erroEndereco('numero')) { <mat-error>{{ erroEndereco('numero') }}</mat-error> }
-                </mat-form-field>
-                <mat-form-field appearance="outline">
-                  <mat-label>Complemento</mat-label>
-                  <input matInput formControlName="complemento" />
-                </mat-form-field>
-              </div>
-              <div class="form-row">
-                <mat-form-field appearance="outline">
-                  <mat-label>Bairro</mat-label>
-                  <input matInput formControlName="bairro" />
-                  @if (erroEndereco('bairro')) { <mat-error>{{ erroEndereco('bairro') }}</mat-error> }
-                </mat-form-field>
-                <mat-form-field appearance="outline">
-                  <mat-label>Município</mat-label>
-                  <input matInput formControlName="municipio" />
-                  @if (erroEndereco('municipio')) { <mat-error>{{ erroEndereco('municipio') }}</mat-error> }
-                </mat-form-field>
-              </div>
-              <div class="end-form-actions">
-                <button mat-flat-button color="primary" type="submit">
-                  <mat-icon>save</mat-icon>
-                  {{ enderecoEmEdicao !== null ? 'Atualizar Endereço' : 'Salvar Endereço' }}
+
+              <div class="form-acoes">
+                <button type="submit" class="btn-salvar" [disabled]="salvandoDados()">
+                  @if (!salvandoDados()) {
+                    <mat-icon>save</mat-icon>
+                    <span>Salvar Alterações</span>
+                  }
+                  @if (salvandoDados()) {
+                    <span class="btn-loading">
+                      <mat-icon class="icone-girando">refresh</mat-icon>
+                      Salvando...
+                    </span>
+                  }
                 </button>
-                @if (enderecoEmEdicao !== null) {
-                  <button mat-button type="button" (click)="cancelarEdicao()">Cancelar</button>
+              </div>
+
+            </form>
+          </div>
+        }
+
+        <!-- ===== ALTERAR SENHA (tab 1) ===== -->
+        @if (tabIndex() === 1) {
+          <div class="perfil-secao">
+            <div class="secao-header">
+              <div class="secao-header-icone">
+                <mat-icon>lock_reset</mat-icon>
+              </div>
+              <div>
+                <h3 class="secao-titulo">Alterar Senha</h3>
+                <p class="secao-subtitulo">Mantenha sua conta segura com uma senha forte.</p>
+              </div>
+            </div>
+
+            <form [formGroup]="senhaForm" (ngSubmit)="alterarSenha()" class="dados-form">
+
+              <div class="campo-wrapper">
+                <label class="campo-label">Senha atual</label>
+                <div class="campo-input-wrapper">
+                  <mat-icon class="campo-icone">lock</mat-icon>
+                  <input [type]="hideSenhaAtual ? 'password' : 'text'"
+                         class="campo-input campo-input-pw"
+                         placeholder="Sua senha atual"
+                         formControlName="senhaAtual" />
+                  <button type="button" class="campo-toggle"
+                          (click)="hideSenhaAtual = !hideSenhaAtual">
+                    <mat-icon>{{ hideSenhaAtual ? 'visibility_off' : 'visibility' }}</mat-icon>
+                  </button>
+                </div>
+                @if (erroSenha('senhaAtual')) {
+                  <span class="campo-erro">{{ erroSenha('senhaAtual') }}</span>
                 }
               </div>
+
+              <div class="campo-wrapper">
+                <label class="campo-label">Nova senha</label>
+                <div class="campo-input-wrapper">
+                  <mat-icon class="campo-icone">lock_open</mat-icon>
+                  <input [type]="hideNovaSenha ? 'password' : 'text'"
+                         class="campo-input campo-input-pw"
+                         placeholder="Mínimo 6 caracteres"
+                         formControlName="novaSenha" />
+                  <button type="button" class="campo-toggle"
+                          (click)="hideNovaSenha = !hideNovaSenha">
+                    <mat-icon>{{ hideNovaSenha ? 'visibility_off' : 'visibility' }}</mat-icon>
+                  </button>
+                </div>
+                @if (erroSenha('novaSenha')) {
+                  <span class="campo-erro">{{ erroSenha('novaSenha') }}</span>
+                }
+              </div>
+
+              <div class="campo-wrapper">
+                <label class="campo-label">Confirmar nova senha</label>
+                <div class="campo-input-wrapper">
+                  <mat-icon class="campo-icone">lock_open</mat-icon>
+                  <input [type]="hideConfirmarSenha ? 'password' : 'text'"
+                         class="campo-input campo-input-pw"
+                         placeholder="Repita a nova senha"
+                         formControlName="confirmarSenha" />
+                  <button type="button" class="campo-toggle"
+                          (click)="hideConfirmarSenha = !hideConfirmarSenha">
+                    <mat-icon>{{ hideConfirmarSenha ? 'visibility_off' : 'visibility' }}</mat-icon>
+                  </button>
+                </div>
+                @if (senhaForm.get('confirmarSenha')?.hasError('passwordMismatch') && senhaForm.get('confirmarSenha')?.touched) {
+                  <span class="campo-erro">As senhas não conferem.</span>
+                }
+              </div>
+
+              <div class="form-acoes">
+                <button type="submit" class="btn-salvar"
+                        [disabled]="salvandoSenha() || senhaForm.invalid">
+                  @if (!salvandoSenha()) {
+                    <mat-icon>key</mat-icon>
+                    <span>Alterar Senha</span>
+                  }
+                  @if (salvandoSenha()) {
+                    <span class="btn-loading">
+                      <mat-icon class="icone-girando">refresh</mat-icon>
+                      Alterando...
+                    </span>
+                  }
+                </button>
+              </div>
+
             </form>
-          }
-        </div>
-      </mat-tab>
+          </div>
+        }
 
-      <!-- TAB 4: HISTÓRICO DE PEDIDOS -->
-      <mat-tab label="Meus Pedidos">
-        <div class="tab-content">
-          @if (pedidos().length === 0) {
-            <p class="empty-msg">Nenhum pedido realizado ainda.</p>
-            <a mat-flat-button color="primary" routerLink="/">Explorar pijamas</a>
-          }
+        <!-- ===== ENDEREÇOS (tab 2) ===== -->
+        @if (tabIndex() === 2) {
+          <div class="perfil-secao">
+            <div class="secao-header">
+              <div class="secao-header-icone">
+                <mat-icon>location_on</mat-icon>
+              </div>
+              <div>
+                <h3 class="secao-titulo">Meus Endereços</h3>
+                <p class="secao-subtitulo">Gerencie seus endereços de entrega.</p>
+              </div>
+            </div>
 
-          @if (pedidos().length > 0) {
-            <table mat-table [dataSource]="pedidos()" class="pedidos-table">
+            @if (enderecos.length > 0) {
+              <div class="enderecos-lista">
+                @for (end of enderecos; track $index) {
+                  <div class="endereco-card">
+                    <div class="endereco-info">
+                      <p class="endereco-linha endereco-principal">
+                        {{ end.logradouro }}, {{ end.numero }}
+                        @if (end.complemento) {<span> — {{ end.complemento }}</span>}
+                      </p>
+                      <p class="endereco-linha endereco-detalhe">
+                        {{ end.bairro }} • {{ end.municipio }}/{{ end.estado }}
+                        • CEP {{ end.cep }}
+                      </p>
+                    </div>
+                    <div class="endereco-acoes">
+                      <button class="btn-end-acao btn-editar-end" type="button"
+                              (click)="editarEndereco($index, end)" title="Editar">
+                        <mat-icon>edit</mat-icon>
+                      </button>
+                      <button class="btn-end-acao btn-remover-end" type="button"
+                              (click)="removerEndereco($index)" title="Remover">
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
 
-              <ng-container matColumnDef="id">
-                <th mat-header-cell *matHeaderCellDef>Pedido</th>
-                <td mat-cell *matCellDef="let p">#{{ p.id }}</td>
-              </ng-container>
+            @if (mostrarFormEndereco()) {
+              <form [formGroup]="enderecoForm" (ngSubmit)="salvarEndereco()" class="end-form">
+                <div class="form-grid-2">
+                  <div class="campo-wrapper">
+                    <label class="campo-label">CEP</label>
+                    <input class="campo-input-sm" formControlName="cep"
+                           placeholder="00000-000" maxlength="9"
+                           mask="00000-000" [dropSpecialCharacters]="false" />
+                    @if (erroEndereco('cep')) {
+                      <span class="campo-erro">{{ erroEndereco('cep') }}</span>
+                    }
+                  </div>
+                  <div class="campo-wrapper">
+                    <label class="campo-label">UF</label>
+                    <input class="campo-input-sm" formControlName="estado"
+                           placeholder="UF" maxlength="2" />
+                    @if (erroEndereco('estado')) {
+                      <span class="campo-erro">{{ erroEndereco('estado') }}</span>
+                    }
+                  </div>
+                </div>
 
-              <ng-container matColumnDef="data">
-                <th mat-header-cell *matHeaderCellDef>Data</th>
-                <td mat-cell *matCellDef="let p">{{ p.data | date:'dd/MM/yyyy' }}</td>
-              </ng-container>
+                <div class="campo-wrapper">
+                  <label class="campo-label">Logradouro</label>
+                  <input class="campo-input-sm" formControlName="logradouro"
+                         placeholder="Rua, Av..." />
+                  @if (erroEndereco('logradouro')) {
+                    <span class="campo-erro">{{ erroEndereco('logradouro') }}</span>
+                  }
+                </div>
 
-              <ng-container matColumnDef="status">
-                <th mat-header-cell *matHeaderCellDef>Status</th>
-                <td mat-cell *matCellDef="let p"><span class="status-badge">{{ $any(p.status)?.nome ?? p.status }}</span></td>
-              </ng-container>
+                <div class="form-grid-2">
+                  <div class="campo-wrapper">
+                    <label class="campo-label">Número</label>
+                    <input class="campo-input-sm" formControlName="numero" placeholder="Nº" />
+                    @if (erroEndereco('numero')) {
+                      <span class="campo-erro">{{ erroEndereco('numero') }}</span>
+                    }
+                  </div>
+                  <div class="campo-wrapper">
+                    <label class="campo-label">Complemento</label>
+                    <input class="campo-input-sm" formControlName="complemento"
+                           placeholder="Opcional" />
+                  </div>
+                </div>
 
-              <ng-container matColumnDef="total">
-                <th mat-header-cell *matHeaderCellDef>Total</th>
-                <td mat-cell *matCellDef="let p">R$ {{ p.total | number:'1.2-2' }}</td>
-              </ng-container>
+                <div class="form-grid-2">
+                  <div class="campo-wrapper">
+                    <label class="campo-label">Bairro</label>
+                    <input class="campo-input-sm" formControlName="bairro" placeholder="Bairro" />
+                    @if (erroEndereco('bairro')) {
+                      <span class="campo-erro">{{ erroEndereco('bairro') }}</span>
+                    }
+                  </div>
+                  <div class="campo-wrapper">
+                    <label class="campo-label">Município</label>
+                    <input class="campo-input-sm" formControlName="municipio"
+                           placeholder="Cidade" />
+                    @if (erroEndereco('municipio')) {
+                      <span class="campo-erro">{{ erroEndereco('municipio') }}</span>
+                    }
+                  </div>
+                </div>
 
-              <ng-container matColumnDef="formaPagamento">
-                <th mat-header-cell *matHeaderCellDef>Pagamento</th>
-                <td mat-cell *matCellDef="let p">{{ $any(p.formaPagamento)?.nome ?? p.formaPagamento }}</td>
-              </ng-container>
+                <div class="end-form-acoes">
+                  <button type="submit" class="btn-salvar-end">
+                    <mat-icon>save</mat-icon>
+                    {{ enderecoEmEdicao !== null ? 'Atualizar Endereço' : 'Salvar Endereço' }}
+                  </button>
+                  @if (enderecoEmEdicao !== null) {
+                    <button type="button" class="btn-cancelar-end" (click)="cancelarEdicao()">
+                      Cancelar Edição
+                    </button>
+                  }
+                </div>
+              </form>
+            }
 
-              <tr mat-header-row *matHeaderRowDef="pedidoColumns"></tr>
-              <tr mat-row *matRowDef="let row; columns: pedidoColumns;"></tr>
-            </table>
-          }
-        </div>
-      </mat-tab>
+            <button class="btn-adicionar-end" type="button" (click)="toggleFormEndereco()">
+              <mat-icon>{{ mostrarFormEndereco() ? 'close' : 'add' }}</mat-icon>
+              {{ mostrarFormEndereco() ? 'Cancelar' : 'Adicionar novo endereço' }}
+            </button>
 
-    </mat-tab-group>
-  }
+          </div>
+        }
 
+        <!-- ===== MEUS PEDIDOS (tab 3) ===== -->
+        @if (tabIndex() === 3) {
+          <div class="perfil-secao">
+            <div class="secao-header">
+              <div class="secao-header-icone">
+                <mat-icon>receipt_long</mat-icon>
+              </div>
+              <div>
+                <h3 class="secao-titulo">Meus Pedidos</h3>
+                <p class="secao-subtitulo">Histórico de todas as suas compras.</p>
+              </div>
+            </div>
+
+            @if (pedidos().length === 0) {
+              <div class="estado-vazio">
+                <mat-icon class="vazio-icone">shopping_bag</mat-icon>
+                <p class="vazio-titulo">Nenhum pedido ainda</p>
+                <p class="vazio-texto">Seus pedidos aparecerão aqui após a primeira compra.</p>
+                <a routerLink="/" class="btn-explorar">Explorar produtos</a>
+              </div>
+            }
+
+            @if (pedidos().length > 0) {
+              <div class="pedidos-lista">
+                @for (p of pedidos(); track p.id) {
+                  <div class="pedido-card">
+                    <div class="pedido-topo">
+                      <div class="pedido-id">
+                        <mat-icon>receipt</mat-icon>
+                        <span>#JB-{{ p.id }}</span>
+                      </div>
+                      <span class="pedido-status">
+                        {{ $any(p.status)?.nome ?? p.status }}
+                      </span>
+                    </div>
+                    <div class="pedido-info">
+                      <span class="pedido-data">
+                        <mat-icon>calendar_today</mat-icon>
+                        {{ p.data | date:'dd/MM/yyyy' }}
+                      </span>
+                      <span class="pedido-pagamento">
+                        <mat-icon>credit_card</mat-icon>
+                        {{ $any(p.formaPagamento)?.nome ?? p.formaPagamento }}
+                      </span>
+                    </div>
+                    <div class="pedido-total-linha">
+                      <span class="pedido-total-label">Total</span>
+                      <span class="pedido-total-valor">
+                        R$ {{ p.total | number:'1.2-2':'pt-BR' }}
+                      </span>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+
+          </div>
+        }
+
+      }
+    </div>
+
+  </div>
 </div>
