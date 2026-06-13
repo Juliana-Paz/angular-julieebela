@@ -56,19 +56,21 @@ export class PijamaForm implements OnInit, AfterViewInit {
   estampas: Estampa[] = [];
 
   readonly tamanhos = [
-    { id: 1, nome: 'Recém-Nascido' },
-    { id: 2, nome: '1 a 3 Meses' },
-    { id: 3, nome: '3 a 6 Meses' },
-    { id: 4, nome: '6 a 9 Meses' },
-    { id: 5, nome: '1 Ano' },
-    { id: 6, nome: '2 Anos' },
-    { id: 7, nome: '3 Anos' },
-    { id: 8, nome: '4 Anos' },
-    { id: 9, nome: '6 Anos' },
-    { id: 10, nome: '8 Anos' },
-    { id: 11, nome: '10 Anos' },
-    { id: 12, nome: '12 Anos' },
-    { id: 13, nome: 'Adulto' },
+    { id: 1, nome: 'RN' },
+    { id: 2, nome: 'P' },
+    { id: 3, nome: 'M' },
+    { id: 4, nome: 'G' },
+    { id: 5, nome: 'GG' },
+    { id: 6, nome: 'XG' },
+    { id: 7, nome: 'Adulto' },
+    { id: 8, nome: '1 Ano' },
+    { id: 9, nome: '2 Anos' },
+    { id: 10, nome: '4 Anos' },
+    { id: 11, nome: '6 Anos' },
+    { id: 12, nome: '8 Anos' },
+    { id: 13, nome: '10 Anos' },
+    { id: 14, nome: '12 Anos' },
+    { id: 15, nome: '16 Anos' },
   ];
   readonly sexos = [
     { id: 1, nome: 'Feminino' },
@@ -186,9 +188,8 @@ export class PijamaForm implements OnInit, AfterViewInit {
             this.variantesArray.removeAt(0);
           }
           pijama.variantes?.forEach((v: PijamaVariante) => {
-            const idTamanho = this.tamanhos.find(t => t.nome === v.tamanhoNome)?.id ?? null;
             this.variantesArray.push(this.criarVarianteGroup({
-              idTamanho,
+              idTamanho: v.tamanhoId,
               idCor: v.cor?.id ?? null,
               estoque: v.estoque,
             }));
@@ -435,7 +436,7 @@ export class PijamaForm implements OnInit, AfterViewInit {
         estoque: Number(v.estoque),
       })),
     );
-    formData.append('variantes', new Blob([variantesJson], { type: 'application/json' }));
+    formData.append('variantes', variantesJson);
 
     const req = valores.id
       ? this.pijamaService.update(valores.id, formData)

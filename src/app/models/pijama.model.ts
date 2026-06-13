@@ -6,7 +6,7 @@ import { Material } from './material.model';
 
 export interface PijamaVariante {
   id: number;
-  tamanhoId: string;
+  tamanhoId: number;
   tamanhoNome: string;
   cor: { id: number; nome: string; hexadecimal: string } | null;
   estoque: number;
