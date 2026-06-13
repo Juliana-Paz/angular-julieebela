@@ -66,6 +66,11 @@ export class TemplateEcommerce implements OnInit {
     this.router.navigate([rota]);
   }
 
+  irParaPedidos(): void {
+    this.perfilAberto = false;
+    this.router.navigate(['/perfil'], { queryParams: { aba: 3 } });
+  }
+
   ngOnInit(): void {
     this.route.queryParamMap.subscribe(params => {
       this.categoriaAtiva.set(params.get('categoria') ?? '');

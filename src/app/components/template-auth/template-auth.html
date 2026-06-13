@@ -13,16 +13,47 @@
       </a>
 
       <div class="auth-header-acoes">
-        <button class="auth-acao-btn" type="button" [routerLink]="['/carrinho']">
-          <mat-icon>shopping_cart</mat-icon>
-        </button>
+
+        <!-- Voltar à loja -->
         <a class="auth-voltar-loja" routerLink="/">
           <mat-icon>storefront</mat-icon>
           <span>Voltar à loja</span>
         </a>
+
+        <!-- Carrinho -->
+        <button class="acao-btn carrinho-btn" type="button" [routerLink]="['/carrinho']">
+          <mat-icon>shopping_cart</mat-icon>
+          @if (quantidadeCarrinho > 0) {
+            <span class="carrinho-badge">{{ quantidadeCarrinho }}</span>
+          }
+        </button>
+
+        <!-- Separador vertical -->
+        <div class="auth-separador-vertical"></div>
+
+        <!-- Perfil -->
+        @if (usuarioLogado) {
+          <div class="perfil-area" [class.aberto]="perfilAberto">
+            <div class="perfil-trigger-wrapper" (click)="togglePerfil($event)">
+              <div class="perfil-avatar">{{ inicialUsuario }}</div>
+              <div class="perfil-info">
+                <span class="perfil-nome">{{ nomeUsuario }}</span>
+                <span class="perfil-sub">Minha Conta</span>
+              </div>
+            </div>
+            @if (perfilAberto) {
+              <div class="perfil-painel">
+                <button class="perfil-opcao" (click)="irPara('/perfil')">Meu Perfil</button>
+                <button class="perfil-opcao" (click)="irParaPedidos()">Meus Pedidos</button>
+                <div class="perfil-divider"></div>
+                <button class="perfil-opcao sair" (click)="sair()">Sair</button>
+              </div>
+            }
+          </div>
+        }
+
       </div>
     </div>
-    <div class="auth-header-linha"></div>
   </header>
 
   <main class="auth-main">

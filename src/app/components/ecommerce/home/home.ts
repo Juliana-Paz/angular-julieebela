@@ -79,11 +79,10 @@ export class Home implements OnInit {
   precoMax = 9999;
   precoMinTemp = 0;
   precoMaxTemp = 9999;
-  ordenacao = 'relevancia';
+  ordenacao = 'mais_vendidos';
   ordenarAberto = false;
   readonly ordenacaoOpcoes = [
-    { value: 'relevancia',    label: 'Mais relevantes' },
-    { value: 'mais-vendidos', label: 'Mais vendidos' },
+    { value: 'mais_vendidos', label: 'Mais vendidos' },
     { value: 'menor_preco',   label: 'Menor preço' },
     { value: 'maior_preco',   label: 'Maior preço' },
     { value: 'novidades',     label: 'Novidades' },
@@ -92,7 +91,7 @@ export class Home implements OnInit {
   get logado(): boolean { return this.authService.logado(); }
 
   get ordenacaoLabel(): string {
-    return this.ordenacaoOpcoes.find(o => o.value === this.ordenacao)?.label ?? 'Mais relevantes';
+    return this.ordenacaoOpcoes.find(o => o.value === this.ordenacao)?.label ?? 'Mais vendidos';
   }
 
   get nomeCategoriaSelecionada(): string {
@@ -303,8 +302,19 @@ export class Home implements OnInit {
 
   aplicarOrdenacaoLista(lista: PijamaEcommerce[]): void {
     switch (this.ordenacao) {
-      case 'menor_preco': lista.sort((a, b) => a.preco - b.preco); break;
-      case 'maior_preco': lista.sort((a, b) => b.preco - a.preco); break;
+      case 'mais_vendidos':
+        // modelo não tem totalVendido — mantém ordem retornada pela API
+        break;
+      case 'menor_preco':
+        lista.sort((a, b) => a.preco - b.preco);
+        break;
+      case 'maior_preco':
+        lista.sort((a, b) => b.preco - a.preco);
+        break;
+      case 'novidades':
+        // id maior = cadastrado mais recentemente
+        lista.sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
+        break;
     }
     this.pjamasFiltrados = lista;
   }

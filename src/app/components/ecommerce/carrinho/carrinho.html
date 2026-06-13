@@ -85,14 +85,22 @@
             <label class="cupom-label">Cupom de Desconto</label>
             <div class="cupom-input-row">
               <input type="text" class="cupom-input"
+                     [class.cupom-input-erro]="erroCupom()"
                      placeholder="Código"
-                     [formControl]="cupomControl" />
+                     [formControl]="cupomControl"
+                     (input)="erroCupom.set(null)" />
               <button class="cupom-btn" type="button"
                       (click)="aplicarCupom()"
                       [disabled]="carregandoCupom()">
                 {{ carregandoCupom() ? '...' : 'Aplicar' }}
               </button>
             </div>
+            @if (erroCupom()) {
+              <p class="cupom-mensagem-erro">
+                <mat-icon>error_outline</mat-icon>
+                {{ erroCupom() }}
+              </p>
+            }
           </div>
         }
 

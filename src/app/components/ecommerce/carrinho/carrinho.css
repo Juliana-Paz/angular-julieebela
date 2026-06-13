@@ -337,11 +337,40 @@
   background: #F8F3EC;
   outline: none;
   transition: border-color 0.2s;
+  text-transform: uppercase;
+}
+
+.cupom-input::placeholder {
+  text-transform: none;
 }
 
 .cupom-input:focus {
   border-color: #2B5B75;
   box-shadow: 0 0 0 3px rgba(43, 91, 117, 0.08);
+}
+
+.cupom-input-erro {
+  border-color: #ba1a1a !important;
+  box-shadow: 0 0 0 3px rgba(186,26,26,0.1) !important;
+  background: #fff0f0 !important;
+}
+
+.cupom-mensagem-erro {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: #ba1a1a;
+  font-weight: 500;
+  margin: 6px 0 0;
+  padding: 0 4px;
+}
+
+.cupom-mensagem-erro mat-icon {
+  font-size: 0.9rem !important;
+  width: 0.9rem !important;
+  height: 0.9rem !important;
+  flex-shrink: 0;
 }
 
 .cupom-btn {

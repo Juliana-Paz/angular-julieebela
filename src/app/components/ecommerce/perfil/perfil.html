@@ -287,10 +287,13 @@
             }
 
             @if (mostrarFormEndereco()) {
+              <p class="form-obrigatorio-legenda">
+                <span class="asterisco">*</span> Campos obrigatórios
+              </p>
               <form [formGroup]="enderecoForm" (ngSubmit)="salvarEndereco()" class="end-form">
                 <div class="form-grid-2">
                   <div class="campo-wrapper">
-                    <label class="campo-label">CEP</label>
+                    <label class="campo-label">CEP <span class="asterisco">*</span></label>
                     <input class="campo-input-sm" formControlName="cep"
                            placeholder="00000-000" maxlength="9"
                            mask="00000-000" [dropSpecialCharacters]="false" />
@@ -299,7 +302,7 @@
                     }
                   </div>
                   <div class="campo-wrapper">
-                    <label class="campo-label">UF</label>
+                    <label class="campo-label">UF <span class="asterisco">*</span></label>
                     <input class="campo-input-sm" formControlName="estado"
                            placeholder="UF" maxlength="2" />
                     @if (erroEndereco('estado')) {
@@ -309,7 +312,7 @@
                 </div>
 
                 <div class="campo-wrapper">
-                  <label class="campo-label">Logradouro</label>
+                  <label class="campo-label">Logradouro <span class="asterisco">*</span></label>
                   <input class="campo-input-sm" formControlName="logradouro"
                          placeholder="Rua, Av..." />
                   @if (erroEndereco('logradouro')) {
@@ -319,7 +322,7 @@
 
                 <div class="form-grid-2">
                   <div class="campo-wrapper">
-                    <label class="campo-label">Número</label>
+                    <label class="campo-label">Número <span class="asterisco">*</span></label>
                     <input class="campo-input-sm" formControlName="numero" placeholder="Nº" />
                     @if (erroEndereco('numero')) {
                       <span class="campo-erro">{{ erroEndereco('numero') }}</span>
@@ -334,14 +337,14 @@
 
                 <div class="form-grid-2">
                   <div class="campo-wrapper">
-                    <label class="campo-label">Bairro</label>
+                    <label class="campo-label">Bairro <span class="asterisco">*</span></label>
                     <input class="campo-input-sm" formControlName="bairro" placeholder="Bairro" />
                     @if (erroEndereco('bairro')) {
                       <span class="campo-erro">{{ erroEndereco('bairro') }}</span>
                     }
                   </div>
                   <div class="campo-wrapper">
-                    <label class="campo-label">Município</label>
+                    <label class="campo-label">Município <span class="asterisco">*</span></label>
                     <input class="campo-input-sm" formControlName="municipio"
                            placeholder="Cidade" />
                     @if (erroEndereco('municipio')) {

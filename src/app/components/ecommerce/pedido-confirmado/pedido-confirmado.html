@@ -11,51 +11,82 @@
   @if (!loading() && !error() && pedido(); as p) {
     <div class="confirmado-card">
 
-      <!-- Ícone de sucesso -->
-      <div class="confirmado-icone-wrapper">
-        <div class="confirmado-icone-circulo">
-          <mat-icon class="confirmado-icone">check</mat-icon>
+      <!-- Animação de sucesso -->
+      <div class="sucesso-animacao">
+        <div class="sucesso-circulo">
+          <svg class="sucesso-check" viewBox="0 0 52 52">
+            <circle class="check-circulo" cx="26" cy="26" r="25" fill="none"/>
+            <path class="check-seta" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+          </svg>
         </div>
       </div>
 
       <!-- Título -->
       <h2 class="confirmado-titulo">Pedido Realizado com Sucesso!</h2>
       <p class="confirmado-subtitulo">
-        Seu pedido foi recebido com sucesso e está sendo processado
-        com todo o carinho e cuidado do nosso ateliê.
+        Seu pedido está sendo preparado com todo o carinho
+        e cuidado do nosso ateliê. 🎀
       </p>
 
       <!-- Número do pedido + data -->
       <div class="pedido-meta">
         <div class="pedido-meta-item">
           <span class="meta-label">Número do Pedido</span>
-          <span class="meta-valor meta-numero">#JB-{{ p.id }}</span>
+          <span class="meta-numero">#JB-{{ p.id }}</span>
         </div>
+        <div class="pedido-meta-divider"></div>
         <div class="pedido-meta-item pedido-meta-direita">
           <span class="meta-label">Data do Pedido</span>
-          <span class="meta-valor">{{ p.data | date:'dd/MM/yyyy' }}</span>
+          <span class="meta-data">{{ p.data | date:'dd/MM/yyyy' }}</span>
         </div>
       </div>
 
-      <!-- Resumo do pedido -->
+      <!-- Resumo -->
       <div class="pedido-resumo">
         <h3 class="resumo-titulo">Resumo do Pedido</h3>
 
-        <!-- Lista de itens -->
         <div class="resumo-itens">
           @for (item of p.itens; track item.id) {
             <div class="resumo-item">
+
+              <!-- Imagem -->
               <div class="item-imagem">
                 <img [src]="getImageUrl(item.pijama)"
                      [alt]="item.pijama.nome" />
               </div>
+
+              <!-- Info -->
               <div class="item-info">
                 <p class="item-nome">{{ item.pijama.nome }}</p>
-                <p class="item-detalhe">Qtd: {{ item.quantidade }}</p>
+                <div class="item-tags">
+
+                  @if (item.pijama.modelo) {
+                    <span class="item-tag">
+                      <mat-icon>style</mat-icon>
+                      {{ item.pijama.modelo }}
+                    </span>
+                  }
+
+                  <span class="item-tag item-tag-qtd">
+                    <mat-icon>shopping_bag</mat-icon>
+                    Quantidade: {{ item.quantidade }}
+                  </span>
+
+                </div>
               </div>
-              <span class="item-valor">
-                R$ {{ item.subtotal | number:'1.2-2' }}
-              </span>
+
+              <!-- Valor -->
+              <div class="item-valor-wrapper">
+                <span class="item-valor">
+                  R$ {{ item.subtotal | number:'1.2-2':'pt-BR' }}
+                </span>
+                @if (item.quantidade > 1) {
+                  <span class="item-valor-unitario">
+                    R$ {{ item.precoUnitario | number:'1.2-2':'pt-BR' }} cada
+                  </span>
+                }
+              </div>
+
             </div>
           }
         </div>
@@ -65,14 +96,48 @@
         @if (p.valorDesconto > 0) {
           <div class="resumo-desconto">
             <span class="desconto-label">Desconto aplicado</span>
-            <span class="desconto-valor">- R$ {{ p.valorDesconto | number:'1.2-2' }}</span>
+            <span class="desconto-valor">- R$ {{ p.valorDesconto | number:'1.2-2':'pt-BR' }}</span>
           </div>
         }
 
-        <!-- Total -->
         <div class="resumo-total">
           <span class="total-label">Total da Compra</span>
-          <span class="total-valor">R$ {{ p.total | number:'1.2-2' }}</span>
+          <span class="total-valor">
+            R$ {{ p.total | number:'1.2-2':'pt-BR' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Próximos passos -->
+      <div class="proximos-passos">
+        <div class="passo">
+          <div class="passo-icone">
+            <mat-icon>inventory_2</mat-icon>
+          </div>
+          <div class="passo-info">
+            <p class="passo-titulo">Preparando seu pedido</p>
+            <p class="passo-desc">Nossa equipe já recebeu seu pedido</p>
+          </div>
+        </div>
+        <div class="passo-conector"></div>
+        <div class="passo">
+          <div class="passo-icone passo-icone-inativo">
+            <mat-icon>local_shipping</mat-icon>
+          </div>
+          <div class="passo-info">
+            <p class="passo-titulo passo-titulo-inativo">Em breve será enviado</p>
+            <p class="passo-desc">Você receberá uma notificação</p>
+          </div>
+        </div>
+        <div class="passo-conector"></div>
+        <div class="passo">
+          <div class="passo-icone passo-icone-inativo">
+            <mat-icon>home</mat-icon>
+          </div>
+          <div class="passo-info">
+            <p class="passo-titulo passo-titulo-inativo">Entrega no seu endereço</p>
+            <p class="passo-desc">Com carinho até você</p>
+          </div>
         </div>
       </div>
 
@@ -81,10 +146,10 @@
         <a class="btn-meus-pedidos"
            routerLink="/perfil"
            [queryParams]="{aba: 3}">
+          <mat-icon>receipt_long</mat-icon>
           Ver meus pedidos
         </a>
-        <a class="btn-continuar"
-           routerLink="/">
+        <a class="btn-continuar" routerLink="/">
           Continuar comprando
         </a>
       </div>

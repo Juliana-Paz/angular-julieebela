@@ -17,6 +17,7 @@ export class Pijama {
   nome!: string;
   descricao!: string;
   preco!: number;
+  precoOriginal?: number;
   modelo!: string;
   ativo!: boolean;
   sexo?: { id: number; nome: string };

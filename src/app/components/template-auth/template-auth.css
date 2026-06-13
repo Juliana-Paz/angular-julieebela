@@ -1,3 +1,7 @@
+:host {
+  display: block;
+}
+
 .auth-layout {
   min-height: 100vh;
   background: #F8F3EC;
@@ -6,10 +10,13 @@
   font-family: 'Work Sans', sans-serif;
 }
 
-/* Header */
+/* Header — border-bottom é o único mecanismo da barra azul */
+:host header,
 .auth-header {
   background: #fef8f2;
   width: 100%;
+  border-bottom: 2px solid #2B5B75 !important;
+  box-shadow: none !important;
 }
 
 .auth-header-inner {
@@ -67,26 +74,10 @@
 .auth-header-acoes {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 }
 
-.auth-acao-btn {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #41484d;
-  transition: background 0.15s;
-}
-
-.auth-acao-btn:hover { background: rgba(43,91,117,0.08); }
-.auth-acao-btn mat-icon { font-size: 1.3rem !important; }
-
+/* Voltar à loja */
 .auth-voltar-loja {
   display: flex;
   align-items: center;
@@ -99,6 +90,7 @@
   border-radius: 999px;
   padding: 7px 14px;
   transition: all 0.15s;
+  white-space: nowrap;
 }
 
 .auth-voltar-loja:hover {
@@ -109,11 +101,50 @@
 
 .auth-voltar-loja mat-icon { font-size: 1rem !important; }
 
-/* Linha azul */
-.auth-header-linha {
-  height: 2px;
-  background: #2B5B75;
-  width: 100%;
+/* Separador vertical */
+.auth-separador-vertical {
+  width: 1px;
+  height: 32px;
+  background: rgba(193,199,205,0.3);
+  margin: 0 4px;
+}
+
+/* Botão carrinho — idêntico ao template-ecommerce */
+.acao-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #41484d;
+  transition: color 0.2s;
+  position: relative;
+}
+
+.acao-btn:hover { color: #a53461; }
+.acao-btn mat-icon { font-size: 1.4rem !important; }
+
+.carrinho-btn { position: relative; }
+
+.carrinho-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: #a53461;
+  color: #fff;
+  font-size: 0.55rem;
+  font-weight: 700;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fef8f2;
 }
 
 /* Main */
@@ -139,8 +170,125 @@
   margin: 0;
 }
 
-@media (max-width: 600px) {
+/* Perfil — idêntico ao template-ecommerce.css */
+.perfil-area {
+  position: relative;
+  display: inline-block;
+  border-left: 1px solid rgba(193, 199, 205, 0.3);
+  padding-left: 16px;
+  margin-left: 8px;
+}
+
+.perfil-trigger-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.perfil-trigger-wrapper:hover {
+  opacity: 0.8;
+}
+
+.perfil-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #ffd9e2;
+  color: #760a3e;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.perfil-trigger-wrapper:hover .perfil-avatar {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.perfil-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+}
+
+.perfil-nome {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #1d1b18;
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+
+.perfil-trigger-wrapper:hover .perfil-nome {
+  color: #0b435c;
+}
+
+.perfil-sub {
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #41484d;
+  opacity: 0.7;
+  white-space: nowrap;
+  font-weight: 700;
+}
+
+.perfil-painel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 160px;
+  background: #fff;
+  border: 1px solid var(--outline, #e8e0d8);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  z-index: 1000;
+  overflow: hidden;
+  padding: 4px 0;
+}
+
+.perfil-opcao {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  font-size: 0.875rem;
+  font-family: inherit;
+  color: #1d1b18;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+
+.perfil-opcao:hover {
+  background: #F6E2DC;
+  color: #613824;
+}
+
+.perfil-opcao.sair { color: #e05555; }
+.perfil-opcao.sair:hover { background: #fff0f0; color: #c0392b; }
+
+.perfil-divider {
+  height: 1px;
+  background: rgba(193, 199, 205, 0.3);
+  margin: 4px 0;
+}
+
+@media (max-width: 768px) {
   .auth-logo-subtitulo { display: none; }
-  .auth-voltar-loja span { display: none; }
+  .perfil-info { display: none; }
+}
+
+@media (max-width: 600px) {
   .auth-header-inner { padding: 12px 16px; }
+  .auth-voltar-loja span { display: none; }
 }

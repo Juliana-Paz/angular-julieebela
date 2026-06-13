@@ -250,9 +250,17 @@
 .campo-icone {
   position: absolute;
   left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
   font-size: 1rem !important;
+  width: 1rem !important;
+  height: 1rem !important;
   color: #71787d;
   pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 .campo-input {
@@ -291,6 +299,8 @@
 .campo-toggle {
   position: absolute;
   right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
   background: transparent;
   border: none;
   cursor: pointer;
@@ -300,11 +310,21 @@
   align-items: center;
   justify-content: center;
   border-radius: 6px;
+  line-height: 1;
   transition: color 0.15s;
 }
 
 .campo-toggle:hover { color: #2B5B75; }
-.campo-toggle mat-icon { font-size: 1rem !important; }
+
+.campo-toggle mat-icon {
+  font-size: 1rem !important;
+  width: 1rem !important;
+  height: 1rem !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
 
 .campo-erro {
   font-size: 0.75rem;
@@ -416,6 +436,19 @@
 
 .btn-remover-end { color: #a53461; }
 .btn-remover-end:hover { background: rgba(165,52,97,0.08); }
+
+.form-obrigatorio-legenda {
+  font-size: 0.72rem;
+  color: rgba(65,72,77,0.6);
+  margin: 0 0 16px;
+  text-align: right;
+}
+
+.asterisco {
+  color: #ba1a1a;
+  font-weight: 700;
+  margin-left: 2px;
+}
 
 /* Formulário endereço inline */
 .end-form {

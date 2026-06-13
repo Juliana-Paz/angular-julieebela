@@ -33,6 +33,7 @@ export class Carrinho {
 
   readonly cupomControl = new FormControl('');
   readonly carregandoCupom = signal(false);
+  readonly erroCupom = signal<string | null>(null);
   readonly imageBase = 'http://localhost:8080/pijamas/imagens/download/';
 
   getImageUrl(pijama: PijamaEcommerce): string {
@@ -63,10 +64,15 @@ export class Carrinho {
       this.snack.open('Digite um código de cupom.', 'OK', { duration: 3000 });
       return;
     }
+    this.erroCupom.set(null);
     this.carregandoCupom.set(true);
     this.cupomService.validar(codigo).subscribe({
       next: cupom => {
-        if (!cupom.ativo) { this.snack.open('Cupom inativo.', 'OK', { duration: 3000 }); this.carregandoCupom.set(false); return; }
+        if (!cupom.ativo) {
+          this.erroCupom.set('Cupom inativo.');
+          this.carregandoCupom.set(false);
+          return;
+        }
         const desconto = cupom.percentual
           ? this.valorTotal() * (cupom.valorDesconto / 100)
           : cupom.valorDesconto;
@@ -77,7 +83,7 @@ export class Carrinho {
       },
       error: () => {
         this.carregandoCupom.set(false);
-        this.snack.open('Cupom inválido ou expirado.', 'OK', { duration: 3000 });
+        this.erroCupom.set('Cupom inválido ou expirado.');
       },
     });
   }

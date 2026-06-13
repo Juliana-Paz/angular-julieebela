@@ -52,6 +52,12 @@ export class DetalhePijama implements OnInit {
     return v !== null && v.estoque > 0;
   });
 
+  readonly percentualDesconto = computed(() => {
+    const p = this.pijama();
+    if (!p?.precoOriginal || p.precoOriginal <= p.preco) return 0;
+    return Math.round((1 - p.preco / p.precoOriginal) * 100);
+  });
+
   ngOnInit(): void {
     const p: Pijama = this.route.snapshot.data['pijama'];
     this.pijama.set(p);
@@ -100,6 +106,10 @@ export class DetalhePijama implements OnInit {
     if (variante.estoque > 0) {
       this.varianteSelecionada.set(variante);
     }
+  }
+
+  abrirGuiaTamanhos(): void {
+    this.snack.open('Guia de tamanhos em breve!', '', { duration: 2500, verticalPosition: 'top' });
   }
 
   getImageUrl(index: number): string {

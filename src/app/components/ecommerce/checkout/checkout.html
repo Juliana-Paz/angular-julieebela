@@ -49,56 +49,123 @@
 
           <!-- Formulário novo endereço -->
           @if (mostrarNovoEndereco()) {
-            <form [formGroup]="novoEnderecoForm"
-                  (ngSubmit)="salvarNovoEndereco()"
-                  class="novo-end-form">
-              <div class="end-form-row">
+            <div class="endereco-form-wrapper">
+              <p class="form-obrigatorio-legenda">
+                <span class="asterisco">*</span> Campos obrigatórios
+              </p>
+              <form [formGroup]="novoEnderecoForm"
+                    (ngSubmit)="salvarNovoEndereco()"
+                    class="endereco-form">
+
+                <!-- CEP -->
                 <div class="campo-wrapper">
-                  <label class="campo-label">CEP</label>
-                  <input class="campo-input-sm" formControlName="cep"
-                         placeholder="00000-000" maxlength="9" />
+                  <label class="campo-label">CEP <span class="asterisco">*</span></label>
+                  <input class="campo-input-sm"
+                         formControlName="cep"
+                         placeholder="00000-000"
+                         maxlength="9" />
                 </div>
+
+                <!-- Logradouro -->
                 <div class="campo-wrapper">
-                  <label class="campo-label">UF</label>
-                  <input class="campo-input-sm" formControlName="estado"
-                         placeholder="UF" maxlength="2" />
+                  <label class="campo-label">Logradouro <span class="asterisco">*</span></label>
+                  <input class="campo-input-sm"
+                         formControlName="logradouro"
+                         placeholder="Rua, Avenida, etc." />
                 </div>
-              </div>
-              <div class="campo-wrapper">
-                <label class="campo-label">Logradouro</label>
-                <input class="campo-input-full" formControlName="logradouro"
-                       placeholder="Rua, Av..." />
-              </div>
-              <div class="end-form-row">
-                <div class="campo-wrapper">
-                  <label class="campo-label">Número</label>
-                  <input class="campo-input-sm" formControlName="numero"
-                         placeholder="Nº" />
+
+                <!-- Número + Complemento -->
+                <div class="end-form-row">
+                  <div class="campo-wrapper campo-numero">
+                    <label class="campo-label">Número <span class="asterisco">*</span></label>
+                    <input class="campo-input-sm"
+                           formControlName="numero"
+                           placeholder="Nº" />
+                  </div>
+                  <div class="campo-wrapper campo-complemento">
+                    <label class="campo-label">Complemento</label>
+                    <input class="campo-input-sm"
+                           formControlName="complemento"
+                           placeholder="Apto, Bloco... (opcional)" />
+                  </div>
                 </div>
+
+                <!-- Bairro -->
                 <div class="campo-wrapper">
-                  <label class="campo-label">Complemento</label>
-                  <input class="campo-input-sm" formControlName="complemento"
-                         placeholder="Opcional" />
-                </div>
-              </div>
-              <div class="end-form-row">
-                <div class="campo-wrapper">
-                  <label class="campo-label">Bairro</label>
-                  <input class="campo-input-sm" formControlName="bairro"
+                  <label class="campo-label">Bairro <span class="asterisco">*</span></label>
+                  <input class="campo-input-sm"
+                         formControlName="bairro"
                          placeholder="Bairro" />
                 </div>
-                <div class="campo-wrapper">
-                  <label class="campo-label">Município</label>
-                  <input class="campo-input-sm" formControlName="municipio"
-                         placeholder="Cidade" />
+
+                <!-- Município + Estado -->
+                <div class="end-form-row">
+                  <div class="campo-wrapper campo-cidade">
+                    <label class="campo-label">Município <span class="asterisco">*</span></label>
+                    <input class="campo-input-sm"
+                           formControlName="municipio"
+                           placeholder="Cidade" />
+                  </div>
+                  <div class="campo-wrapper campo-estado">
+                    <label class="campo-label">Estado <span class="asterisco">*</span></label>
+                    <select class="campo-input-sm campo-select"
+                            formControlName="estado">
+                      <option value="">UF</option>
+                      <option value="AC">AC</option>
+                      <option value="AL">AL</option>
+                      <option value="AP">AP</option>
+                      <option value="AM">AM</option>
+                      <option value="BA">BA</option>
+                      <option value="CE">CE</option>
+                      <option value="DF">DF</option>
+                      <option value="ES">ES</option>
+                      <option value="GO">GO</option>
+                      <option value="MA">MA</option>
+                      <option value="MT">MT</option>
+                      <option value="MS">MS</option>
+                      <option value="MG">MG</option>
+                      <option value="PA">PA</option>
+                      <option value="PB">PB</option>
+                      <option value="PR">PR</option>
+                      <option value="PE">PE</option>
+                      <option value="PI">PI</option>
+                      <option value="RJ">RJ</option>
+                      <option value="RN">RN</option>
+                      <option value="RS">RS</option>
+                      <option value="RO">RO</option>
+                      <option value="RR">RR</option>
+                      <option value="SC">SC</option>
+                      <option value="SP">SP</option>
+                      <option value="SE">SE</option>
+                      <option value="TO">TO</option>
+                    </select>
+                  </div>
                 </div>
-              </div>
-              <button type="submit" class="btn-salvar-end"
-                      [disabled]="salvandoEndereco()">
-                <mat-icon>save</mat-icon>
-                {{ salvandoEndereco() ? 'Salvando...' : 'Salvar Endereço' }}
-              </button>
-            </form>
+
+                <!-- Ações -->
+                <div class="endereco-form-acoes">
+                  <button type="button"
+                          class="btn-cancelar-end"
+                          (click)="toggleNovoEndereco()">
+                    Cancelar
+                  </button>
+                  <button type="submit"
+                          class="btn-salvar-end"
+                          [disabled]="novoEnderecoForm.invalid || salvandoEndereco()">
+                    @if (!salvandoEndereco()) {
+                      Salvar Endereço
+                    }
+                    @if (salvandoEndereco()) {
+                      <span class="btn-loading">
+                        <mat-icon class="icone-girando">refresh</mat-icon>
+                        Salvando...
+                      </span>
+                    }
+                  </button>
+                </div>
+
+              </form>
+            </div>
           }
 
           <button class="btn-adicionar-end" type="button"
@@ -179,7 +246,7 @@
                 [disabled]="salvando() || itens().length === 0">
           @if (!salvando()) {
             <mat-icon>shopping_bag</mat-icon>
-            <span>CONFIRMAR PEDIDO</span>
+            <span>CONFIRMAR A COMPRA</span>
           }
           @if (salvando()) {
             <span class="btn-loading">

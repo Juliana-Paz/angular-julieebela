@@ -511,6 +511,72 @@
 
 .resumo-seguranca mat-icon { font-size: 0.85rem !important; }
 
+/* Formulário novo endereço — versão melhorada */
+.endereco-form-wrapper {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(193,199,205,0.3);
+}
+
+.form-obrigatorio-legenda {
+  font-size: 0.72rem;
+  color: rgba(65,72,77,0.6);
+  margin: 0 0 16px;
+  text-align: right;
+}
+
+.asterisco {
+  color: #ba1a1a;
+  font-weight: 700;
+  margin-left: 2px;
+}
+
+.endereco-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: #F8F3EC;
+  border-radius: 12px;
+  border: 1px solid rgba(193,199,205,0.3);
+}
+
+.campo-numero { width: 110px; flex-shrink: 0; }
+.campo-complemento { flex: 1; }
+.campo-cidade { flex: 1; }
+.campo-estado { width: 90px; flex-shrink: 0; }
+
+.campo-select {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.endereco-form-acoes {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.btn-cancelar-end {
+  padding: 10px 20px;
+  background: transparent;
+  border: 1px solid rgba(193,199,205,0.4);
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: inherit;
+  color: #41484d;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-cancelar-end:hover {
+  border-color: #2B5B75;
+  color: #2B5B75;
+}
+
 /* Responsivo */
 @media (max-width: 1000px) {
   .checkout-layout {

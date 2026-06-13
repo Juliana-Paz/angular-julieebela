@@ -43,48 +43,51 @@
       <!-- ── INFO ───────────────────────────────────── -->
       <div class="detalhe-info">
 
+        <!-- 1. Tag categoria -->
         @if (p.categoria) {
-          <span class="detalhe-tag">{{ p.categoria.nome }}</span>
+          <div class="detalhe-tag-wrapper">
+            <span class="detalhe-tag">{{ p.categoria.nome }}</span>
+          </div>
         }
 
+        <!-- 2. Nome -->
         <h1 class="detalhe-nome">{{ p.nome }}</h1>
 
+        <!-- Avaliação -->
         <div class="detalhe-avaliacao">
           <div class="estrelas">
             @for (s of [1,2,3,4,5]; track s) {
               <mat-icon class="estrela">star</mat-icon>
             }
           </div>
-          <span class="avaliacao-nota">(4.8)</span>
+          <span class="avaliacao-nota">4.8</span>
           <span class="avaliacao-total">12 avaliações</span>
         </div>
 
+        <!-- 3. Preço -->
         <div class="detalhe-preco-wrapper">
-          <div class="preco-linha">
+          <div class="preco-principal">
             <span class="preco-atual">R$ {{ p.preco | number:'1.2-2':'pt-BR' }}</span>
+            @if (percentualDesconto() > 0) {
+              <span class="preco-badge-desconto">-{{ percentualDesconto() }}% OFF</span>
+            }
           </div>
-          <p class="preco-parcelas">
-            ou em até 3x de R$ {{ p.preco / 3 | number:'1.2-2':'pt-BR' }} sem juros
-          </p>
+          @if (p.precoOriginal) {
+            <span class="preco-original">De: R$ {{ p.precoOriginal | number:'1.2-2':'pt-BR' }}</span>
+          }
+          <p class="preco-parcelas">ou em até 3x de R$ {{ p.preco / 3 | number:'1.2-2':'pt-BR' }} sem juros</p>
         </div>
 
-        <!-- Seleção de cor -->
+        <!-- 4. Seleção de cor -->
         @if (coresDisponiveis().length > 0) {
           <div class="detalhe-cores">
-            <div class="tamanhos-header">
-              <span class="tamanhos-label">
-                COR:
-                @if (corSelecionada()) {
-                  <strong>{{ corSelecionada()!.nome }}</strong>
-                }
-              </span>
-            </div>
+            <p class="variante-label">COR: <strong>{{ corSelecionada()?.nome }}</strong></p>
             <div class="cores-grid">
               @for (cor of coresDisponiveis(); track cor.id) {
                 <button class="cor-btn"
                         type="button"
                         [class.selecionada]="corSelecionada()?.id === cor.id"
-                        [style.background]="cor.hexadecimal"
+                        [style.background-color]="cor.hexadecimal"
                         [title]="cor.nome"
                         (click)="selecionarCor(cor)">
                 </button>
@@ -93,17 +96,12 @@
           </div>
         }
 
-        <!-- Seleção de tamanho -->
+        <!-- 5. Seleção de tamanho -->
         @if (tamanhosDaCorSelecionada().length > 0) {
           <div class="detalhe-tamanhos">
-            <div class="tamanhos-header">
-              <span class="tamanhos-label">
-                TAMANHO:
-                @if (varianteSelecionada()) {
-                  <strong>{{ varianteSelecionada()!.tamanhoNome }}</strong>
-                }
-              </span>
-              <button class="guia-tamanhos-btn" type="button">GUIA DE TAMANHOS</button>
+            <div class="variante-header">
+              <p class="variante-label">TAMANHO: <strong>{{ varianteSelecionada()?.tamanhoNome }}</strong></p>
+              <button class="link-guia" type="button" (click)="abrirGuiaTamanhos()">Guia de tamanhos</button>
             </div>
             <div class="tamanhos-grid">
               @for (v of tamanhosDaCorSelecionada(); track v.id) {
@@ -120,18 +118,24 @@
           </div>
         }
 
+        <!-- 6. Estoque -->
         @if (varianteSelecionada()) {
-          <p class="estoque-info">
-            <mat-icon>inventory</mat-icon>
-            {{ varianteSelecionada()!.estoque }} unidades disponíveis
-          </p>
+          <div class="estoque-info">
+            <mat-icon class="estoque-icone">inventory_2</mat-icon>
+            <span class="estoque-texto"
+                  [class.estoque-baixo]="varianteSelecionada()!.estoque <= 5">
+              {{ varianteSelecionada()!.estoque > 5
+                 ? varianteSelecionada()!.estoque + ' unidades disponíveis'
+                 : 'Apenas ' + varianteSelecionada()!.estoque + ' restantes!' }}
+            </span>
+          </div>
         }
 
         @if (!p.variantes?.length) {
           <p class="sem-variantes">Sem variantes cadastradas.</p>
         }
 
-        <!-- Botões de ação -->
+        <!-- 7. Botões de ação -->
         <div class="detalhe-acoes">
           <button class="btn-adicionar" type="button" (click)="adicionarCarrinho()">
             <mat-icon>shopping_cart</mat-icon>
@@ -142,48 +146,51 @@
           </button>
         </div>
 
-        <!-- Materiais -->
+        <!-- 8. Benefícios -->
+        <div class="beneficios-card">
+          <div class="beneficio">
+            <mat-icon>eco</mat-icon>
+            <span>Material sustentável</span>
+          </div>
+          <div class="beneficio-divider"></div>
+          <div class="beneficio">
+            <mat-icon>local_shipping</mat-icon>
+            <span>Frete grátis acima de R$ 199</span>
+          </div>
+          <div class="beneficio-divider"></div>
+          <div class="beneficio">
+            <mat-icon>autorenew</mat-icon>
+            <span>Troca em até 30 dias</span>
+          </div>
+        </div>
+
+        <!-- 9. Materiais -->
         @if (p.materiais?.length) {
-          <div class="materiais-wrap">
-            <span class="tamanhos-label">MATERIAIS</span>
-            <div class="tamanhos-grid" style="margin-top:8px">
+          <div class="materiais-wrapper">
+            <p class="variante-label">MATERIAIS</p>
+            <div class="materiais-chips">
               @for (mat of p.materiais!; track mat.id) {
-                <span class="mat-chip">{{ mat.nome }}</span>
+                <span class="material-chip">{{ mat.nome }}</span>
               }
             </div>
           </div>
         }
 
-        <!-- Descrição accordion -->
+        <!-- 10. Descrição accordion -->
         @if (p.descricao) {
-          <div class="detalhe-descricao">
-            <div class="descricao-header" (click)="descricaoAberta.set(!descricaoAberta())">
-              <h3>Descrição</h3>
-              <mat-icon [class.virado]="descricaoAberta()">keyboard_arrow_down</mat-icon>
-            </div>
+          <div class="descricao-accordion">
+            <button class="descricao-toggle" type="button"
+                    (click)="descricaoAberta.set(!descricaoAberta())">
+              <span>Descrição do produto</span>
+              <mat-icon [class.rotacionado]="descricaoAberta()">expand_more</mat-icon>
+            </button>
             @if (descricaoAberta()) {
-              <div class="descricao-corpo">
+              <div class="descricao-conteudo">
                 <p>{{ p.descricao }}</p>
               </div>
             }
           </div>
         }
-
-        <!-- Garantias -->
-        <div class="features-row">
-          <div class="feature-item">
-            <mat-icon>eco</mat-icon>
-            <span>Material sustentável</span>
-          </div>
-          <div class="feature-item">
-            <mat-icon>local_shipping</mat-icon>
-            <span>Frete grátis acima de R$ 199</span>
-          </div>
-          <div class="feature-item">
-            <mat-icon>replay</mat-icon>
-            <span>Troca em até 30 dias</span>
-          </div>
-        </div>
 
       </div>
     </div>
