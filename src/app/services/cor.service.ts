@@ -1,7 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Cor } from '../models/cor.model';
+
+interface CorPage {
+  data: Cor[];
+}
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +17,9 @@ export class CorService {
   constructor(private httpClient: HttpClient) {}
 
   findAll(): Observable<Cor[]> {
-    return this.httpClient.get<Cor[]>(this.api);
+    return this.httpClient.get<CorPage>(this.api).pipe(
+      map(resp => resp.data ?? [])
+    );
   }
 
   findById(id: number): Observable<Cor> {

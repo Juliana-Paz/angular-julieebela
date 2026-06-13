@@ -19,7 +19,7 @@ export class MunicipioService {
     if (page !== undefined && pageSize !== undefined) {
       params = {
         page: page?.toString(),
-        pageSize: pageSize?.toString()
+        size: pageSize?.toString()
       }
     }
 

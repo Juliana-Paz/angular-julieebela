@@ -1,7 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Estampa } from '../models/estampa.model';
+
+interface EstampaPage {
+  data: Estampa[];
+}
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +17,9 @@ export class EstampaService {
   constructor(private httpClient: HttpClient) {}
 
   findAll(): Observable<Estampa[]> {
-    return this.httpClient.get<Estampa[]>(this.api);
+    return this.httpClient.get<EstampaPage>(this.api).pipe(
+      map(resp => resp.data ?? [])
+    );
   }
 
   findById(id: number): Observable<Estampa> {

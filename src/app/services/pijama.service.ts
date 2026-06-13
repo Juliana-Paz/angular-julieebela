@@ -1,7 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Pijama } from '../models/pijama.model';
+
+interface PijamaPage {
+  data: Pijama[];
+  total: number;
+  page: number;
+  size: number;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -14,9 +22,19 @@ export class PijamaService {
   findAll(page?: number, pageSize?: number): Observable<Pijama[]> {
     let params = {};
     if (page !== undefined && pageSize !== undefined) {
-      params = { page: page.toString(), pageSize: pageSize.toString() };
+      params = { page: page.toString(), size: pageSize.toString() };
     }
-    return this.httpClient.get<Pijama[]>(this.api, { params });
+    return this.httpClient.get<PijamaPage>(this.api, { params }).pipe(
+      map(resp => resp.data ?? [])
+    );
+  }
+
+  findAllPaged(page: number, pageSize: number): Observable<{ data: Pijama[]; total: number }> {
+    return this.httpClient.get<PijamaPage>(this.api, {
+      params: { page: page.toString(), size: pageSize.toString() },
+    }).pipe(
+      map(resp => ({ data: resp.data ?? [], total: resp.total ?? 0 }))
+    );
   }
 
   count(): Observable<number> {

@@ -1,7 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Cupom } from '../models/cupom.model';
+
+interface CupomPage {
+  data: Cupom[];
+}
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +17,9 @@ export class CupomService {
   constructor(private httpClient: HttpClient) {}
 
   findAll(): Observable<Cupom[]> {
-    return this.httpClient.get<Cupom[]>(this.api);
+    return this.httpClient.get<CupomPage>(this.api).pipe(
+      map(resp => resp.data ?? [])
+    );
   }
 
   findById(id: number): Observable<Cupom> {

@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Pedido } from '../models/pedido.model';
 
 export interface ItemPedidoDto { idPijama: number; quantidade: number; }
@@ -18,6 +19,10 @@ export interface CriarPedidoDto {
   idFormaPagamento: number;
 }
 
+interface PedidoPage {
+  data: Pedido[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class PedidoService {
   private readonly api = 'http://localhost:8080/pedidos';
@@ -30,7 +35,9 @@ export class PedidoService {
   }
 
   historico(): Observable<Pedido[]> {
-    return this.httpClient.get<Pedido[]>(this.api);
+    return this.httpClient.get<Pedido[] | PedidoPage>(this.api).pipe(
+      map(resp => Array.isArray(resp) ? resp : resp.data ?? [])
+    );
   }
 
   findById(id: number): Observable<Pedido> {

@@ -1,7 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Categoria } from '../models/categoria.model';
+
+interface CategoriaPage {
+  data: Categoria[];
+}
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +17,9 @@ export class CategoriaService {
   constructor(private httpClient: HttpClient) {}
 
   findAll(): Observable<Categoria[]> {
-    return this.httpClient.get<Categoria[]>(this.api);
+    return this.httpClient.get<CategoriaPage>(this.api).pipe(
+      map(resp => resp.data ?? [])
+    );
   }
 
   findById(id: number): Observable<Categoria> {

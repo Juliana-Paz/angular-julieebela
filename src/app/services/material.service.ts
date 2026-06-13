@@ -1,7 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Material } from '../models/material.model';
+
+interface MaterialPage {
+  data: Material[];
+}
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +17,9 @@ export class MaterialService {
   constructor(private httpClient: HttpClient) {}
 
   findAll(): Observable<Material[]> {
-    return this.httpClient.get<Material[]>(this.api);
+    return this.httpClient.get<MaterialPage>(this.api).pipe(
+      map(resp => resp.data ?? [])
+    );
   }
 
   findById(id: number): Observable<Material> {

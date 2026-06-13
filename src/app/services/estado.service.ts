@@ -19,7 +19,7 @@ export class EstadoService {
     if (page !== undefined && pageSize !== undefined) {
       params = {
         page: page?.toString(),
-        pageSize: pageSize?.toString()
+        size: pageSize?.toString()
       }
     }
 

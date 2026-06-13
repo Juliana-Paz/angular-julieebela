@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -31,7 +31,7 @@ function getPtPaginatorIntl(): MatPaginatorIntl {
   templateUrl: './pijama-list.html',
   styleUrl: './pijama-list.css',
 })
-export class PijamaList implements OnInit, AfterViewInit {
+export class PijamaList implements AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   displayedColumns: string[] = ['numero', 'imagem', 'nome', 'categoria', 'preco', 'variantes', 'ativo', 'acao'];
@@ -40,11 +40,16 @@ export class PijamaList implements OnInit, AfterViewInit {
 
   constructor(private pijamaService: PijamaService, private snack: MatSnackBar) {}
 
-  ngOnInit(): void { this.carregar(); }
-  ngAfterViewInit(): void { this.dataSource.paginator = this.paginator; }
+  ngAfterViewInit(): void {
+    this.carregar(0, this.paginator.pageSize);
+    this.paginator.page.subscribe(ev => this.carregar(ev.pageIndex, ev.pageSize));
+  }
 
-  carregar(): void {
-    this.pijamaService.findAll().subscribe(data => { this.dataSource.data = data; });
+  carregar(page: number, pageSize: number): void {
+    this.pijamaService.findAllPaged(page, pageSize).subscribe(({ data, total }) => {
+      this.dataSource.data = data;
+      this.paginator.length = total;
+    });
   }
 
   applyFilter(event: Event): void {
@@ -59,7 +64,7 @@ export class PijamaList implements OnInit, AfterViewInit {
   excluir(id: number): void {
     if (!confirm('Deseja realmente excluir este pijama?')) return;
     this.pijamaService.delete(id).subscribe({
-      next: () => { this.snack.open('Pijama excluído!', 'OK', { duration: 2500, verticalPosition: 'top' }); this.carregar(); },
+      next: () => { this.snack.open('Pijama excluído!', 'OK', { duration: 2500, verticalPosition: 'top' }); this.carregar(this.paginator.pageIndex, this.paginator.pageSize); },
       error: () => this.snack.open('Erro ao excluir pijama.', 'OK', { duration: 2500, verticalPosition: 'top' }),
     });
   }
