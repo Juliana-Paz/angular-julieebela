@@ -1,30 +1,26 @@
 <section class="page">
 
-  <nav class="breadcrumb" aria-label="Breadcrumb">
-    <a class="bc-link" routerLink="/adm/dashboard">Home</a>
-    <mat-icon class="bc-sep">chevron_right</mat-icon>
-    <span class="bc-current">Pijamas</span>
-  </nav>
-
   <div class="page-header">
-    <div>
-      <h1 class="page-title display">Controle de Pijamas</h1>
-      <p class="page-subtitle">Gerencie o catálogo de pijamas da loja Julie e Bela.</p>
+    <div class="page-header-info">
+      <h1 class="page-title">Gerenciar Pijamas</h1>
+      <span class="total-badge">
+        <span class="total-dot"></span>
+        {{ total() }} produto{{ total() !== 1 ? 's' : '' }} no total
+      </span>
     </div>
-    <button matButton="filled" routerLink="/adm/pijamas/new" aria-label="Adicionar pijama">
+    <a class="btn-novo" routerLink="/adm/pijamas/new" aria-label="Adicionar pijama">
       <mat-icon>add</mat-icon>
       Novo Pijama
-    </button>
+    </a>
   </div>
 
   <div class="filter-bar">
     <div class="filter-search">
       <mat-icon>search</mat-icon>
-      <input (keyup)="applyFilter($event)" placeholder="Buscar pijama por nome..." #input>
+      <input (input)="onSearch($event)"
+             placeholder="Buscar pijama por nome, código ou categoria..."
+             autocomplete="off">
     </div>
-    <button class="filter-icon-btn" type="button" aria-label="Filtros">
-      <mat-icon>filter_list</mat-icon>
-    </button>
   </div>
 
   <div class="list-card">
@@ -32,42 +28,54 @@
 
       <ng-container matColumnDef="numero">
         <th mat-header-cell *matHeaderCellDef>#</th>
-        <td mat-cell *matCellDef="let obj; let i = index">{{ i + 1 }}</td>
+        <td mat-cell *matCellDef="let obj; let i = index">{{ formatIndex(i) }}</td>
       </ng-container>
 
       <ng-container matColumnDef="imagem">
         <th mat-header-cell *matHeaderCellDef>Foto</th>
         <td mat-cell *matCellDef="let obj">
-          <img class="thumb" [src]="getImageUrl(obj)" [alt]="obj.nome" />
+          @if (hasImage(obj)) {
+            <img class="thumb" [src]="getImageUrl(obj)" [alt]="obj.nome" />
+          } @else {
+            <div class="thumb-placeholder">
+              <mat-icon>photo</mat-icon>
+            </div>
+          }
         </td>
       </ng-container>
 
       <ng-container matColumnDef="nome">
         <th mat-header-cell *matHeaderCellDef>Nome</th>
         <td mat-cell *matCellDef="let obj">
-          <strong>{{ obj.nome }}</strong>
+          <div class="nome-cell">
+            <strong class="nome-text">{{ obj.nome }}</strong>
+            @if (obj.categoria?.nome) {
+              <span class="nome-cat-sub">{{ obj.categoria.nome }}</span>
+            }
+          </div>
         </td>
       </ng-container>
 
       <ng-container matColumnDef="categoria">
         <th mat-header-cell *matHeaderCellDef>Categoria</th>
-        <td mat-cell *matCellDef="let obj">{{ obj.categoria?.nome }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="sexo">
-        <th mat-header-cell *matHeaderCellDef>Sexo</th>
-        <td mat-cell *matCellDef="let obj">{{ obj.sexo?.nome }}</td>
+        <td mat-cell *matCellDef="let obj">
+          @if (obj.categoria?.nome) {
+            <span class="cat-badge">{{ obj.categoria.nome }}</span>
+          }
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="preco">
         <th mat-header-cell *matHeaderCellDef>Preço</th>
-        <td mat-cell *matCellDef="let obj">R$ {{ obj.preco | number:'1.2-2' }}</td>
+        <td mat-cell *matCellDef="let obj" class="preco-cell">
+          R$ {{ obj.preco | number:'1.2-2' }}
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="variantes">
         <th mat-header-cell *matHeaderCellDef>Variantes</th>
-        <td mat-cell *matCellDef="let obj">
-          <span class="estoque-badge">{{ obj.variantes?.length ?? 0 }}</span>
+        <td mat-cell *matCellDef="let obj" class="center-cell">
+          <span class="variantes-badge">{{ obj.variantes?.length ?? 0 }}</span>
         </td>
       </ng-container>
 
@@ -82,7 +90,10 @@
 
       <ng-container matColumnDef="acao">
         <th mat-header-cell *matHeaderCellDef>Ações</th>
-        <td mat-cell *matCellDef="let obj">
+        <td mat-cell *matCellDef="let obj" class="actions-cell">
+          <button class="action-view" (click)="verPijama(obj.id)" aria-label="Visualizar">
+            <mat-icon>visibility</mat-icon>
+          </button>
           <button class="action-edit" [routerLink]="['/adm/pijamas/edit', obj.id]" aria-label="Editar">
             <mat-icon>edit</mat-icon>
           </button>
@@ -93,13 +104,55 @@
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" [class.row-inativo]="!row.ativo"></tr>
       <tr class="mat-row" *matNoDataRow>
-        <td class="mat-cell no-data" [attr.colspan]="displayedColumns.length">Nenhum pijama encontrado.</td>
+        <td class="mat-cell no-data" [attr.colspan]="displayedColumns.length">
+          <mat-icon>search_off</mat-icon>
+          <span>Nenhum pijama encontrado.</span>
+        </td>
       </tr>
     </table>
 
-    <mat-paginator [pageSizeOptions]="[10, 25, 50]" [pageSize]="25" showFirstLastButtons />
+    <!-- Paginação customizada -->
+    <div class="pagination-bar">
+      <div class="pagination-info">
+        <label class="pagination-label" for="page-size-select">Itens por página:</label>
+        <select id="page-size-select" class="pagination-size-select" (change)="onPageSizeChange($event)">
+          @for (s of [5, 10, 25, 50]; track s) {
+            <option [value]="s" [selected]="s === pageSize()">{{ s }}</option>
+          }
+        </select>
+        @if (total() > 0) {
+          <span class="pagination-range">{{ rangeStart() }}–{{ rangeEnd() }} de {{ total() }}</span>
+        }
+      </div>
+
+      <div class="pagination-controls">
+        <button class="page-nav" (click)="goFirst()" [disabled]="currentPage() === 0" aria-label="Primeira página">
+          <mat-icon>first_page</mat-icon>
+        </button>
+        <button class="page-nav" (click)="prevPage()" [disabled]="currentPage() === 0" aria-label="Página anterior">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+
+        @for (p of pageNumbers(); track $index) {
+          @if (isNumber(p)) {
+            <button class="page-num" [class.page-active]="p === currentPage()" (click)="goToPage(p)">
+              {{ p + 1 }}
+            </button>
+          } @else {
+            <span class="page-ellipsis">…</span>
+          }
+        }
+
+        <button class="page-nav" (click)="nextPage()" [disabled]="currentPage() >= totalPages() - 1" aria-label="Próxima página">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+        <button class="page-nav" (click)="goLast()" [disabled]="currentPage() >= totalPages() - 1" aria-label="Última página">
+          <mat-icon>last_page</mat-icon>
+        </button>
+      </div>
+    </div>
   </div>
 
 </section>

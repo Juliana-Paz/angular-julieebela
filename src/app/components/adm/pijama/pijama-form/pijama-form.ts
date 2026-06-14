@@ -91,6 +91,8 @@ export class PijamaForm implements OnInit, AfterViewInit {
   private sortableSalvas?: Sortable;
   private sortableNovas?: Sortable;
 
+  readonly modoVisualizacao = signal(false);
+
   imagensSalvas: { fid: string; nomeOriginal: string; url: string }[] = [];
   novasImagens: { file: File; preview: string; name: string }[] = [];
   indiceCapa = signal(0);
@@ -148,6 +150,7 @@ export class PijamaForm implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     const pijama: Pijama = this.activatedRoute.snapshot.data['pijama'];
+    this.modoVisualizacao.set(this.activatedRoute.snapshot.data['modo'] === 'view');
 
     forkJoin({
       categorias: this.categoriaService.findAll(),
@@ -198,6 +201,10 @@ export class PijamaForm implements OnInit, AfterViewInit {
 
         if (this.variantesArray.length === 0) {
           this.adicionarVariante();
+        }
+
+        if (this.modoVisualizacao()) {
+          this.form.disable({ emitEvent: false });
         }
 
         setTimeout(() => this.inicializarSortable(), 100);

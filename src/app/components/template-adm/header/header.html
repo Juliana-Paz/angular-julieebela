@@ -1,32 +1,16 @@
 <mat-toolbar class="adm-header">
-  <div class="adm-header-spacer"></div>
-
-  <div class="adm-header-center">
-    <strong>Julie e Bela — Administração</strong>
+  <div class="adm-breadcrumb">
+    <span class="adm-breadcrumb-root">ADM</span>
+    <mat-icon class="adm-breadcrumb-sep">chevron_right</mat-icon>
+    <span class="adm-breadcrumb-current">{{ breadcrumb() }}</span>
   </div>
 
   <div class="adm-header-actions">
-    <button mat-button [matMenuTriggerFor]="menuUsuario" class="user-btn">
-      <mat-icon>admin_panel_settings</mat-icon>
-      <span>{{ authService.nomeUsuario() }}</span>
-      <mat-icon>arrow_drop_down</mat-icon>
+    <button mat-icon-button aria-label="Notificações" class="action-btn">
+      <mat-icon>notifications_none</mat-icon>
+    </button>
+    <button mat-icon-button aria-label="Configurações" class="action-btn">
+      <mat-icon>settings</mat-icon>
     </button>
   </div>
 </mat-toolbar>
-
-<mat-menu #menuUsuario="matMenu">
-  <button mat-menu-item disabled>
-    <mat-icon>person</mat-icon>
-    <span>{{ authService.nomeUsuario() }}</span>
-  </button>
-  <mat-divider />
-  <button mat-menu-item routerLink="/adm/perfil">
-    <mat-icon>manage_accounts</mat-icon>
-    <span>Meu Perfil</span>
-  </button>
-  <mat-divider />
-  <button mat-menu-item (click)="sair()">
-    <mat-icon>logout</mat-icon>
-    <span>Sair</span>
-  </button>
-</mat-menu>

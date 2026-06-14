@@ -29,10 +29,10 @@ export class PijamaService {
     );
   }
 
-  findAllPaged(page: number, pageSize: number): Observable<{ data: Pijama[]; total: number }> {
-    return this.httpClient.get<PijamaPage>(this.api, {
-      params: { page: page.toString(), size: pageSize.toString() },
-    }).pipe(
+  findAllPaged(page: number, pageSize: number, nome?: string): Observable<{ data: Pijama[]; total: number }> {
+    const params: Record<string, string> = { page: page.toString(), size: pageSize.toString() };
+    if (nome) params['nome'] = nome;
+    return this.httpClient.get<PijamaPage>(this.api, { params }).pipe(
       map(resp => ({ data: resp.data ?? [], total: resp.total ?? 0 }))
     );
   }

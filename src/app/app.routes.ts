@@ -78,6 +78,8 @@ export const routes: Routes = [
             { path: 'pijamas/new', component: PijamaForm, title: 'Cadastro de Pijama' },
             { path: 'pijamas/edit/:id', component: PijamaForm, title: 'Edição de Pijama',
               resolve: { pijama: pijamaResolver } },
+            { path: 'pijamas/view/:id', component: PijamaForm, title: 'Visualizar Pijama',
+              data: { modo: 'view' }, resolve: { pijama: pijamaResolver } },
             { path: 'categorias', component: CategoriaList, title: 'Listagem de Categorias' },
             { path: 'categorias/new', component: CategoriaForm, title: 'Cadastro de Categoria' },
             { path: 'categorias/edit/:id', component: CategoriaForm, title: 'Edição de Categoria',

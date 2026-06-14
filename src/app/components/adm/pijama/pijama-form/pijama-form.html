@@ -5,13 +5,17 @@
     <mat-icon class="bc-sep">chevron_right</mat-icon>
     <a class="bc-link" routerLink="/adm/pijamas">Pijamas</a>
     <mat-icon class="bc-sep">chevron_right</mat-icon>
-    <span class="bc-current">{{ form.value.id ? 'Editar Pijama' : 'Novo Pijama' }}</span>
+    <span class="bc-current">{{ modoVisualizacao() ? 'Visualizar' : (form.value.id ? 'Editar' : 'Novo') }}</span>
   </nav>
 
   <div class="form-hero-row">
     <div>
-      <h1 class="page-title display">Cadastro de Pijama</h1>
-      <p class="page-subtitle">Preencha todas as informações do produto.</p>
+      <h1 class="page-title display">
+        {{ modoVisualizacao() ? 'Visualizar Pijama' : (form.value.id ? 'Editar Pijama' : 'Cadastrar Pijama') }}
+      </h1>
+      @if (!modoVisualizacao()) {
+        <p class="page-subtitle">Preencha todas as informações do produto.</p>
+      }
     </div>
     <button class="voltar-btn" type="button" routerLink="/adm/pijamas">
       <mat-icon>arrow_back</mat-icon> Voltar
@@ -198,10 +202,12 @@
         }
       </div>
 
-      <button mat-stroked-button type="button" color="primary"
-              (click)="adicionarVariante()" class="btn-add-variante">
-        <mat-icon>add</mat-icon> Adicionar Variante
-      </button>
+      @if (!modoVisualizacao()) {
+        <button mat-stroked-button type="button" color="primary"
+                (click)="adicionarVariante()" class="btn-add-variante">
+          <mat-icon>add</mat-icon> Adicionar Variante
+        </button>
+      }
     </div>
 
     <!-- SEÇÃO 4: Imagens -->
@@ -262,25 +268,35 @@
         </div>
       }
 
-      <!-- Área de upload -->
-      <div class="upload-area" (click)="inputImagem.click()"
-           (dragover)="$event.preventDefault()" (drop)="onDrop($event)">
-        <mat-icon>cloud_upload</mat-icon>
-        <p>Clique ou arraste imagens aqui</p>
-        <p class="upload-hint">JPG, PNG ou WEBP — múltiplas permitidas</p>
-      </div>
-      <input #inputImagem type="file" accept="image/*" multiple hidden
-             (change)="onImagensChange($event)">
+      @if (!modoVisualizacao()) {
+        <div class="upload-area" (click)="inputImagem.click()"
+             (dragover)="$event.preventDefault()" (drop)="onDrop($event)">
+          <mat-icon>cloud_upload</mat-icon>
+          <p>Clique ou arraste imagens aqui</p>
+          <p class="upload-hint">JPG, PNG ou WEBP — múltiplas permitidas</p>
+        </div>
+        <input #inputImagem type="file" accept="image/*" multiple hidden
+               (change)="onImagensChange($event)">
+      }
     </div>
 
     <div class="form-footer">
-      <button matButton="text" type="button" routerLink="/adm/pijamas">Cancelar</button>
-      <button matButton="outlined" type="button" (click)="excluir()" [disabled]="!form.value.id">
-        <mat-icon>delete</mat-icon> Excluir
-      </button>
-      <button matButton="filled" type="submit" (click)="salvar()" [disabled]="form.invalid">
-        <mat-icon>save</mat-icon> Salvar Pijama
-      </button>
+      @if (modoVisualizacao()) {
+        <button matButton="text" type="button" routerLink="/adm/pijamas">
+          <mat-icon>arrow_back</mat-icon> Voltar à lista
+        </button>
+        <a matButton="outlined" [routerLink]="['/adm/pijamas/edit', form.getRawValue().id]">
+          <mat-icon>edit</mat-icon> Editar este pijama
+        </a>
+      } @else {
+        <button matButton="text" type="button" routerLink="/adm/pijamas">Cancelar</button>
+        <button matButton="outlined" type="button" (click)="excluir()" [disabled]="!form.value.id">
+          <mat-icon>delete</mat-icon> Excluir
+        </button>
+        <button matButton="filled" type="submit" (click)="salvar()" [disabled]="form.invalid">
+          <mat-icon>save</mat-icon> Salvar Pijama
+        </button>
+      }
     </div>
   </form>
 

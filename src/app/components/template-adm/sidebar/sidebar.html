@@ -1,23 +1,64 @@
-<div class="sidebar-header" [class.collapsed]="collapsed">
+<div class="sidebar-inner">
+
+  <!-- BRAND -->
+  <div class="sidebar-header" [class.collapsed]="collapsed">
+    @if (!collapsed) {
+      <div class="brand-logo">
+        <mat-icon>child_care</mat-icon>
+      </div>
+      <div class="sidebar-brand">
+        <strong class="brand-name">Julie & Bela</strong>
+        <span class="brand-sub">ADMINISTRAÇÃO</span>
+      </div>
+    }
+    <button mat-icon-button class="toggle-btn" (click)="toggleCollapse.emit()" aria-label="Alternar menu">
+      <mat-icon>{{ collapsed ? 'menu' : 'menu_open' }}</mat-icon>
+    </button>
+  </div>
+
+  <!-- NAV -->
+  <nav class="sidebar-nav">
+    <mat-nav-list>
+      @for (item of menuItems; track item.route) {
+        <a mat-list-item
+           [routerLink]="item.route"
+           routerLinkActive="active-link"
+           [routerLinkActiveOptions]="{ exact: false }"
+           class="sidebar-link"
+           [class.collapsed]="collapsed"
+           [matTooltip]="collapsed ? item.label : ''"
+           matTooltipPosition="after">
+          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+          @if (!collapsed) {
+            <span matListItemTitle>{{ item.label }}</span>
+          }
+        </a>
+      }
+    </mat-nav-list>
+  </nav>
+
+  <!-- ADMIN FOOTER -->
   @if (!collapsed) {
-    <div class="sidebar-brand-text">
-      <strong>Julie e Bela</strong>
+    <div class="sidebar-footer">
+      <div class="admin-card">
+        <div class="admin-avatar">{{ inicial }}</div>
+        <div class="admin-info">
+          <span class="admin-name">{{ authService.nomeUsuario() }}</span>
+          <span class="admin-role">Administrador</span>
+        </div>
+        <button mat-icon-button class="admin-logout-btn" (click)="sair()"
+                aria-label="Sair" matTooltip="Sair" matTooltipPosition="above">
+          <mat-icon>logout</mat-icon>
+        </button>
+      </div>
+    </div>
+  } @else {
+    <div class="sidebar-footer-collapsed">
+      <button mat-icon-button (click)="sair()" aria-label="Sair"
+              matTooltip="Sair" matTooltipPosition="after" class="toggle-btn">
+        <mat-icon>logout</mat-icon>
+      </button>
     </div>
   }
-  <button mat-icon-button class="toggle-btn" (click)="toggleCollapse.emit()" aria-label="Alternar menu">
-    <mat-icon>{{ collapsed ? 'menu' : 'menu_open' }}</mat-icon>
-  </button>
-</div>
 
-<mat-nav-list class="sidebar-nav">
-  @for (item of menuItems; track item.route) {
-    <a mat-list-item [routerLink]="item.route" routerLinkActive="active-link"
-      class="sidebar-link" [class.collapsed]="collapsed"
-      [matTooltip]="collapsed ? item.label : ''" matTooltipPosition="after">
-      <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
-      @if (!collapsed) {
-        <span matListItemTitle>{{ item.label }}</span>
-      }
-    </a>
-  }
-</mat-nav-list>
+</div>
